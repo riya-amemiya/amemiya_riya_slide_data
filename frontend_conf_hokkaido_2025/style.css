@@ -1,0 +1,42 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+/* Global styles for the presentation */
+:root {
+  --slidev-theme-primary: #3984FD;
+  --slidev-theme-text: #243762;
+  --slidev-theme-bg: #FFFFFF;
+}
+
+/* Background color for all slides */
+.slidev-layout {
+  background-color: #FFFFFF !important;
+}
+
+/* Default heading styles for all slides except the first one */
+h1, h2, h3, h4, h5, h6 {
+  color: #3984FD !important;
+  font-family: 'Nunito', sans-serif !important;
+}
+
+/* Default body text styles */
+p, li, span, div {
+  color: #243762 !important;
+  font-family: 'Nunito', sans-serif !important;
+}
+
+/* Special styling for the first slide (cover page) */
+.slidev-layout[data-slide="1"] h1 {
+  font-family: 'Noto Sans JP', sans-serif !important;
+}
+
+/* Ensure proper text color inheritance */
+.slidev-layout * {
+  color: inherit;
+}
+
+/* Code blocks should maintain their own colors */
+pre, code {
+  color: initial !important;
+}
