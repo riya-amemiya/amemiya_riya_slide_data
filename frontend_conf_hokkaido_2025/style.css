@@ -11,32 +11,37 @@
 
 /* Background color for all slides */
 .slidev-layout {
-  background-color: #FFFFFF !important;
-}
-
-/* Default heading styles for all slides except the first one */
-h1, h2, h3, h4, h5, h6 {
-  color: #3984FD !important;
-  font-family: 'Nunito', sans-serif !important;
+  background-color: #FFFFFF;
 }
 
 /* Default body text styles */
 p, li, span, div {
-  color: #243762 !important;
-  font-family: 'Nunito', sans-serif !important;
+  color: #243762;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Specific heading styles with higher specificity */
+.slidev-layout h1, 
+.slidev-layout h2, 
+.slidev-layout h3, 
+.slidev-layout h4, 
+.slidev-layout h5, 
+.slidev-layout h6 {
+  color: #3984FD;
+  font-family: 'Nunito', sans-serif;
 }
 
 /* Special styling for the first slide (cover page) */
 .slidev-layout[data-slide="1"] h1 {
-  font-family: 'Noto Sans JP', sans-serif !important;
+  font-family: 'Noto Sans JP', sans-serif;
 }
 
-/* Ensure proper text color inheritance */
-.slidev-layout * {
+/* Ensure proper text color inheritance for non-heading elements */
+.slidev-layout *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre):not(code) {
   color: inherit;
 }
 
 /* Code blocks should maintain their own colors */
 pre, code {
-  color: initial !important;
+  color: initial;
 }

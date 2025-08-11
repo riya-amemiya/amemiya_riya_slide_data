@@ -1,35 +1,6 @@
----
-theme: seriph
-background: white
-title: 「え？！それ今ではCSSだけでできるの！？」驚きの進化を遂げたモダンCSS
-info: |
-  ## Frontend Conference Hokkaido 2025
-  モダンCSSの進化について
-layout: center
-defaults:
-  layout: center
-drawings:
-  persist: false
-transition: slide-left
-mdc: true
-seoMeta:
-  ogImage: auto
-css: unocss
-highlighter: shiki
----
-
-<style>
-@import './style.css';
-</style>
-
-# 「え？！それ今ではCSSだけでできるの！？」
-
-## 驚きの進化を遂げたモダンCSS
+# 「え？！それ今ではCSSだけでできるの！？」<br>驚きの進化を遂げたモダンCSS
 
 ---
-
-<div class="grid grid-cols-2 gap-4">
-<div>
 
 ## 自己紹介
 
@@ -37,20 +8,12 @@ highlighter: shiki
 - 所属：株式会社ダイニー
 - TypeScriptが好きです
 
-</div>
-<div>
-
-<img src="./assets/profile.png" alt="プロフィール画像" class="rounded-full w-48 h-48" />
-
-</div>
-</div>
+(ここは右半分はアイコンのスライド)
 
 ---
 
-## 今日のゴール
-
+**今日のゴール：**
 「へー！今のCSSってそんなことできるんだー」
-
 と思って帰ってもらう
 
 ---
@@ -64,13 +27,7 @@ highlighter: shiki
 - スクロールに連動したプログレスバー
 - ポップアップやツールチップ
 
----
-
-## 今こう思ってませんか？
-
-- めんどくさい処理だなぁ...
-- JavaScriptでしかできないなぁ...
-- まさかCSSでできるの？！
+**「JavaScriptでしょ？」**
 
 ---
 
@@ -80,8 +37,6 @@ highlighter: shiki
 
 今日は「昔はJavaScript必須だったけど、
 今はCSSだけでできる」機能を紹介します
-
-(＊一部ブラウザAPIやHTMLを含む＊)
 
 ---
 
@@ -264,10 +219,6 @@ JavaScriptのイベント管理が不要に
 </div>
 ```
 
----
-
-## 自動的に全て対応
-
 ```css
 /* ポップオーバーのスタイリング */
 [popover]:popover-open {
@@ -374,29 +325,6 @@ BEMやCSS Modulesで名前空間を作ってきたけど...
 
 ---
 
-## @scopeのインラインスタイル構文
-
-```html
-<section class="article-body">
-  <style>
-    @scope {
-      /* ここに書いたスタイルは、自動的にこの<style>タグの親要素
-         （この場合はsection.article-body）だけに適用されます */
-      img {
-        border: 5px solid black;
-        background-color: goldenrod;
-      }
-    }
-  </style>
-
-  <!-- セクションの内容 -->
-</section>
-```
-
-HTML内にインラインで@scopeを書くことで、そのHTML要素のみにスタイルを適用できます
-
----
-
 # 6. CSS Nesting
 
 ## Sassがいらなくなる日
@@ -470,7 +398,7 @@ HTML内にインラインで@scopeを書くことで、そのHTML要素のみに
 ```
 
 スクロール位置が自動的にアニメーションの進行度に！
-滑らかな動きが簡単に実現
+60fpsの滑らかな動きが簡単に実現
 
 ---
 
@@ -620,26 +548,24 @@ textarea {
 **レイアウト・レスポンシブ**
 
 - Container Queries - 親要素ベースのレスポンシブ
-- `:has()` - 子要素の状態で親を選択
+- :has() - 子要素の状態で親を選択
 
 **UI・インタラクション**
 
 - Popover API - ネイティブなポップオーバー
 - Scroll-driven Animations - スクロール連動アニメ
-- `@starting-style` - `display:none`からのアニメ
-
----
+- @starting-style - display:noneからのアニメ
 
 **スタイル管理**
 
-- `@layer` - 詳細度の制御
-- `@scope` - スタイルの適用範囲
+- @layer - 詳細度の制御
+- @scope - スタイルの適用範囲
 - CSS Nesting - ネイティブなネスト
 
 **その他の便利機能**
 
-- `text-wrap: balance` - 自動改行調整
-- `light-dark()` - 自動テーマ切り替え
+- text-wrap: balance - 自動改行調整
+- light-dark() - 自動テーマ切り替え
 - field-sizing - フォームの自動リサイズ
 
 この他にも様々な機能があり、CSSは進化し続けています。
