@@ -7,6 +7,10 @@
   --slidev-theme-primary: #3984FD;
   --slidev-theme-text: #243762;
   --slidev-theme-bg: #FFFFFF;
+  /* Fixed width for code blocks (px so it doesn't vary by font-size) */
+  --code-block-width: 900px;
+  /* Unify code font-size so width/height look consistent across slides */
+  --code-font-size: 16px;
 }
 
 /* Background color for all slides */
@@ -21,11 +25,11 @@ p, li, span, div {
 }
 
 /* Specific heading styles with higher specificity */
-.slidev-layout h1, 
-.slidev-layout h2, 
-.slidev-layout h3, 
-.slidev-layout h4, 
-.slidev-layout h5, 
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout h4,
+.slidev-layout h5,
 .slidev-layout h6 {
   color: #3984FD;
   font-family: 'Nunito', sans-serif;
@@ -44,4 +48,42 @@ p, li, span, div {
 /* Code blocks should maintain their own colors */
 pre, code {
   color: initial;
+}
+
+/* Fixed-width code blocks with horizontal scroll */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code,
+.slidev-layout .slidev-code pre {
+  width: var(--code-block-width);
+  max-width: var(--code-block-width);
+  overflow-x: auto;
+  overflow-y: visible;
+  white-space: pre;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Ensure code content maintains full width inside fixed container */
+.slidev-layout pre.shiki > code {
+  display: inline-block;
+  /* expand to content width while keeping at least container width */
+  min-width: 100%;
+}
+
+/* Ensure consistent code font sizing across all code blocks */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code pre,
+.slidev-layout pre.shiki code {
+  font-size: var(--code-font-size);
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 1024px) {
+  :root {
+    --code-block-width: 820px;
+    --code-font-size: 15px;
+  }
 }

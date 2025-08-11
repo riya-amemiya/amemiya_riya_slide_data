@@ -28,7 +28,7 @@ highlighter: shiki
 
 ---
 
-<div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-2 gap-4 items-center">
 <div>
 
 ## 自己紹介
@@ -40,7 +40,7 @@ highlighter: shiki
 </div>
 <div>
 
-<img src="./assets/profile.png" alt="プロフィール画像" class="rounded-full w-48 h-48" />
+<img src="/icon.png" alt="プロフィール画像" class="rounded-full w-48 h-48" />
 
 </div>
 </div>
