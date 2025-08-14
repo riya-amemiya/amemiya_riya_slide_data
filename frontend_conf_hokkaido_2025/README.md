@@ -1,11 +1,8 @@
-# Welcome to [Slidev](https://github.com/slidevjs/slidev)!
+# フロントエンドカンファレンス北海道2025
 
-To start the slide show:
+フロントエンドカンファレンス北海道2025で発表したスライドの元データです
 
-- `pnpm install`
-- `pnpm dev`
-- visit <http://localhost:3030>
+Slidevで作成されています
 
-Edit the [slides.md](./slides.md) to see the changes.
+<a href="https://github.com/sponsors/riya-amemiya"><img alt="Sponsor" src="https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#white" /></a>
 
-Learn more about Slidev at the [documentation](https://sli.dev/).
