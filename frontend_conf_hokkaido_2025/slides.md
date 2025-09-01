@@ -659,16 +659,37 @@ textarea {
 
 ---
 
+<!--
+License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+Legal code: <https://creativecommons.org/licenses/by-sa/4.0/legalcode>
+
+Translation Exception (Additional Permission):
+To prioritize dissemination across language barriers, translations may be distributed under CC BY 4.0, provided that you credit “Riya Amemiya”, link to <https://github.com/riya-amemiya>, indicate that changes were made (translation), and include this notice.
+
+Required Attribution: Riya Amemiya (<https://github.com/riya-amemiya>).
+-->
+
 ## ご清聴ありがとうございました
 
-このスライドは以下のリポジトリで公開しています。
+本日のスライドは下記のリポジトリで公開しています。
+内容の修正・改善など、お気軽にPull Requestをお送りください。
 
 <https://github.com/riya-amemiya/amemiya_riya_slide_data/tree/main/frontend_conf_hokkaido_2025>
 
 ご質問はお気軽に
 
-- XやGitHubなど: <https://riya-amemiya-links.oshaburikitchin.com/>
+- XやGitHubなど: <https://riya-amemiya-links.tokidux.com/>
 
 <div class="flex justify-center">
 <img src="/links.png" alt="リンク集" class="w-48 h-48" />
+</div>
+
+<hr>
+
+<div class="text-sm">
+
+このスライドは **CC BY-SA 4.0** でライセンスされています。<br>
+**より自由な翻訳を可能にするため**、翻訳は例外的に **CC BY 4.0** での配布が許可されています。<br>
+Required Attribution: Riya Amemiya (<https://github.com/riya-amemiya>)
+
 </div>
