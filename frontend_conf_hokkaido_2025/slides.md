@@ -637,8 +637,8 @@ textarea {
 **UI・インタラクション**
 
 - Popover API - ネイティブなポップオーバー
-- Scroll-driven Animations - スクロール連動アニメ
-- `@starting-style` - `display:none`からのアニメ
+- Scroll-driven Animations - スクロール連動アニメーション
+- `@starting-style` - `display:none`からのアニメーション
 
 ---
 
@@ -646,42 +646,50 @@ textarea {
 
 - `@layer` - 詳細度の制御
 - `@scope` - スタイルの適用範囲
-- CSS Nesting - ネイティブなネスト
+- CSS Nesting - ネイティブなネスト記法
 
 **その他の便利機能**
 
 - `text-wrap: balance` - 自動改行調整
 - `light-dark()` - 自動テーマ切り替え
-- field-sizing - フォームの自動リサイズ
+- `field-sizing` - フォームの自動リサイズ
 
 この他にも様々な機能があり、CSSは進化し続けています。
 ぜひ気になったら調べてみてください。
 
 ---
 
-<!--
-License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
-Legal code: <https://creativecommons.org/licenses/by-sa/4.0/legalcode>
+## 注意
 
-Translation Exception (Additional Permission):
-To prioritize dissemination across language barriers, translations may be distributed under CC BY 4.0, provided that you credit “Riya Amemiya”, link to <https://github.com/riya-amemiya>, indicate that changes were made (translation), and include this notice.
+今回紹介した機能は、ブラウザの対応状況によってはまだ使用できない場合があります。
 
-Required Attribution: Riya Amemiya (<https://github.com/riya-amemiya>).
--->
+詳細は以下のページを参照してください。
+- <https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Container_Queries>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/:has>
+- <https://developer.mozilla.org/ja/docs/Web/API/Popover_API>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/@layer>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/@scope>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Nesting>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/@starting-style>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/text-wrap>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/color_value/light-dark>
+- <https://developer.mozilla.org/ja/docs/Web/CSS/field-sizing>
+
+---
 
 ## ご清聴ありがとうございました
 
-本日のスライドは下記のリポジトリで公開しています。
-内容の修正・改善など、お気軽にPull Requestをお送りください。
+本日のスライドは下記のリポジトリで公開しています。<br>
+内容の修正・改善など、お気軽にPull Requestをお送りください。<br>
+9/21の東京、11/30の関西のフロントエンドカンファレンスでも登壇するので、そこでもお会いしましょう！
 
 <https://github.com/riya-amemiya/amemiya_riya_slide_data/tree/main/frontend_conf_hokkaido_2025>
 
-ご質問はお気軽に
-
-- XやGitHubなど: <https://riya-amemiya-links.tokidux.com/>
+- ご質問はお気軽にXやGitHubなど: <https://riya-amemiya-links.tokidux.com/>
 
 <div class="flex justify-center">
-<img src="/links.png" alt="リンク集" class="w-48 h-48" />
+<img src="/link.png" alt="リンク集" class="w-48 h-48" />
 </div>
 
 <hr>
