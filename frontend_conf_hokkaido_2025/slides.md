@@ -81,7 +81,7 @@ highlighter: shiki
 今日は「昔はJavaScript必須だったけど、
 今はCSSだけでできる」機能を紹介します
 
-(＊一部ブラウザAPIやHTMLを含む＊)
+(＊一部ブラウザAPIやHTMLとの連携を含む＊)
 
 ---
 
@@ -93,7 +93,8 @@ highlighter: shiki
 
 ## こんな経験ありませんか？
 
-**サイドバーとメインエリアで同じカードコンポーネントを使いたい**
+**サイドバーとメインエリアで同じカードコンポーネントを使いたい**<br>
+サイズによって横並び、縦並びを出し分けたい...
 
 でも...
 
@@ -151,7 +152,7 @@ const resizeObserver = new ResizeObserver(entries => {
 
 **これだけ！**
 
-サイドバーでは縦並び、メインでは横並び
+サイドバーでは縦並び、メインでは横並びなどが実現できる！<br>
 場所に応じて自動的にレイアウトが変わる！
 
 ---
@@ -164,8 +165,7 @@ const resizeObserver = new ResizeObserver(entries => {
 
 ## フォームでこんな実装してませんか？
 
-**「入力エラーがあるフィールドの
-親要素を赤く表示したい」**
+**「入力エラーがあるフィールドの親要素を赤く表示したい」**
 
 よくある要件ですよね？
 
@@ -686,7 +686,7 @@ textarea {
 
 <https://github.com/riya-amemiya/amemiya_riya_slide_data/tree/main/frontend_conf_hokkaido_2025>
 
-- ご質問はお気軽にXやGitHubなど: <https://riya-amemiya-links.tokidux.com/>
+- XやGitHubなど: <https://riya-amemiya-links.tokidux.com/>
 
 <div class="flex justify-center">
 <img src="/link.png" alt="リンク集" class="w-48 h-48" />
