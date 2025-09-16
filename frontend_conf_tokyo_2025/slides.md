@@ -1,10 +1,10 @@
 ---
 theme: seriph
 background: white
-title: 「え？！それ今ではCSSだけでできるの！？」驚きの進化を遂げたモダンCSS
+title: V8エンジンの最適化戦略
 info: |
-  ## Frontend Conference Hokkaido 2025
-  モダンCSSの進化について
+  ## Frontend Conference Tokyo 2025
+  V8エンジンの最適化戦略について
 layout: center
 defaults:
   layout: center
@@ -22,9 +22,7 @@ highlighter: shiki
 @import './style.css';
 </style>
 
-# 「え？！それ今ではCSSだけでできるの！？」
-
-## 驚きの進化を遂げたモダンCSS
+# V8エンジンの最適化戦略
 
 ---
 
@@ -47,637 +45,281 @@ highlighter: shiki
 
 ---
 
-## 今日のゴール
+## V8とは？
 
-「へー！今のCSSってそんなことできるんだー」
+**V8**は、Googleが開発するオープンソースのJavaScriptおよびWebAssemblyエンジンです。現代のウェブとサーバーサイドアプリケーションの根幹を支える技術と言えます。
 
-と思って帰ってもらう
+**主な使用例**:
+- **Google Chrome**: 世界で最も広く使われているWebブラウザのJavaScript実行を担う心臓部です。
+- **Node.js**: サーバーサイドJavaScriptの標準的な実行環境であり、V8なくしては成り立ちません。
+- **Electron**: VS Code, Slack, Discordなど、数多くのデスクトップアプリケーションが内部でV8を利用しています。
 
----
-
-## ちょっと質問です 🙋
-
-以下の機能、どうやって実装しますか？
-
-- 親要素のサイズに応じてレイアウトを変える
-- フォームの入力状態に応じて親要素のスタイルを変更
-- スクロールに連動したプログレスバー
-- ポップアップやツールチップ
+私たちが書くJavaScriptコードのパフォーマンスは、このV8の働きに直接的に依存するため、その内部構造を理解することは、より高速なアプリケーションを開発する上で極めて重要です。
 
 ---
 
-## 今こう思ってませんか？
+## V8コンパイラの全体像
 
-- めんどくさい処理だなぁ...
-- JavaScriptでしかできないなぁ...
-- まさかCSSでできるの？！
+V8は「**起動速度**」と「**実行速度**」という相反する要求を両立させるため、複数のコンパイラを使い分ける**段階的最適化**戦略を採用しています。
 
----
+全てのコードを一度に最高レベルで最適化するのではなく、コードの実行頻度、いわゆる「温度」に応じて、より高度なコンパイラへと処理を引き継いでいきます。
 
-## 実は...全部CSSだけでできます
-
-**2019-2025年でCSSは劇的に進化しました**
-
-今日は「昔はJavaScript必須だったけど、
-今はCSSだけでできる」機能を紹介します
-
-(＊一部ブラウザAPIやHTMLとの連携を含む＊)
+| 層       | コンパイラ                           | 役割                       |
+| :------- | :----------------------------------- | :------------------------- |
+| **Tier 0** | **Ignition** (インタープリタ)          | 即時実行 & プロファイル収集  |
+| **Tier 1** | **Sparkplug** (ベースライン)         | 高速な非最適化コンパイル     |
+| **Tier 2** | **Maglev** (中間最適化)              | バランスの取れた高速最適化   |
+| **Tier 3** | **TurboFan** (最適化)                | 最高レベルのパフォーマンス   |
 
 ---
 
-# 1. レスポンシブデザインの新常識
-
-## Container Queries（コンテナクエリ）
+# すべての最適化の基礎: Ignition
 
 ---
 
-## こんな経験ありませんか？
+## Ignitionの役割
 
-**サイドバーとメインエリアで同じカードコンポーネントを使いたい**<br>
-サイズによって横並び、縦並びを出し分けたい...
+**Ignition**は、V8のインタープリタです。その第一の使命は、JavaScriptコードを受け取り、可能な限り速く実行を開始することです。
 
-でも...
-
-- サイドバーは幅300px
-- メインエリアは幅800px
-
-**同じブレークポイントじゃ対応できない！**
-
-メディアクエリは画面全体のサイズしか見れないから、
-配置場所によって異なるレイアウトが必要な時に困る...
+これを実現するために、JavaScriptのソースコードをマシンが直接実行するマシン語ではなく、**バイトコード**と呼ばれる中間表現に変換します。このバイトコードは、Ignitionが内蔵する**レジスタベース**の仮想マシンによって解釈・実行されます。
 
 ---
 
-## 従来の解決方法：JavaScript
+## Ignitionの最重要任務
 
-**ResizeObserverで親要素のサイズを監視して
-クラスを付け替える...**
+Ignitionは単にコードを実行するだけではありません。後の最適化コンパイラが最高のパフォーマンスを引き出すための**偵察**として、実行時のコードの振る舞いを詳細に記録します。
+
+このプロファイル情報は **Feedback Vector** と呼ばれ、以下のような情報を含みます。
+
+- **型情報**: 関数に渡された引数や、変数に代入された値がどのような型（数値、文字列、オブジェクトなど）であったか。
+- **オブジェクト形状**: オブジェクトがどのようなプロパティを、どのような順序で持っていたか（**Hidden Class**）。
+- **実行回数**: 関数が何回呼び出されたか、ループが何回繰り返されたか。
+
+---
+
+## Ignitionのキーテクノロジー①：Hidden Class
+
+**Hidden Class**は、V8がオブジェクトの内部構造を効率的に管理するための仕組みです。（最近では**Shape**と呼ばれることが主流です）
+
+JavaScriptのオブジェクトは動的にプロパティを追加できますが、V8はプロパティの**名前と順序**が同じオブジェクトは「同じ形状」であるとみなし、内部的に同じHidden Classを割り当てます。
+
+これにより、V8はオブジェクトのプロパティがメモリ上のどこにあるのかを高速に特定できます。逆に、オブジェクトの生成後にプロパティを追加・削除すると、その都度新しいHidden Classへの**遷移**が発生し、パフォーマンス上のペナルティとなります。
+
+---
+
+## Ignitionのキーテクノロジー②：Inline Cache (IC)
+
+**Inline Cache (IC)**は、Hidden Classを利用してプロパティアクセスを劇的に高速化するキャッシュ機構です。
+
+**仕組み**: 初回アクセス時に、オブジェクトのHidden Classとプロパティのメモリ上の位置（オフセット）をセットでキャッシュします。2回目以降は、同じHidden Classであれば検索をスキップし、直接オフセットを参照します。
+
+**状態**:
+- **Monomorphic (単一形状)**: 最も理想的で最速。
+- **Polymorphic (多形状)**: 2〜4種類の形状を扱う。少し遅くなる。
+- **Megamorphic (超多形状)**: 5種類以上の形状を扱う。ICによる最適化を諦め、大幅に低速化する。
+
+---
+
+# 常識を覆した超高速コンパイラ: Sparkplug
+
+---
+
+## Sparkplugの設計思想
+
+**Sparkplug**は、V8 v9.1で導入された**非最適化**（ベースライン）コンパイラです。その核心的な思想は、従来のコンパイラの常識を完全に無視することにあります。
+
+通常のコンパイラはソースコードをAST（抽象構文木）やIR（中間表現）に変換し、それを最適化してからマシン語を生成します。しかしSparkplugは、**Ignitionが生成したバイトコードから直接マシンコードを生成**することで、これらのプロセスを全て省略し、驚異的なコンパイル速度を実現します。
+
+---
+
+## Sparkplugの内部実装と利点
+
+Sparkplugの実装は、コンパイラ全体が実質的に巨大な**switch文**を含む単一のループとして構成されています。各バイトコード命令に対し、事前に用意された固定のマシンコード生成関数を呼び出すだけ、という極めてシンプルな構造です。
+
+このアプローチが効果的なのは、**多くのJavaScriptコードは数回しか実行されない**という現実があるためです。複雑な最適化にかける時間が、それによって得られる実行時間の短縮を上回ることが多いため、Sparkplugは「変換による高速化」以外の最適化を大胆に切り捨てています。
+
+---
+
+# バランス型の現実的な最適化: Maglev
+
+---
+
+## Maglevの設計思想：「十分に良いコードを、十分に速く」
+
+**Maglev**は、SparkplugとTurboFanの間を埋める、高速な**中間最適化**コンパイラです。
+
+Maglevは、Ignitionが収集した**Feedback Vectorを初めて本格的に活用**し、低コストで効果の高い最適化を実施します。
+
+---
+
+## Maglevの主要技術①：SSAと制御フローグラフ
+
+**SSA (静的単一代入) 形式**:
+MaglevはIRとしてSSA形式を採用しています。この形式では各変数が一度だけ代入されるため、データフローの解析が劇的に簡単になり、定数伝播や不要コード削除といった基本的な最適化が、複雑な解析なしに実現できます。
+
+**制御フローグラフ (CFG)**:
+コードの実行経路（ループや条件分岐）をグラフとして構築することで、ループ不変式の移動などの最適化を可能にします。ただし、コンパイル時間を抑えるため、高度なループ変換は行いません。
+
+---
+
+## Maglevの主要技術②：型フィードバックとインライン展開
+
+**型フィードバックによる最適化**:
+Ignitionが収集した型情報を活用し、オブジェクトの形状(Shape)が安定しているプロパティアクセスに対しては、既知のオフセットから直接値を読み取るような、静的言語に近い効率的なコードを生成します。
+
+**インライン展開**:
+小さな関数の呼び出しは、その関数本体を呼び出し元に展開（インライン化）することで、関数呼び出しのオーバーヘッドを削減します。ただし、コードの肥大化を防ぐため、一定の閾値を超えるとインライン化を控える、バランスの取れた戦略を採用しています。
+
+---
+
+# 最高峰の最適化コンパイラ: TurboFan
+
+---
+
+## TurboFanの役割
+
+**TurboFan**は、V8で最も高度な最適化を担当するコンパイラです。実行頻度が極めて高い「ホット」な関数に対してのみ適用され、時間をかけてでも最高レベルのパフォーマンスを引き出します。
+
+---
+
+## TurboFanのコア技術①：Sea-of-Nodes IR
+
+**Sea-of-Nodes**は、TurboFanが採用する独自の中間表現(IR)です。
+
+データフローと制御フローを統一的なグラフ構造で扱うことで、命令の順序付けを非常に柔軟にします。
+
+これにより、従来のコンパイラが行う基本ブロック単位の最適化とは異なり、プログラム全体を俯瞰した**大域的な最適化**が可能となり、より積極的で大胆なコード変換を実現します。
+
+---
+
+## TurboFanのコア技術②：投機的最適化と脱最適化
+
+**投機的最適化**は、TurboFanの真骨頂です。Feedback Vectorに基づき、「この変数は常に数値である」「この条件分岐は常にtrueである」といった**予測（賭け）**を行います。
+
+この予測が的中している限り、型チェックなどを省略した非常に高速なコードが実行されます。もし予測が外れた場合、**脱最適化 (Deoptimization)** という安全装置が作動し、実行中のコードを即座に安全な下位のコンパイラのコードに戻します。これにより、安全性を担保しつつ、動的言語であるJavaScriptで静的言語並みの最適化を可能にしています。
+
+---
+
+## TurboFanの高度な最適化技術
+
+TurboFanは、前述のコア技術を基盤に、多数の高度な最適化技術を駆使します。
+
+**グローバル値番号付け (GVN)**: プログラム全体で冗長な計算を検出し、削除します。
+
+**強度低減**: 除算を乗算に、乗算をシフト演算に置き換えるなど、高コストな演算を低コストなものに変換します。
+
+**高度なループ最適化**: ループ不変式の移動、ループ融合、ベクトル化など、特に数値計算が多いアプリケーションの性能を劇的に向上させる最適化を行います。
+
+---
+
+## TurboFanの脱最適化の限界
+
+TurboFanには重要な安全装置があります：**
+4回脱最適化が発生すると、その関数の最適化を完全に諦めます**。
+
+これは無限の最適化-脱最適化サイクルを防ぐための機構で、型が頻繁に変わるコードでは最適化されない状態で実行され続けることを意味します。
+
+---
+
+## 2024年の新技術: Profile-Guided Tiering
+
+IntelとGoogle V8チームが共同開発した**Profile-Guided Tiering**は、関数ごとに最適なコンパイラ戦略を選択します。
+
+- 頻繁に使用される関数は早期にTurboFanへ直接昇格
+- 脱最適化が多い関数は遅延ティアリング戦略を適用
+- **Speedometer 3で約5%の性能向上**を実現（Intel Core Ultra Series 2）
+
+---
+
+# V8に好かれるコードの書き方
+
+---
+
+## 1: オブジェクトの形状を保持する
+
+**なぜ重要か？**: オブジェクトの形状(Hidden Class)が安定していると、**Inline Cache(IC)**が有効に機能し、プロパティアクセスが高速化されます。オブジェクト生成後にプロパティを追加・削除すると、形状が変化し、ICが無効化されてしまいます。
+
+---
+
+## ❌ Before: 形状が変化するコード
+
+このコードでは、`user`オブジェクトは3つの異なる形状を経由してしまいます。
+プロパティが追加されるたびにHidden Classが遷移し、V8の最適化を阻害します。
 
 ```javascript
-const resizeObserver = new ResizeObserver(entries => {
-  entries.forEach(entry => {
-    const width = entry.contentRect.width;
-    entry.target.classList.toggle('small', width < 400);
-  });
-});
+const user = { id: 1 };
+user.name = "Taro";
+user.isAdmin = false;
 ```
 
-でもこれって：
-
-- パフォーマンスへの影響
-- 複雑なイベント管理
-- CSSとJSの依存関係
-
-**もっとシンプルにできないの？**
-
 ---
 
-## 今はCSSだけで解決
+## ✅ After: 形状が安定したコード
 
-**Container Queries：親要素のサイズでスタイルを変える**
-
-```css
-/* 親要素をコンテナとして定義 */
-.card-container {
-  container-type: inline-size;
-}
-
-/* コンテナのサイズに応じてスタイルを変更 */
-@container (max-width: 400px) {
-  .card {
-    flex-direction: column;
-  }
-}
-```
-
-**これだけ！**
-
-サイドバーでは縦並び、メインでは横並びなどが実現できる！<br>
-場所に応じて自動的にレイアウトが変わる！
-
----
-
-# 2. 親要素を操る魔法のセレクタ
-
-## :has() セレクタ
-
----
-
-## フォームでこんな実装してませんか？
-
-**「入力エラーがあるフィールドの親要素を赤く表示したい」**
-
-よくある要件ですよね？
-
-でもCSSでは子要素は選択できても
-親要素は選択できなかった...
-
----
-
-## 従来の解決方法：JavaScript
-
-**入力が変わるたびに親要素を探してクラスを付ける**
+こちらのコードでは、`User`インスタンスは常に同じ形状を持つため、V8は安心して最適化できます。
 
 ```javascript
-input.addEventListener('blur', () => {
-  if (input.invalid) {
-    input.closest('.form-group').classList.add('error');
-  }
-});
-```
-
-面倒だし、動的なフォームだと管理が大変...
-
----
-
-## 今はCSSだけで解決
-
-**:has()セレクタ：子要素の状態で親を選択**
-
-```css
-/* 無効な入力を含むフォームグループ */
-.form-group:has(input:invalid) {
-  border-left: 3px solid red;
-  background: #ffebee;
-}
-
-/* チェックされたチェックボックスを含むラベル */
-label:has(input:checked) {
-  font-weight: bold;
-  color: blue;
-}
-```
-
-**入力が無効になった瞬間に自動的に反映！**
-
-JavaScriptのイベント管理が不要に
-
----
-
-# 3. z-index地獄からの解放
-
-## Popover API
-
----
-
-## モーダルやツールチップの実装で困ること
-
-**z-indexの値がどんどん大きくなっていく...**
-
-```css
-.dropdown { z-index: 100; }
-.modal { z-index: 1000; }
-.tooltip { z-index: 9999; }
-.super-modal { z-index: 999999; }
-```
-
-どれが一番上に来るか分からない！
-しかもフォーカス管理やESCキーの処理も必要...
-
----
-
-## 従来の解決方法：JavaScript
-
-**ライブラリを使うか、大量のコードを書く**
-
-- z-indexの動的計算
-- フォーカストラップ
-- キーボードイベント
-- 外側クリックの検知
-
-**結果：Popper.jsなどに頼ることに**
-
----
-
-## 今はHTMLとCSSだけで解決
-
-**Popover API：ネイティブなポップオーバー機能**
-
-```html
-<button popovertarget="menu">開く</button>
-<div id="menu" popover>
-  <h3>メニュー</h3>
-  <ul>
-    <li>項目1</li>
-    <li>項目2</li>
-  </ul>
-</div>
-```
-
----
-
-## 自動的に全て対応
-
-```css
-/* ポップオーバーのスタイリング */
-[popover]:popover-open {
-  animation: slideIn 0.2s;
-}
-```
-
-自動的に：
-
-- トップレイヤーに表示（z-index不要）
-- ESCで閉じる
-- 外側クリックで閉じる
-- フォーカス管理
-
-**JavaScriptゼロ行！**
-
----
-
-# 4. 詳細度の戦争を終わらせる
-
-## @layer（カスケードレイヤー）
-
----
-
-## CSSあるある：詳細度の戦い
-
-**外部ライブラリのスタイルを上書きしたい時...**
-
-```css
-/* ライブラリ */
-.btn-primary { background: blue; }
-
-/* 上書きしたい... */
-.my-component .btn-primary { } /* 詳細度を上げる */
-body .my-component .btn-primary { } /* もっと上げる */
-.btn-primary { background: red !important; } /* 最終手段 */
-```
-
-**!important地獄の始まり...**
-
----
-
-## 今はCSSだけで解決
-
-**@layer：優先順位を明示的に制御**
-
-```css
-/* レイヤーの定義（左から右に優先度が上がる） */
-@layer library, components, utilities;
-
-@layer library {
-  .btn { background: blue; }
-}
-
-@layer components {
-  .btn { background: red; } /* 詳細度が低くても勝つ！ */
-}
-```
-
-レイヤーの順番で優先度が決まる
-
-詳細度の計算から解放される！
-
----
-
-# 5. スタイルに境界線を引く
-
-## @scope
-
----
-
-## グローバルCSSの永遠の課題
-
-**「このスタイル、どこまで影響するの？」**
-
-BEMやCSS Modulesで名前空間を作ってきたけど...
-
-- 長いクラス名
-- 命名規則の学習コスト
-- それでも完璧じゃない
-
-**もっとシンプルに範囲を限定できないの？**
-
----
-
-## 今はCSSだけで解決
-
-**@scope：スタイルの適用範囲を限定**
-
-```css
-/* .article内だけに適用 */
-@scope (.article) {
-  h2 { font-size: 2rem; }
-  p { line-height: 1.8; }
-}
-
-/* .sidebar内は完全に独立 */
-@scope (.sidebar) {
-  h2 { font-size: 1.2rem; } /* .articleのh2と競合しない！ */
-}
-```
-
-シンプルなクラス名でOK
-
-範囲が明確で安心！
-
----
-
-## @scopeのインラインスタイル構文
-
-```html
-<section class="article-body">
-  <style>
-    @scope {
-      /* ここに書いたスタイルは、自動的にこの<style>タグの親要素
-         （この場合はsection.article-body）だけに適用されます */
-      img {
-        border: 5px solid black;
-        background-color: goldenrod;
-      }
-    }
-  </style>
-
-  <!-- セクションの内容 -->
-</section>
-```
-
-HTML内にインラインで@scopeを書くことで、そのHTML要素のみにスタイルを適用できます
-
----
-
-# 6. CSS Nesting
-
-## Sassがいらなくなる日
-
----
-
-## ネストした構造を書きたい時
-
-**従来：Sassなどのプリプロセッサが必要**
-
-ビルド環境の構築、package.jsonの設定...
-
-ちょっとしたプロジェクトには大げさすぎる
-
----
-
-## 今はCSSだけで解決
-
-**ネイティブCSSでネスト記法が可能に**
-
-```css
-.card {
-  padding: 1rem;
-
-  & .title {
-    font-size: 1.5rem;
-
-    &:hover {
-      color: blue;
-    }
+class User {
+  constructor(id, name) {
+    this.id = id;
+    this.name = name;
+    this.isAdmin = false;
   }
 }
-```
 
-ビルド不要でネストが書ける！
-
----
-
-# 7. スクロール駆動アニメーション
-
-## Scroll-driven Animations
-
----
-
-## スクロールに連動した演出
-
-**パララックス、進捗バー、要素の出現...**
-
-従来はscrollイベントでゴリゴリ計算
-
-- パフォーマンスの問題
-- スムーズさに欠ける
-- 複雑な計算ロジック
-
----
-
-## 今はCSSだけで解決
-
-**animation-timeline: scroll()**
-
-```css
-/* スクロール進捗バー */
-.progress-bar {
-  animation: grow auto linear;
-  animation-timeline: scroll(root); /* ページ全体のスクロール */
-}
-
-@keyframes grow {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-```
-
-たったこれだけで、スクロールに連動したアニメーションが実現
-
----
-
-# 8. 初期表示アニメーション
-
-## @starting-style
-
----
-
-## display: noneからのアニメーション問題
-
-**モーダルやアコーディオンを
-スムーズに表示したいけど...**
-
-display: noneからdisplay: blockへは
-トランジションが効かない！
-
-JavaScriptで2段階の処理が必要だった
-
----
-
-## 今はCSSだけで解決
-
-**@starting-style：初期状態を定義**
-
-```css
-dialog {
-  opacity: 1;
-  transition: opacity 0.3s;
-}
-
-/* 表示開始時の初期状態 */
-@starting-style {
-  dialog[open] {
-    opacity: 0;
-  }
-}
-```
-
-表示時に自動的にフェードイン！
-
----
-
-# 9. 美しいテキスト折り返し
-
-## text-wrap: balance
-
----
-
-## 見出しの最後の単語問題
-
-**「最後の単語だけ次の行になっちゃう...」**
-
-デザイナーさんからよく指摘される問題
-でも動的なテキストだと制御が難しい
-
----
-
-## 今はCSSだけで解決
-
-**text-wrap: balance**
-
-```css
-h1, h2, h3 {
-  text-wrap: balance; /* 自動で読みやすい幅に改行 */
-}
-```
-
-ブラウザが自動的にバランスの良い改行位置を計算！
-
-<div class="text-sm">
-文字を数えて複数の行にまたがるようにバランスをとるのはコンピューターに負荷がかかるため、この値は限られた行数（Chromium では 6 行以下、Firefox では 10 行以下）のテキストブロックにのみ対応しています。
-</div>
-
----
-
-# 10. 自動ダークモード対応
-
-## light-dark()関数
-
----
-
-## ダークモード対応の面倒さ
-
-**2セットの色を管理して
-JavaScriptで切り替え...**
-
-メディアクエリで分岐したり
-クラスで切り替えたり
-管理が煩雑に
-
----
-
-## 今はCSSだけで解決
-
-**light-dark()：自動色切り替え**
-
-```css
-:root {
-  color-scheme: light dark;
-}
-
-/* light-dark(ライトモード, ダークモード) */
-body {
-  background: light-dark(white, #1a1a1a);
-  color: light-dark(black, #e5e5e5);
-}
-```
-
-OSの設定に自動追従！
-
----
-
-## ちなみに
-
-一般的にはすべきではないですが、`color-scheme`を使って強制的にモードを切り替えることもできます。
-
-```css
-:root {
-  color-scheme: light; /* 強制的にライトモードにする */
-}
+const user1 = new User(1, "Taro");
+const user2 = new User(2, "Jiro");
 ```
 
 ---
 
-# 11. 自動リサイズフォーム
+## 2: 型の一貫性を維持する
 
-## field-sizing
-
----
-
-## テキストエリアの高さ調整
-
-**入力内容に応じて高さを変えたい**
-
-従来はJavaScriptでscrollHeightを計算して調整...
+**なぜ重要か？**: 変数や引数の型が安定していると、TurboFanの**投機的最適化**が成功しやすくなります。V8は「この関数はきっと次も同じ型で呼ばれるだろう」と予測して最適化するため、その予測を裏切らないことが重要です。
 
 ---
 
-## 今はCSSだけで解決
+## ❌ Before: 型が不安定なコード
 
-**field-sizing: content**
+このコードでは、`add`関数に数値と文字列という異なる型が渡されています。これにより、V8のInline CacheはPolymorphicまたはMegamorphicな状態に陥り、型を毎回チェックする必要が生まれるため、最適化の効率が著しく低下します。
 
-```css
-textarea {
-  field-sizing: content;
-  min-height: 3lh;  /* 最小3行分 */
-  max-height: 10lh; /* 最大10行分 */
+```javascript
+function add(a, b) {
+  return a + b;
 }
+
+add(1, 2);
+add("a", "b");
 ```
 
-入力に応じて自動的にリサイズ！
+---
+
+## ✅ After: 型が一貫したコード
+
+こちらのコードでは、関数を数値用と文字列用に分離しています。これにより、各関数は常に同じ型（Monomorphic）の引数を受け取るため、V8は安心して型に特化した最適化を行うことができます。
+
+```javascript
+function addInt(a, b) {
+  return a + b;
+}
+
+function concatStr(a, b) {
+  return a + b;
+}
+
+addInt(1, 2);
+concatStr("a", "b");
+```
 
 ---
 
 ## まとめ
 
-最後に今回紹介した機能をまとめます
+V8は **Ignition, Sparkplug, Maglev, TurboFan** という多層コンパイラ構造で、起動速度と実行速度を両立させています。
 
-**レイアウト・レスポンシブ**
+開発者として重要なのは、V8の気持ち、すなわち**「予測しやすいコードを好む」**という性質を理解することです。
 
-- Container Queries - 親要素ベースのレスポンシブ
-- `:has()` - 子要素の状態で親を選択
-
-**UI・インタラクション**
-
-- Popover API - ネイティブなポップオーバー
-- Scroll-driven Animations - スクロール連動アニメーション
-- `@starting-style` - `display:none`からのアニメーション
-
----
-
-**スタイル管理**
-
-- `@layer` - 詳細度の制御
-- `@scope` - スタイルの適用範囲
-- CSS Nesting - ネイティブなネスト記法
-
-**その他の便利機能**
-
-- `text-wrap: balance` - 自動改行調整
-- `light-dark()` - 自動テーマ切り替え
-- `field-sizing` - フォームの自動リサイズ
-
-この他にも様々な機能があり、CSSは進化し続けています。
-ぜひ気になったら調べてみてください。
-
----
-
-## 注意
-
-今回紹介した機能は、ブラウザの対応状況によってはまだ使用できない場合があります。
-
-詳細は以下のページを参照してください。
-- <https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Container_Queries>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/:has>
-- <https://developer.mozilla.org/ja/docs/Web/API/Popover_API>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/@layer>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/@scope>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Nesting>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/CSS_scroll-driven_animations>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/@starting-style>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/text-wrap>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/color_value/light-dark>
-- <https://developer.mozilla.org/ja/docs/Web/CSS/field-sizing>
+**型の一貫性**を保ち、**オブジェクトの形状を安定**させ、**処理を共通化**することで、V8はあなたのコードを最大限に高速化してくれます。
 
 ---
 
@@ -687,7 +329,7 @@ textarea {
 内容の修正・改善など、お気軽にPull Requestをお送りください。<br>
 9/21の東京、11/30の関西のフロントエンドカンファレンスでも登壇するので、そこでもお会いしましょう！
 
-<https://github.com/riya-amemiya/amemiya_riya_slide_data/tree/main/frontend_conf_hokkaido_2025>
+<https://github.com/riya-amemiya/amemiya_riya_slide_data/tree/main/frontend_conf_tokyo_2025>
 
 - XやGitHubなど: <https://riya-amemiya-links.tokidux.com/>
 
