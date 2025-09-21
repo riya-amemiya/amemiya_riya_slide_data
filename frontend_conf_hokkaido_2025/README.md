@@ -2,6 +2,8 @@
 
 フロントエンドカンファレンス北海道2025で発表したスライドの元データです
 
+[speakerdeckバージョン](https://speakerdeck.com/riyaamemiya/e-sorejin-dehacssdakededekiruno-jing-kinojin-hua-wosui-getamodancss)
+
 Slidevで作成されています
 
 <a href="https://github.com/sponsors/riya-amemiya"><img alt="Sponsor" src="https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#white" /></a>
