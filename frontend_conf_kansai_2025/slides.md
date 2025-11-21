@@ -217,7 +217,7 @@ Popover APIを使うとこれだけで動きます。トップレイヤーに表
 <div class="grid grid-cols-2 gap-4">
 <div>
 
-従来の実装
+従来の実装<br/>管理が複雑
 
 ```html
 <button onclick="togglePopup()">
@@ -226,14 +226,18 @@ Popover APIを使うとこれだけで動きます。トップレイヤーに表
 <div id="popup" class="popup hidden">
   ...
 </div>
+<script>
+function togglePopup() {
+  // 色々な処理が必要
+}
+</script>
 ```
-
-z-indexの競合、overflow:hiddenの制約<br/>イベント管理複雑
 
 </div>
 <div>
 
-Popover API
+Popover API<br/>
+トップレイヤーで独立 + 自動イベント管理
 
 ```html
 <button popovertarget="menu">
@@ -243,8 +247,6 @@ Popover API
   ...
 </div>
 ```
-
-トップレイヤーで独立 + 自動イベント管理
 
 </div>
 </div>
