@@ -98,7 +98,37 @@ JavaScript実装から、HTML属性による宣言的な記述へ
 
 ---
 
-# 1. Popover API
+## 今日紹介する機能
+
+<div class="grid grid-cols-2 gap-4 text-sm">
+<div>
+
+1. Popover API (Baseline 2024)
+2. Dialog要素 (Baseline 2022)
+3. details要素のname属性 (Baseline 2024)
+4. inert属性 (Baseline 2023)
+5. search要素 (Baseline 2023)
+6. loading属性 (Baseline 2020)
+
+</div>
+<div>
+
+7. fetchpriority属性 (Baseline 2023)
+8. blocking属性 (Baseline 2024)
+9. inputmode属性 (Baseline 2018)
+10. enterkeyhint属性 (Baseline 2021)
+11. rel属性のSEO対応値 (2019)
+
+</div>
+</div>
+
+<!--
+今日紹介する11の機能です。2018年から2024年にかけてBaselineに追加されたものを取り上げます。
+-->
+
+---
+
+# 1. Popover API (Baseline 2024)
 
 ## ネイティブなポップオーバー機能
 
@@ -110,12 +140,38 @@ JavaScript実装から、HTML属性による宣言的な記述へ
 
 ## ポップアップ実装で困ること
 
+<div class="grid grid-cols-2 gap-4 items-start">
+<div>
+
 - z-indexの管理が大変
 - 外側クリックで閉じる処理
 - ESCキーで閉じる処理
 - フォーカス管理
 
-**結局ライブラリに頼ることに...**
+結局ライブラリに頼ることに...
+
+</div>
+<div>
+
+<div style="position: relative; width: 260px; height: 200px; border: 2px solid #ddd; background: #fafafa;">
+  <div style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: white; border: 2px solid #007bff; border-radius: 8px; padding: 20px; width: 200px; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <div style="font-size: 13px; font-weight: bold; margin-bottom: 8px;">確認ダイアログ<br/>(z-index: 10)</div>
+    <div style="font-size: 11px; color: #666; margin-bottom: 12px;">本当に削除しますか？</div>
+    <div style="display: flex; gap: 8px;">
+      <button style="flex: 1; padding: 6px; background: #dc3545; color: white; border: none; border-radius: 4px; font-size: 11px;">削除</button>
+      <button style="flex: 1; padding: 6px; background: #6c757d; color: white; border: none; border-radius: 4px; font-size: 11px;">キャンセル</button>
+    </div>
+  </div>
+  <div style="position: absolute; top: 0; left: 0; right: 0; background: rgba(51, 51, 51, 0.95); color: white; padding: 12px; z-index: 50; font-size: 12px; font-weight: bold;">
+    固定ヘッダー (z-index: 50)
+  </div>
+  <div style="position: absolute; bottom: 10px; left: 10px; font-size: 10px; color: #dc3545; font-weight: bold;">
+    ヘッダーがダイアログに重なる
+  </div>
+</div>
+
+</div>
+</div>
 
 <!--
 ポップアップの実装って大変ですよね。z-indexの管理、外側クリック、ESCキー、フォーカス管理...結局ライブラリに頼ることになりがちです。
@@ -125,9 +181,9 @@ JavaScript実装から、HTML属性による宣言的な記述へ
 
 ## 今はHTMLだけで解決
 
-Popover APIを使うと、popovertarget属性とpopover属性を指定するだけで、
-z-indexの管理、外側クリックやESCキーで閉じる処理、フォーカス管理を
-ブラウザが自動的に処理してくれます
+popovertarget属性 + popover属性を指定するだけ
+
+→ z-index管理、外側クリック/ESCキーで閉じる、フォーカス管理を自動処理
 
 ```html
 <button popovertarget="menu">メニューを開く</button>
@@ -142,13 +198,13 @@ Popover APIを使うとこれだけで動きます。トップレイヤーに表
 
 ## なぜz-index問題が解決するの？
 
-**トップレイヤー**という新しい描画層
+トップレイヤーという新しい描画層
 
 - DOM階層から完全に独立
 - z-indexの制約を受けない
 - `overflow:hidden`で切れない
 
-従来のz-index地獄から解放！
+従来のz-index地獄から解放
 
 <!--
 トップレイヤーはDOM階層から完全に独立した描画層です。z-indexの制約を受けず、overflow:hiddenで切れることもありません。
@@ -158,24 +214,40 @@ Popover APIを使うとこれだけで動きます。トップレイヤーに表
 
 ## 従来の実装 vs Popover API
 
-従来はJavaScriptでイベント管理、z-index制御、外側クリック検知などを
-すべて自前で実装する必要がありましたが、
-Popover APIなら属性を指定するだけでブラウザが自動的に処理してくれます
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+従来の実装
 
 ```html
-<!-- 従来の実装：JavaScriptが必須 -->
-<button onclick="togglePopup()">メニュー</button>
+<button onclick="togglePopup()">
+  メニュー
+</button>
 <div id="popup" class="popup hidden">
-  <!-- z-indexの競合、overflow:hiddenの制約、
-       イベント管理の複雑さなど多くの問題を抱えていた -->
-</div>
-
-<!-- Popover APIによる宣言的実装 -->
-<button popovertarget="menu">メニュー</button>
-<div popover id="menu">
-  <!-- トップレイヤーで完全に独立、自動的なイベント管理 -->
+  ...
 </div>
 ```
+
+z-indexの競合、overflow:hiddenの制約<br/>イベント管理複雑
+
+</div>
+<div>
+
+Popover API
+
+```html
+<button popovertarget="menu">
+  メニュー
+</button>
+<div popover id="menu">
+  ...
+</div>
+```
+
+トップレイヤーで独立 + 自動イベント管理
+
+</div>
+</div>
 
 <!--
 従来の実装ではJavaScriptでイベント管理が必要でしたが、Popover APIなら宣言的に書くだけでブラウザが自動的に処理してくれます。
@@ -202,8 +274,7 @@ popovertargetaction属性を使うと、同じポップオーバーに対して
 
 ## popovertarget属性による宣言的関係性
 
-複数のボタンで同じポップオーバーを制御する場合も、
-属性で関係性を宣言するだけでブラウザが自動的に紐づけてくれます
+属性で関係性を宣言 → 自動的に紐づけ
 
 ```html
 <!-- 複数のボタンで同じポップオーバーを制御 -->
@@ -216,7 +287,7 @@ popovertargetaction属性を使うと、同じポップオーバーに対して
 </div>
 ```
 
-ブラウザが適切なイベントハンドリングとアクセシビリティ属性を自動的に設定してくれます
+適切なイベントハンドリング + アクセシビリティ属性の自動設定
 
 <!--
 popovertargetactionを使うと、開く、閉じる、トグルを明示的に指定できます。これもブラウザがイベント処理とアクセシビリティを自動で設定してくれます。
@@ -224,7 +295,7 @@ popovertargetactionを使うと、開く、閉じる、トグルを明示的に�
 
 ---
 
-# 2. Dialog要素
+# 2. Dialog要素 (Baseline 2022)
 
 ## ネイティブなモーダルダイアログ
 
@@ -236,12 +307,37 @@ popovertargetactionを使うと、開く、閉じる、トグルを明示的に�
 
 ## モーダルダイアログ実装で困ること
 
+<div class="grid grid-cols-2 gap-4 items-start">
+<div>
+
 - フォーカストラップの実装
 - ESCキーで閉じる処理
 - 背景の無効化
 - アクセシビリティ対応
 
-**自前で全部実装するのは大変...**
+自前で全部実装するのは大変...
+
+</div>
+<div>
+
+<div style="position: relative; width: 260px; height: 180px; border: 2px solid #ddd; background: #f5f5f5;">
+  <div style="position: absolute; top: 10px; left: 10px; right: 10px; background: white; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    <div style="font-size: 11px; color: #666; margin-bottom: 6px;">ページコンテンツ</div>
+    <input type="text" style="width: 100%; padding: 4px; font-size: 10px; margin-bottom: 4px;" placeholder="入力欄1">
+    <button style="padding: 4px 8px; font-size: 10px; background: #007bff; color: white; border: none; border-radius: 3px;">送信</button>
+  </div>
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border: 2px solid #dc3545; border-radius: 6px; padding: 15px; width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+    <div style="font-size: 12px; font-weight: bold; margin-bottom: 6px;">モーダル</div>
+    <div style="font-size: 10px; color: #666; margin-bottom: 8px;">削除しますか？</div>
+    <button style="padding: 4px 8px; font-size: 10px; background: #dc3545; color: white; border: none; border-radius: 3px;">削除</button>
+  </div>
+  <div style="position: absolute; bottom: 8px; left: 8px; font-size: 9px; color: #dc3545;">
+    背景がクリック可能...
+  </div>
+</div>
+
+</div>
+</div>
 
 <!--
 モーダルダイアログの実装って大変ですよね。フォーカストラップ、ESCキー、背景無効化、アクセシビリティ...全部自分で実装するのは大変です。
@@ -251,8 +347,9 @@ popovertargetactionを使うと、開く、閉じる、トグルを明示的に�
 
 ## 今はDialog要素で解決
 
-Dialog要素を使えば、フォーカストラップ、ESCキーで閉じる処理、
-背景の無効化、アクセシビリティ対応をブラウザが自動的に処理してくれます
+Dialog要素で以下を自動処理：
+
+フォーカストラップ、ESCキーで閉じる、背景の無効化、アクセシビリティ対応
 
 <!--
 Dialog要素を使えば、フォーカストラップなど全部ブラウザがやってくれます。2022年3月からすべての主要ブラウザで使えます。
@@ -290,12 +387,11 @@ Dialog要素の基本的な使い方です。showModal()でモーダルとして
 
 ## showModal()とshow()の違い
 
-**showModal()**
-モーダルダイアログとして表示し、`::backdrop`擬似要素で背景を覆い、
-フォーカストラップを自動的に実装してくれます
+showModal()
+→ モーダル表示 + `::backdrop`で背景を覆う + フォーカストラップ自動実装
 
-**show()**
-非モーダルダイアログとして表示し、背景の要素も操作可能な状態を維持できます
+show()
+→ 非モーダル表示、背景の要素も操作可能
 
 <!--
 showModal()は背景を覆ってフォーカストラップを実装し、show()は非モーダルで背景も操作可能です。用途に応じて使い分けてください。
@@ -305,8 +401,7 @@ showModal()は背景を覆ってフォーカストラップを実装し、show()
 
 ## form要素との統合
 
-`method="dialog"`を指定したフォームは、送信時に自動的にダイアログを閉じ、
-ボタンの`value`属性の値を`dialog.returnValue`に設定してくれます
+`method="dialog"`指定 → 送信時にダイアログを自動で閉じる + ボタンのvalueを`dialog.returnValue`に設定
 
 ```html
 <dialog id="confirm-dialog">
@@ -341,7 +436,7 @@ DialogとPopoverの使い分けは、ユーザーの操作を求める場合はD
 
 ---
 
-# 3. details要素のname属性
+# 3. details要素のname属性 (Baseline 2024)
 
 ## ネイティブなアコーディオン
 
@@ -353,9 +448,34 @@ DialogとPopoverの使い分けは、ユーザーの操作を求める場合はD
 
 ## アコーディオン実装で困ること
 
-**一度に1つだけ開くアコーディオン**
+<div class="grid grid-cols-2 gap-4 items-start">
+<div>
 
-従来のdetails要素は独立して動作するので、JavaScriptで状態管理が必要でした
+一度に1つだけ開くアコーディオン
+
+従来のdetails要素は独立動作 → JavaScriptで状態管理が必要
+
+</div>
+<div>
+
+<div style="width: 240px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; font-size: 11px;">
+  <details open style="border-bottom: 1px solid #ddd; padding: 8px; background: #f8f9fa;">
+    <summary style="cursor: pointer; font-weight: bold;">質問1</summary>
+    <div style="padding: 8px 0; color: #666;">回答1の内容</div>
+  </details>
+  <details open style="border-bottom: 1px solid #ddd; padding: 8px; background: #f8f9fa;">
+    <summary style="cursor: pointer; font-weight: bold;">質問2</summary>
+    <div style="padding: 8px 0; color: #666;">回答2の内容</div>
+  </details>
+  <details style="padding: 8px; background: #f8f9fa;">
+    <summary style="cursor: pointer; font-weight: bold;">質問3</summary>
+    <div style="padding: 8px 0; color: #666;">回答3の内容</div>
+  </details>
+</div>
+<div style="font-size: 9px; color: #dc3545; margin-top: 4px;">複数が同時に開いてしまう</div>
+
+</div>
+</div>
 
 <!--
 アコーディオンで一度に1つだけ開く実装、JavaScriptで状態管理してませんか？従来のdetails要素は独立して動作するので、JavaScriptが必須でした。
@@ -365,7 +485,7 @@ DialogとPopoverの使い分けは、ユーザーの操作を求める場合はD
 
 ## 今はname属性で解決
 
-同じ`name`値を持つdetails要素は自動で排他制御されるので、JavaScriptが不要になります
+同じname値を持つdetails要素 → 自動で排他制御、JavaScript不要
 
 <!--
 name属性を追加するだけで、ブラウザが自動的に排他制御してくれます。JavaScriptは不要です。
@@ -393,7 +513,7 @@ name属性を追加するだけで、ブラウザが自動的に排他制御し�
 </details>
 ```
 
-**JavaScriptゼロ行！**
+JavaScriptゼロ行
 
 <!--
 FAQセクションの例です。すべてのdetails要素に同じname="faq"を指定するだけで、一度に1つだけ開くアコーディオンになります。JavaScriptは不要です。
@@ -401,7 +521,7 @@ FAQセクションの例です。すべてのdetails要素に同じname="faq"を
 
 ---
 
-# 4. inert属性
+# 4. inert属性 (Baseline 2023)
 
 ## 包括的な要素の無効化
 
@@ -411,13 +531,16 @@ FAQセクションの例です。すべてのdetails要素に同じname="faq"を
 
 ---
 
-## 背景を操作不可にしたい時
+## 非表示スライド内のリンクを無効化したい時
 
-モーダル表示時、背景要素を無効化したい
+<div class="grid grid-cols-2 gap-4 items-start">
+<div>
 
-でも、従来の`disabled`属性はフォーム要素のみ...
+カルーセルUIで前後のスライドも操作可能になってしまう
 
-**→ 今はinert属性でリンクや画像なども含め全要素を無効化可能**
+従来の`disabled`属性はフォーム要素のみ
+
+→ inert属性でリンクやコンテンツも含めて無効化可能
 
 無効化される範囲：
 
@@ -425,13 +548,34 @@ FAQセクションの例です。すべてのdetails要素に同じname="faq"を
 - クリック/タップ
 - アクセシビリティツリー
 
-```html
-<!-- inert属性を適用した状態 -->
-<main id="main-content" inert>
-  <h1>メインコンテンツ</h1>
-  <button>このボタンは操作不可能</button>
-</main>
-```
+</div>
+<div>
+
+<div style="position: relative; width: 260px; height: 140px; overflow: hidden;">
+  <div style="display: flex; gap: 10px; transform: translateX(-70px); height: 100%;">
+    <div style="flex-shrink: 0; width: 100px; padding: 12px; background: #f5f5f5; border-radius: 8px; opacity: 0.5;">
+      <div style="font-size: 11px; font-weight: bold; margin-bottom: 6px;">スライド1</div>
+      <a href="#" style="color: #007bff; font-size: 9px; text-decoration: underline; display: block; margin-bottom: 4px;">リンク →</a>
+      <button style="padding: 4px 8px; background: #007bff; color: white; border: none; border-radius: 3px; font-size: 9px;">詳細</button>
+    </div>
+    <div style="flex-shrink: 0; width: 170px; padding: 16px; background: white; border: 2px solid #28a745; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+      <div style="font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #28a745;">スライド2（メイン）</div>
+      <a href="#" style="color: #007bff; font-size: 9px; text-decoration: underline; display: block; margin-bottom: 6px;">リンク →</a>
+      <button style="padding: 4px 10px; background: #28a745; color: white; border: none; border-radius: 3px; font-size: 9px;">詳細</button>
+    </div>
+    <div style="flex-shrink: 0; width: 100px; padding: 12px; background: #f5f5f5; border-radius: 8px; opacity: 0.5;">
+      <div style="font-size: 11px; font-weight: bold; margin-bottom: 6px;">スライド3</div>
+      <a href="#" style="color: #007bff; font-size: 9px; text-decoration: underline; display: block; margin-bottom: 4px;">リンク →</a>
+      <button style="padding: 4px 8px; background: #007bff; color: white; border: none; border-radius: 3px; font-size: 9px;">詳細</button>
+    </div>
+  </div>
+  <div style="position: absolute; bottom: 8px; left: 8px; font-size: 8px; color: #dc3545; background: rgba(255,255,255,0.9); padding: 2px 6px; border-radius: 3px;">
+    前後のリンクもフォーカス可能
+  </div>
+</div>
+
+</div>
+</div>
 
 <!--
 inert属性はフォーカス、イベント応答、アクセシビリティツリーからの除外など、ブラウザの要素処理全般を無効化します。モーダル表示時の背景無効化などに最適です。
@@ -473,7 +617,7 @@ inert属性をtrueに設定するだけで、
 
 ---
 
-# 5. search要素
+# 5. search要素 (Baseline 2023)
 
 ## 検索UIの標準化
 
@@ -487,9 +631,7 @@ inert属性をtrueに設定するだけで、
 
 従来：`role="search"`でアクセシビリティ確保
 
-今は：`<search>`要素で包むだけ
-
-スクリーンリーダーが自動で検索機能を認識するので、アクセシビリティが向上します
+今は：`<search>`要素で包むだけ → スクリーンリーダーが自動で検索機能を認識
 
 <!--
 従来はrole="search"を付けていましたが、search要素を使えばより明確なマークアップができます。スクリーンリーダーが検索機能を自動認識します。
@@ -510,9 +652,7 @@ inert属性をtrueに設定するだけで、
 </search>
 ```
 
-`search`要素は、ブラウザのアクセシビリティツリーで`search`ランドマークとして認識されます
-
-これにより、スクリーンリーダーのユーザーが検索機能を素早く発見できるようになります
+アクセシビリティツリーで`search`ランドマークとして認識 → スクリーンリーダーユーザーが検索機能を素早く発見
 
 <!--
 search要素はブラウザのアクセシビリティツリーでsearchランドマークとして認識されます。アクセシビリティの向上に貢献します。
@@ -520,7 +660,7 @@ search要素はブラウザのアクセシビリティツリーでsearchラン�
 
 ---
 
-# 6. loading属性
+# 6. loading属性 (Baseline 2020)
 
 ## リソース読み込み制御
 
@@ -534,9 +674,7 @@ search要素はブラウザのアクセシビリティツリーでsearchラン�
 
 従来：Intersection Observer APIでゴリゴリ実装
 
-今は：`loading="lazy"`を付けるだけ
-
-ブラウザが最適なタイミングで自動読み込みするので、パフォーマンスが向上します
+今は：`loading="lazy"`を付けるだけ → 最適なタイミングで自動読み込み
 
 ```html
 <!-- ファーストビューの重要な画像 -->
@@ -569,7 +707,7 @@ lazyはスクロール後に表示される画像に、eagerはファースト�
 
 ---
 
-# 7. fetchpriority属性
+# 7. fetchpriority属性 (Baseline 2023)
 
 ## リソース優先度制御
 
@@ -632,7 +770,7 @@ LCP画像やクリティカルCSSはhigh、分析スクリプトなどはlowを�
 
 ---
 
-# 8. blocking属性
+# 8. blocking属性 (Baseline 2024)
 
 ## レンダリング制御
 
@@ -646,11 +784,11 @@ LCP画像やクリティカルCSSはhigh、分析スクリプトなどはlowを�
 
 フォントが読み込まれる前にテキストが表示されてチラつく
 
-従来は暗黙的にレンダリングをブロックしていましたが、明示的に制御できませんでした
+従来は暗黙的にレンダリングをブロック、明示的に制御不可
 
-**→ 今はblocking属性でチラつきを防止可能**
+→ 今はblocking属性でチラつきを防止可能
 
-必要なリソースが読み込まれてから表示されるので、チラつきがなくなります
+必要なリソースが読み込まれてから表示
 
 <!--
 blocking属性を使うと、スクリプトやスタイルシートがレンダリングをブロックするかを明示的に制御できます。
@@ -675,8 +813,7 @@ blocking属性を使うと、スクリプトやスタイルシートがレンダ
       crossorigin>
 ```
 
-これで、ページの初期表示に必要不可欠なリソースと、
-後から適用しても問題ないリソースを明確に区別できるようになりました
+初期表示に必要不可欠なリソース vs 後から適用可能なリソースを明確に区別
 
 <!--
 この例ではクリティカルなフォントをblocking="render"で指定し、レンダリングをブロックしています。必要不可欠なリソースと後から適用できるリソースを区別できます。
@@ -684,7 +821,7 @@ blocking属性を使うと、スクリプトやスタイルシートがレンダ
 
 ---
 
-# 9. inputmode属性
+# 9. inputmode属性 (Baseline 2018)
 
 ## 仮想キーボード最適化
 
@@ -696,9 +833,39 @@ blocking属性を使うと、スクリプトやスタイルシートがレンダ
 
 ## 仮想キーボードの最適化
 
+<div class="grid grid-cols-2 gap-4 items-start">
+<div>
+
 郵便番号入力で数値専用キーボードを出したいのに文字キーボードが表示されてしまう
 
-**→ 今はinputmode属性で数値専用キーボードを表示可能**
+→ inputmode属性で数値専用キーボードを表示可能
+
+</div>
+<div>
+
+<div style="width: 220px; font-size: 10px;">
+  <div style="margin-bottom: 8px;">
+    <div style="background: #f0f0f0; padding: 6px; border-radius: 3px; margin-bottom: 4px;">
+      <input type="text" placeholder="郵便番号" style="width: 100%; padding: 4px; font-size: 10px; border: 1px solid #ccc; border-radius: 2px;">
+    </div>
+    <div style="background: white; border: 1px solid #ccc; padding: 6px; border-radius: 3px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px;">
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">Q</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">W</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">E</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">R</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">T</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">Y</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">U</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">I</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">O</div>
+      <div style="background: #e0e0e0; padding: 4px; text-align: center; border-radius: 2px; font-size: 8px;">P</div>
+    </div>
+    <div style="font-size: 8px; color: #dc3545; margin-top: 2px;">文字キーボード...</div>
+  </div>
+</div>
+
+</div>
+</div>
 
 ```html
 <!-- 数値専用キーボード -->
@@ -738,7 +905,7 @@ inputmodeには6種類あります。numeric、tel、decimal、email、url、sea
 
 ---
 
-# 10. enterkeyhint属性
+# 10. enterkeyhint属性 (Baseline 2021)
 
 ## Enterキー表示の最適化
 
@@ -750,9 +917,32 @@ inputmodeには6種類あります。numeric、tel、decimal、email、url、sea
 
 ## Enterキー表示の最適化
 
+<div class="grid grid-cols-2 gap-4 items-start">
+<div>
+
 検索フィールドなのにEnterキーが「改行」と表示されてしまう
 
-**→ 今はenterkeyhint属性でユーザーに次のアクションを直感的に示せる**
+→ enterkeyhint属性でユーザーに次のアクションを直感的に示せる
+
+</div>
+<div>
+
+<div style="width: 220px; font-size: 10px;">
+  <div style="background: #f0f0f0; padding: 6px; border-radius: 3px; margin-bottom: 4px;">
+    <input type="search" placeholder="検索..." style="width: 100%; padding: 4px; font-size: 10px; border: 1px solid #ccc; border-radius: 2px;">
+  </div>
+  <div style="background: white; border: 1px solid #ccc; padding: 8px; border-radius: 3px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;">
+    <div style="background: #e0e0e0; padding: 6px; text-align: center; border-radius: 2px; font-size: 8px;">1</div>
+    <div style="background: #e0e0e0; padding: 6px; text-align: center; border-radius: 2px; font-size: 8px;">2</div>
+    <div style="background: #e0e0e0; padding: 6px; text-align: center; border-radius: 2px; font-size: 8px;">3</div>
+    <div style="background: #e0e0e0; padding: 6px; text-align: center; border-radius: 2px; font-size: 8px; grid-column: span 2;">スペース</div>
+    <div style="background: #dc3545; color: white; padding: 6px; text-align: center; border-radius: 2px; font-size: 8px;">改行</div>
+  </div>
+  <div style="font-size: 8px; color: #dc3545; margin-top: 2px;">「検索」ではなく「改行」...</div>
+</div>
+
+</div>
+</div>
 
 ```html
 <!-- 検索フィールド -->
@@ -790,7 +980,7 @@ enterkeyhintには5種類あります。search、next、done、go、sendです�
 
 ---
 
-# 11. rel属性のSEO対応値
+# 11. rel属性のSEO対応値 (2019)
 
 ## リンク性質の明確化
 
@@ -804,14 +994,12 @@ enterkeyhintには5種類あります。search、next、done、go、sendです�
 
 全部`nofollow`で一括りにしてませんか？
 
-2019年9月にGoogleが発表した新しい`rel`属性値を使うと、
-リンクの性質を検索エンジンへより詳細に伝えられます
+2019年9月にGoogleが発表した新しい`rel`属性値でリンクの性質を詳細に伝達
 
 - `sponsored`：広告やアフィリエイトリンク
 - `ugc`：ユーザー生成コンテンツ内のリンク
 
-検索エンジンがリンクの文脈を正確に理解し、
-PageRankの評価を適切に調整してくれます
+検索エンジンがリンクの文脈を正確に理解 → PageRankの評価を適切に調整
 
 ---
 
@@ -843,8 +1031,7 @@ sponsoredは広告やアフィリエイトリンク、ugcはユーザー生成�
 | sponsored | 広告、スポンサーシップ、金銭的対価のあるリンク | アフィリエイトリンク、記事広告など |
 | ugc | ユーザー生成コンテンツ内のリンク | ブログコメント欄、フォーラム投稿内のリンク |
 
-これらの値を使うことで、検索エンジンがリンクの文脈をより正確に理解し、
-PageRankアルゴリズムでの評価を適切に調整してくれます
+検索エンジンがリンクの文脈を正確に理解 → PageRank評価を適切に調整
 
 <!--
 sponsoredとugcの2つが主要な値です。これらを使うことで検索エンジンがリンクの文脈を正確に理解し、PageRankの評価を適切に調整してくれます。
@@ -854,16 +1041,11 @@ sponsoredとugcの2つが主要な値です。これらを使うことで検索�
 
 ## まとめ
 
-2019年から現在にかけて、HTMLは要素間の関係性を宣言するだけで
-複雑なUI動作を実現できる言語へと進化してきました
+2019年から現在にかけて、HTMLは要素間の関係性を宣言するだけで複雑なUI動作を実現できる言語へ進化
 
-**UI・インタラクション**
+UI・インタラクション：Popover API、Dialog要素、details要素のname属性、inert属性
 
-Popover API、Dialog要素、details要素のname属性、inert属性
-
-**セマンティクス・アクセシビリティ**
-
-search要素、rel属性のSEO対応値
+セマンティクス・アクセシビリティ：search要素、rel属性のSEO対応値
 
 <!--
 まとめです。今日紹介した11の機能は大きく4つのカテゴリに分けられます。UI・インタラクション、セマンティクス・アクセシビリティ、パフォーマンス最適化、モバイルUXです。
@@ -871,17 +1053,11 @@ search要素、rel属性のSEO対応値
 
 ---
 
-**パフォーマンス最適化**
+パフォーマンス最適化：loading属性、fetchpriority属性、blocking属性
 
-loading属性、fetchpriority属性、blocking属性
+モバイルUX：inputmode属性、enterkeyhint属性
 
-**モバイルUX**
-
-inputmode属性、enterkeyhint属性
-
-特にPopover APIやdetails要素のname属性などを使えば、
-従来のJavaScript依存から脱却し、
-HTMLだけで多くのUIパターンを実現できます
+Popover APIやdetails要素のname属性などでJavaScript依存から脱却、HTMLだけで多くのUIパターンを実現
 
 <!--
 特にPopover APIやdetails要素のname属性などを使えば、JavaScriptなしでUIパターンを実現できます。HTMLの進化によって、より宣言的で保守しやすいコードが書けるようになりました。
@@ -891,9 +1067,9 @@ HTMLだけで多くのUIパターンを実現できます
 
 ## 注意
 
-今回紹介した機能は、ブラウザの対応状況によってはまだ使用できない場合があります
+ブラウザの対応状況によってはまだ使用できない場合あり
 
-詳細は以下のページを参照してください
+詳細は以下を参照
 
 <div class="text-sm">
 
