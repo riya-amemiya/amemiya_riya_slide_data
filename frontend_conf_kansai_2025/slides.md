@@ -1,10 +1,10 @@
 ---
 theme: seriph
 background: white
-title: 最近のHTMLを改めてちゃんと学んでみた
+title: 「え？！それ今ではHTMLだけでできるの！？」驚きの進化を遂げたモダンHTML
 info: |
   ## Frontend Conference Kansai 2025
-  最近のHTMLを改めてちゃんと学んでみた
+  「え？！それ今ではHTMLだけでできるの！？」驚きの進化を遂げたモダンHTML
 layout: center
 defaults:
   layout: center
@@ -22,10 +22,10 @@ highlighter: shiki
 @import './style.css';
 </style>
 
-# 最近のHTMLを改めてちゃんと学んでみた
+# 「え？！それ今ではHTMLだけでできるの！？」驚きの進化を遂げたモダンHTML
 
 <!--
-皆さん、こんにちは。「最近のHTMLを改めてちゃんと学んでみた」というタイトルで発表させていただきます。
+皆さん、こんにちは。「え？！それ今ではHTMLだけでできるの！？」驚きの進化を遂げたモダンHTMLというタイトルで発表させていただきます。
 -->
 
 ---
@@ -38,6 +38,7 @@ highlighter: shiki
 - 名前：西 悠太
 - 所属：株式会社ダイニー
 - TypeScriptが好きです
+- 自称フロントエンドエンジニア<br/>(肩書はPlatform Engineer)
 
 </div>
 <div>
@@ -175,6 +176,7 @@ JavaScript実装から、HTML属性による宣言的な記述へ
 
 <!--
 ポップアップの実装って大変ですよね。z-indexの管理、外側クリック、ESCキー、フォーカス管理...結局ライブラリに頼ることになりがちです。
+特にz-indexなんて、50の後は51とかにすればいいのに、なぜか1000とか999とかにしちゃうんですよね。　
 -->
 
 ---
@@ -257,19 +259,18 @@ Popover API<br/>
 
 ---
 
-## 3つのポップオーバータイプ
+## popovertargetaction属性
 
-popovertargetaction属性を使うと、同じポップオーバーに対して
-ボタンごとに異なる操作（開く・閉じる・切り替え）を指定できます
+同じポップオーバーに対して、ボタンごとに異なる操作を指定できます
 
-| タイプ | 排他制御 | 要素外クリックで閉じる | 適用シーン |
-|--------|----------|---------------------|------------|
-| auto | 他のautoを閉じる | ✅ | メニュー、ダイアログ |
-| hint | 他に影響しない | ✅ | ツールチップ、通知 |
-| manual | 他に影響しない | ❌ | サイドドロワー |
+| 値 | 動作 | 使用場面 |
+|--------|----------|---------------------|
+| show | ポップオーバーを開く | 「開く」ボタン |
+| hide | ポップオーバーを閉じる | 「閉じる」ボタン |
+| toggle | 開閉を切り替える（デフォルト） | トグルボタン |
 
 <!--
-ポップオーバーには3つのタイプがあります。autoはメニューやダイアログ向け、hintはツールチップ向け、manualはサイドドロワーのように明示的に閉じるUI向けです。
+popovertargetaction属性を使うと、同じポップオーバーに対してボタンごとに異なる操作を指定できます。show、hide、toggleの3つの値があり、toggleがデフォルトです。
 -->
 
 ---
@@ -294,6 +295,19 @@ popovertargetaction属性を使うと、同じポップオーバーに対して
 <!--
 popovertargetactionを使うと、開く、閉じる、トグルを明示的に指定できます。これもブラウザがイベント処理とアクセシビリティを自動で設定してくれます。
 -->
+
+---
+
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #f5f5f5; border-radius: 8px; width: fit-content;">
+  <button popovertarget="demo-settings" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">設定を開く</button>
+  <button popovertarget="demo-settings" popovertargetaction="hide" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">設定を閉じる</button>
+  <button popovertarget="demo-settings" popovertargetaction="toggle" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">設定の切り替え</button>
+</div>
+
+<div popover="auto" id="demo-settings" style="padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <h3 style="margin: 0 0 8px 0;">設定</h3>
+  <p style="margin: 0; color: #666;">ここに設定内容が入ります。</p>
+</div>
 
 ---
 
@@ -398,6 +412,19 @@ show()
 <!--
 showModal()は背景を覆ってフォーカストラップを実装し、show()は非モーダルで背景も操作可能です。用途に応じて使い分けてください。
 -->
+
+---
+
+<div style="display: flex; gap: 8px;">
+  <button onclick="document.getElementById('demo-dialog').showModal()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">showModal()</button>
+  <button onclick="document.getElementById('demo-dialog').show()" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">show()</button>
+</div>
+
+<dialog id="demo-dialog" style="padding: 20px; border-radius: 8px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <h3 style="margin: 0 0 8px 0;">ダイアログタイトル</h3>
+  <p style="margin: 0 0 16px 0; color: #666;">ダイアログの内容がここに入ります。</p>
+  <button onclick="document.getElementById('demo-dialog').close()" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">閉じる</button>
+</dialog>
 
 ---
 
@@ -520,6 +547,23 @@ JavaScriptゼロ行
 <!--
 FAQセクションの例です。すべてのdetails要素に同じname="faq"を指定するだけで、一度に1つだけ開くアコーディオンになります。JavaScriptは不要です。
 -->
+
+---
+
+<div style="width: 100%; max-width: 400px;">
+  <details name="demo-faq" style="border: 1px solid #ddd; border-radius: 4px; margin-bottom: 4px; padding: 8px;">
+    <summary style="cursor: pointer; font-weight: bold;">返品は可能ですか？</summary>
+    <p style="margin: 8px 0 0 0; color: #666;">商品到着後14日以内であれば返品可能です。</p>
+  </details>
+  <details name="demo-faq" style="border: 1px solid #ddd; border-radius: 4px; margin-bottom: 4px; padding: 8px;">
+    <summary style="cursor: pointer; font-weight: bold;">送料はいくらですか？</summary>
+    <p style="margin: 8px 0 0 0; color: #666;">5,000円以上のご購入で送料無料です。</p>
+  </details>
+  <details name="demo-faq" style="border: 1px solid #ddd; border-radius: 4px; padding: 8px;">
+    <summary style="cursor: pointer; font-weight: bold;">支払い方法は？</summary>
+    <p style="margin: 8px 0 0 0; color: #666;">クレジットカード、銀行振込、代金引換をご利用いただけます。</p>
+  </details>
+</div>
 
 ---
 
