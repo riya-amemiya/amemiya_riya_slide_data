@@ -3,6 +3,7 @@
 フロントエンドカンファレンス東京2025で発表したスライドの元データです
 
 [speakerdeckバージョン](https://speakerdeck.com/riyaamemiya/e-sorejin-dehahtmldakededekiruno-jing-kinojin-hua-wosui-getamodanhtml)
+[zennバージョン](https://zenn.dev/dinii/articles/16b3e71b580b6c)
 
 Slidevで作成されています
 
