@@ -1,0 +1,84 @@
+name: Deploy slides to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - residual_heat_night_from_fec_hokkaido_and_tokyo
+          - frontend_conf_hokkaido_2025
+          - frontend_conf_kansai_2025
+          - frontend_conf_nagoya_2026
+          - frontend_conf_tokyo_2025
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      - name: Install dependencies
+        working-directory: ${{ matrix.project }}
+        run: bun install --frozen-lockfile
+      - name: Build
+        working-directory: ${{ matrix.project }}
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+          PROJECT: ${{ matrix.project }}
+        run: bun run build --base "/${REPO_NAME}/${PROJECT}/" --out dist
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist-${{ matrix.project }}
+          path: ${{ matrix.project }}/dist
+
+  assemble:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: artifacts
+      - name: Assemble dist
+        run: |
+          mkdir -p dist
+          for dir in artifacts/dist-*; do
+            name="${dir#artifacts/dist-}"
+            mv "$dir" "dist/$name"
+          done
+          ls -la dist
+      - name: Generate index
+        run: |
+          {
+            echo '<!doctype html><meta charset="utf-8"><title>Slides</title><h1>Slides</h1><ul>'
+            for d in dist/*/; do
+              name=$(basename "$d")
+              echo "<li><a href=\"./${name}/\">${name}</a></li>"
+            done
+            echo '</ul>'
+          } > dist/index.html
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    needs: assemble
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
