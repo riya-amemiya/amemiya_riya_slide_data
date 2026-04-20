@@ -35,6 +35,10 @@ p, li, span, div {
   font-family: 'Nunito', sans-serif;
 }
 
+.slidev-layout h1 + p {
+  opacity: 1;
+}
+
 /* Special styling for the first slide (cover page) */
 .slidev-layout[data-slide="1"] h1 {
   font-family: 'Noto Sans JP', sans-serif;
@@ -113,7 +117,6 @@ pre, code {
 
 .slidev-layout .eyebrow {
   font-size: 0.55em;
-  color: #8a95ac;
   letter-spacing: .14em;
   margin-bottom: 28px;
   text-transform: uppercase;
@@ -128,13 +131,13 @@ pre, code {
 }
 .slidev-layout .mega .accent { color: #243762; }
 .slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762; }
-.slidev-layout .byline .venue { color: #8a95ac; margin-left: 12px; }
+.slidev-layout .byline .venue { margin-left: 12px; }
 
 .slidev-layout .section-num {
   font-family: 'Nunito', sans-serif;
   font-size: 8em;
   font-weight: 700;
-  color: #e6e8ef;
+  color: #3984FD;
   line-height: 1;
   margin-bottom: 8px;
 }
@@ -267,4 +270,4 @@ pre, code {
   object-fit: cover; justify-self: center;
 }
 .slidev-layout .intro-grid .bio p { font-size: 1.05em; margin: 0 0 8px; }
-.slidev-layout .intro-grid .bio .role { color: #8a95ac; font-size: 0.85em; margin-top: 16px; }
+.slidev-layout .intro-grid .bio .role { font-size: 0.85em; margin-top: 16px; }
