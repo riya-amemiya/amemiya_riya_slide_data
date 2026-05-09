@@ -1,6 +1,6 @@
-# フロントエンドカンファレンス東京2025
+# フロントエンドカンファレンス名古屋2026
 
-フロントエンドカンファレンス東京2025で発表したスライドの元データです
+フロントエンドカンファレンス名古屋2026で発表したスライドの元データです
 
 [speakerdeckバージョン](https://speakerdeck.com/riyaamemiya/zhi-tuteta-javascriptno-zheng-sisa-wojian-zheng-surutesutoga5mo-yi-shang-moarukoto-test262)
 
