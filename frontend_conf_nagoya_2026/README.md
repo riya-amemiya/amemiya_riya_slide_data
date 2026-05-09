@@ -2,7 +2,7 @@
 
 フロントエンドカンファレンス東京2025で発表したスライドの元データです
 
-[speakerdeckバージョン](https://speakerdeck.com/riyaamemiya/sonojavascript-v8gaqi-itemasu-v8noqi-chi-tiwoli-jie-siteshu-kupahuomansuzui-shi-hua)
+[speakerdeckバージョン](https://speakerdeck.com/riyaamemiya/zhi-tuteta-javascriptno-zheng-sisa-wojian-zheng-surutesutoga5mo-yi-shang-moarukoto-test262)
 
 Slidevで作成されています
 
