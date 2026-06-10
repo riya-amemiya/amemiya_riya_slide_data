@@ -1,0 +1,542 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+/* Global styles for the presentation */
+:root {
+  --slidev-theme-primary: #3984FD;
+  --slidev-theme-text: #243762;
+  --slidev-theme-bg: #FFFFFF;
+  /* Fixed width for code blocks (px so it doesn't vary by font-size) */
+  --code-block-width: 900px;
+  /* Unify code font-size so width/height look consistent across slides */
+  --code-font-size: 16px;
+}
+
+/* Background color for all slides */
+.slidev-layout {
+  background-color: #FFFFFF;
+}
+
+/* Default body text styles */
+p, li, span, div {
+  color: #243762;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Specific heading styles with higher specificity */
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout h4,
+.slidev-layout h5,
+.slidev-layout h6 {
+  color: #3984FD;
+  font-family: 'Nunito', sans-serif;
+}
+
+.slidev-layout h1 + p {
+  opacity: 1;
+}
+
+/* Special styling for the first slide (cover page) */
+.slidev-layout[data-slide="1"] h1 {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* Ensure proper text color inheritance for non-heading elements */
+.slidev-layout *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre):not(code) {
+  color: inherit;
+}
+
+/* Code blocks should maintain their own colors */
+pre, code {
+  color: initial;
+}
+
+/* Fixed-width code blocks with horizontal scroll */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code,
+.slidev-layout .slidev-code pre {
+  width: var(--code-block-width);
+  max-width: var(--code-block-width);
+  overflow-x: auto;
+  overflow-y: visible;
+  white-space: pre;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Ensure code content maintains full width inside fixed container */
+.slidev-layout pre.shiki > code {
+  display: inline-block;
+  /* expand to content width while keeping at least container width */
+  min-width: 100%;
+}
+
+/* Ensure consistent code font sizing across all code blocks */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code pre,
+.slidev-layout pre.shiki code {
+  font-size: var(--code-font-size);
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 1024px) {
+  :root {
+    --code-block-width: 820px;
+    --code-font-size: 15px;
+  }
+}
+
+/* ========================================================================
+   Deck-specific classes ported from the standalone HTML deck
+   ======================================================================== */
+
+.slidev-layout .muted { color: #8a95ac; }
+.slidev-layout .navy  { color: #243762; }
+.slidev-layout .blue  { color: #3984FD; }
+.slidev-layout .caption { font-size: 0.7em; color: #8a95ac; letter-spacing: .05em; }
+.slidev-layout .lede { font-size: 1.1em; line-height: 1.5; max-width: 1500px; }
+.slidev-layout .lede + .lede { margin-top: 1em; }
+
+.slidev-layout .pill {
+  display: inline-block;
+  padding: 6px 18px;
+  border: 2px solid #3984FD;
+  color: #3984FD;
+  border-radius: 999px;
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: .06em;
+  margin-bottom: 24px;
+}
+
+.slidev-layout .eyebrow {
+  font-size: 0.55em;
+  letter-spacing: .14em;
+  margin-bottom: 28px;
+  text-transform: uppercase;
+}
+.slidev-layout .mega {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 2em;
+  line-height: 1.4;
+  color: #3984FD;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+.slidev-layout .mega .accent { color: #243762; }
+.slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762; }
+.slidev-layout .byline .venue { margin-left: 12px; }
+
+.slidev-layout .section-num {
+  font-family: 'Nunito', sans-serif;
+  font-size: 8em;
+  font-weight: 700;
+  color: #3984FD;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.slidev-layout ul.clean { list-style: none; padding: 0; margin: 0; }
+.slidev-layout ul.clean li {
+  padding-left: 28px;
+  position: relative;
+  margin-bottom: 12px;
+}
+.slidev-layout ul.clean li::before {
+  content: '→';
+  color: #3984FD;
+  position: absolute;
+  left: 0; top: 0;
+  font-weight: 700;
+}
+
+.slidev-layout .big-stat { display: flex; flex-direction: column; align-items: flex-start; }
+.slidev-layout .big-stat .n {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 9em;
+  color: #3984FD;
+  line-height: 1;
+  letter-spacing: -.02em;
+}
+.slidev-layout .big-stat .n .plus { font-size: 0.6em; vertical-align: top; }
+.slidev-layout .big-stat .label { font-size: 1.3em; color: #243762; margin-top: 16px; }
+.slidev-layout .big-stat .sub   { font-size: 0.7em; color: #8a95ac; margin-top: 8px; }
+
+.slidev-layout .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+.slidev-layout .two-col.wide { gap: 72px; }
+.slidev-layout .col-label {
+  font-size: 0.85em; color: #3984FD; font-weight: 700;
+  margin-bottom: 12px; letter-spacing: .02em;
+}
+
+.slidev-layout table.engines { border-collapse: collapse; width: 100%; max-width: 900px; margin: 1em auto; }
+.slidev-layout table.engines th, .slidev-layout table.engines td {
+  padding: 10px 16px; border-bottom: 1px solid #e6e8ef; text-align: left;
+}
+.slidev-layout table.engines th {
+  color: #3984FD; font-weight: 700; border-bottom: 2px solid #3984FD;
+}
+.slidev-layout table.engines td.engine { font-weight: 700; }
+
+.slidev-layout .callout {
+  border-left: 6px solid #3984FD;
+  padding: 12px 20px;
+  background: #f6f8fa;
+  border-radius: 0 8px 8px 0;
+}
+
+.slidev-layout .fixme {
+  font-family: ui-monospace, monospace;
+  font-size: 1.2em;
+  padding: 16px 24px;
+  background: #fff7ea;
+  border-left: 8px solid #c15300;
+  color: #243762;
+  border-radius: 0 10px 10px 0;
+}
+.slidev-layout .fixme .tag { color: #c15300; font-weight: 700; }
+
+.slidev-layout .result-bar { display: flex; justify-content: center; gap: 24px; margin-top: 24px; }
+.slidev-layout .result-bar .b {
+  border: 1px solid #e6e8ef; border-radius: 10px;
+  padding: 8px 16px; background: #f6f8fa;
+  font-size: 0.8em;
+}
+.slidev-layout .result-bar .b .eng { color: #3984FD; font-weight: 700; margin-right: 10px; }
+.slidev-layout .result-bar .b .out { font-family: ui-monospace, monospace; color: #243762; }
+
+.slidev-layout .prompt { font-size: 1.1em; color: #243762; margin-top: 28px; text-align: center; }
+.slidev-layout .prompt .ask { color: #3984FD; font-weight: 700; }
+
+.slidev-layout .quote {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 2.4em;
+  line-height: 1.3;
+  color: #3984FD;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  max-width: 1600px;
+}
+.slidev-layout .quote .navy { color: #243762; }
+
+.slidev-layout dl.kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 32px;
+  row-gap: 16px;
+  margin: 0;
+}
+.slidev-layout dl.kv dt {
+  color: #3984FD; font-weight: 700;
+  font-family: ui-monospace, monospace;
+}
+.slidev-layout dl.kv dd { margin: 0; color: #243762; }
+.slidev-layout dl.kv dd .note { display: block; color: #8a95ac; font-size: 0.8em; margin-top: 4px; }
+
+.slidev-layout .flow { display: flex; align-items: stretch; gap: 16px; }
+.slidev-layout .flow .step {
+  flex: 1;
+  border: 2px solid #e6e8ef;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex; flex-direction: column;
+  background: #fff;
+}
+.slidev-layout .flow .step .n {
+  font-size: 0.65em; color: #8a95ac; font-weight: 700;
+  letter-spacing: .1em; margin-bottom: 6px;
+}
+.slidev-layout .flow .step h3 { font-size: 0.95em; margin-bottom: 6px; color: #3984FD; }
+.slidev-layout .flow .step p  { font-size: 0.8em; color: #243762; margin: 0; line-height: 1.5; }
+.slidev-layout .flow .arrow { color: #3984FD; font-size: 1.6em; align-self: center; }
+
+.slidev-layout hr.rule { border: 0; border-top: 1px solid #e6e8ef; margin: 24px 0; width: 100%; }
+
+.slidev-layout .intro-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.slidev-layout .intro-grid img.avatar {
+  width: 280px; height: 280px; border-radius: 50%;
+  object-fit: cover; justify-self: center;
+}
+.slidev-layout .intro-grid .bio p { font-size: 1.05em; margin: 0 0 8px; }
+.slidev-layout .intro-grid .bio .role { font-size: 0.85em; margin-top: 16px; }
+
+/* V8 Number internals deck additions */
+.slidev-layout .number-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 42px;
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+}
+.slidev-layout .number-card {
+  border: 2px solid #e6e8ef;
+  border-radius: 22px;
+  padding: 34px 30px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(36, 55, 98, .08);
+}
+.slidev-layout .number-card .label {
+  font-size: 3.4em;
+  font-weight: 700;
+  color: #243762;
+  line-height: 1;
+}
+.slidev-layout .number-card .type {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: #3984FD;
+  color: white;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.slidev-layout .number-card .desc {
+  margin-top: 22px;
+  line-height: 1.6;
+  color: #243762;
+}
+
+.slidev-layout .tag-grid {
+  width: 880px;
+  max-width: 100%;
+  margin: 32px auto 0;
+  display: grid;
+  gap: 18px;
+}
+.slidev-layout .tag-row {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  align-items: center;
+  gap: 18px;
+}
+.slidev-layout .tag-name {
+  font-size: 1.15em;
+  color: #3984FD;
+  font-weight: 700;
+}
+.slidev-layout .tag-bits {
+  border: 2px solid #e6e8ef;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .05em;
+  color: #243762;
+  background: #f8fbff;
+}
+.slidev-layout .tag-bits strong { color: #3984FD; }
+
+.slidev-layout .heap-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 34px;
+  width: 100%;
+}
+.slidev-layout .tagged-ref,
+.slidev-layout .heap-box {
+  border: 2px solid #3984FD;
+  border-radius: 20px;
+  padding: 30px 42px;
+  min-width: 250px;
+  text-align: center;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(36, 55, 98, .08);
+  font-weight: 700;
+}
+.slidev-layout .tagged-ref span {
+  display: block;
+  margin-top: 10px;
+  font-size: .72em;
+  color: #8a95ac;
+}
+.slidev-layout .arrow {
+  font-size: 3em;
+  color: #3984FD;
+  font-weight: 700;
+}
+.slidev-layout .heap-title {
+  color: #3984FD;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.slidev-layout .heap-body {
+  color: #243762;
+  line-height: 1.5;
+}
+
+.slidev-layout .kind-list {
+  display: grid;
+  gap: 18px;
+  width: 920px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.slidev-layout .kind-card {
+  border-left: 8px solid #3984FD;
+  background: #f6f8fa;
+  border-radius: 0 16px 16px 0;
+  padding: 18px 24px;
+}
+.slidev-layout .kind-card.mid { border-left-color: #ffb020; }
+.slidev-layout .kind-card.slow { border-left-color: #d66; }
+.slidev-layout .kind-name {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #3984FD;
+  font-weight: 700;
+}
+.slidev-layout .kind-code {
+  margin-top: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #243762;
+  font-size: 1.3em;
+}
+.slidev-layout .kind-desc {
+  margin-top: 6px;
+  color: #243762;
+}
+
+.slidev-layout .array-memory {
+  width: 880px;
+  max-width: 100%;
+  margin: 28px auto 0;
+}
+.slidev-layout .array-label {
+  color: #3984FD;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.slidev-layout .cells {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.slidev-layout .cell {
+  min-width: 122px;
+  padding: 16px 12px;
+  border-radius: 14px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  border: 2px solid #e6e8ef;
+}
+.slidev-layout .cell.smi { background: #f0f7ff; color: #3984FD; }
+.slidev-layout .cell.dbl { background: #fff8e6; color: #9a6700; }
+.slidev-layout .cell.obj { background: #f6f8fa; color: #243762; }
+
+.slidev-layout .lattice {
+  width: 720px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+.slidev-layout .lattice .node {
+  border: 2px solid #3984FD;
+  border-radius: 999px;
+  padding: 16px 28px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(36, 55, 98, .08);
+}
+.slidev-layout .lattice .mid { border-color: #ffb020; }
+.slidev-layout .lattice .bottom { border-color: #d66; }
+.slidev-layout .lattice .down {
+  margin: 12px 0;
+  color: #8a95ac;
+  font-size: .85em;
+}
+
+.slidev-layout .layer-stack {
+  display: grid;
+  gap: 14px;
+  width: 820px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.slidev-layout .layer {
+  border: 2px solid #e6e8ef;
+  border-radius: 16px;
+  padding: 16px 24px;
+  font-weight: 700;
+  color: #243762;
+  background: #fff;
+}
+.slidev-layout .layer span {
+  display: block;
+  margin-top: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #3984FD;
+  font-size: .86em;
+}
+.slidev-layout .layer.ts { margin-left: 0; }
+.slidev-layout .layer.js { margin-left: 40px; }
+.slidev-layout .layer.v8 { margin-left: 80px; }
+.slidev-layout .layer.machine { margin-left: 120px; }
+
+.slidev-layout .big-message {
+  font-size: 1.7em;
+  line-height: 1.55;
+  text-align: center;
+  color: #243762;
+}
+.slidev-layout .big-message strong {
+  color: #3984FD;
+  font-size: 1.18em;
+}
+.slidev-layout ul.takeaways {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 920px;
+}
+.slidev-layout ul.takeaways li {
+  padding: 16px 20px 16px 54px;
+  margin: 12px 0;
+  border-radius: 14px;
+  background: #f6f8fa;
+  position: relative;
+  line-height: 1.5;
+}
+.slidev-layout ul.takeaways li::before {
+  content: '✓';
+  position: absolute;
+  left: 20px;
+  top: 16px;
+  color: #3984FD;
+  font-weight: 700;
+}
+.slidev-layout ul.refs {
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.9;
+}
+.slidev-layout ul.refs a { color: #3984FD; font-weight: 700; }
+.slidev-layout .thanks {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 1.4em;
+  color: #243762;
+  line-height: 1.7;
+}
+.slidev-layout .thanks strong {
+  display: block;
+  color: #3984FD;
+  font-size: 1.25em;
+}
