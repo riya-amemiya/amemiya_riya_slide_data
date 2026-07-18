@@ -1,0 +1,149 @@
+name: Export slides to PDF
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/slides.md"
+      - "**/components/**"
+      - "**/setup/**"
+      - "**/style.css"
+      - "**/public/**"
+      - "**/package.json"
+      - "**/bun.lock"
+      - ".github/workflows/export-pdf.yml"
+  workflow_dispatch:
+    inputs:
+      projects:
+        description: "Space-separated project directories (empty exports all)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: export-slide-pdf
+  cancel-in-progress: false
+
+jobs:
+  export-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Fetch push base for diff
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        run: git fetch --depth=1 origin "${{ github.event.before }}"
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+
+      - name: Resolve target projects
+        id: resolve
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+          INPUT_PROJECTS: ${{ inputs.projects }}
+        run: |
+          set -euo pipefail
+
+          list_all() {
+            for d in */; do
+              if [ -f "${d}slides.md" ] && [ -f "${d}package.json" ]; then
+                printf '%s\n' "${d%/}"
+              fi
+            done | sort
+          }
+
+          is_slide_project() {
+            [ -f "$1/slides.md" ] && [ -f "$1/package.json" ]
+          }
+
+          projects=""
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ -n "${INPUT_PROJECTS// }" ]; then
+              for p in $INPUT_PROJECTS; do
+                if is_slide_project "$p"; then
+                  projects="$projects $p"
+                else
+                  echo "Skipping invalid project: $p" >&2
+                fi
+              done
+            else
+              projects="$(list_all | tr '\n' ' ')"
+            fi
+          else
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              projects="$(list_all | tr '\n' ' ')"
+            else
+              projects="$(
+                git diff --name-only "$BEFORE" "$SHA" \
+                  | awk -F/ 'NF >= 2 { print $1 }' \
+                  | sort -u \
+                  | while read -r d; do
+                      if is_slide_project "$d"; then
+                        printf '%s\n' "$d"
+                      fi
+                    done \
+                  | tr '\n' ' '
+              )"
+            fi
+          fi
+
+          projects="$(echo "$projects" | xargs)"
+          {
+            echo "projects=$projects"
+            if [ -z "$projects" ]; then
+              echo "empty=true"
+            else
+              echo "empty=false"
+            fi
+          } >> "$GITHUB_OUTPUT"
+          echo "Resolved projects: ${projects:-<none>}"
+
+      - name: Export PDFs
+        if: steps.resolve.outputs.empty != 'true'
+        env:
+          PROJECTS: ${{ steps.resolve.outputs.projects }}
+        run: |
+          set -euo pipefail
+          deps_installed=0
+          for project in $PROJECTS; do
+            echo "::group::Export ${project}"
+            cd "$project"
+            bun install --frozen-lockfile
+            if [ "$deps_installed" -eq 0 ]; then
+              if [ -f node_modules/playwright-core/cli.js ]; then
+                node node_modules/playwright-core/cli.js install-deps chromium
+              elif [ -x node_modules/.bin/playwright ]; then
+                bunx playwright install-deps chromium
+              else
+                echo "playwright CLI not found in ${project}; Chromium system deps may be missing" >&2
+              fi
+              deps_installed=1
+            fi
+            bun run export -- --output slides-export.pdf
+            test -f slides-export.pdf
+            cd "$GITHUB_WORKSPACE"
+            echo "::endgroup::"
+          done
+
+      - name: Create pull request
+        if: steps.resolve.outputs.empty != 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          commit-message: "chore: update exported slide PDFs"
+          title: "chore: update exported slide PDFs"
+          body: |
+            Automated PDF export from slide source updates on `main`.
+
+            - Trigger commit: ${{ github.sha }}
+            - Projects: ${{ steps.resolve.outputs.projects }}
+          branch: chore/export-slide-pdfs
+          delete-branch: true
+          add-paths: |
+            **/slides-export.pdf
