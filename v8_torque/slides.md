@@ -48,24 +48,14 @@ V8はC++で書かれているとよく言われますが、その内側にはTor
 
 ---
 
-# 言い訳
-
-時間なくてスライド作成にめっちゃAI使いました。
-
-頑張って修正(脱臭)したんですが、若干まだAI臭が残っています。
-
-台本は自分の言葉なので許してください🙇
-
----
-
 <h1 style="margin-bottom:20px">自己紹介</h1>
 
 <div class="intro-grid">
   <div class="bio">
     <p><strong>西 悠太</strong> <span>(Nishi Yuta)</span></p>
-    <p>株式会社ダイニー / Platform Engineer</p>
+    <p>V8 Contributor</p><p>Platform Engineer at Dinii Inc.</p><p>TSKaigi Staff</p>
     <p style="margin-top:24px;">TypeScriptが好きです。<br>V8の中身をのぞくのも好きです。</p>
-    <div class="role">@riya-amemiya</div>
+    <div class="role">(実は21歳)</div>
   </div>
   <img class="avatar" src="/icon.png" alt="プロフィール画像" />
 </div>
@@ -94,6 +84,7 @@ V8は、Googleが開発するオープンソースのJIT仮想マシン型のJav
 ECMAScript (ECMA-262) 準拠で、C++で記述されている。スタンドアローンでの実行が可能なほか、C++で書かれたアプリケーションの一部として動作させることもできる。
 
 引用: [V8 (JavaScriptエンジン) - Wikipedia](https://ja.wikipedia.org/wiki/V8_(JavaScript%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3))
+
 ---
 
 <div class="lead-q">
