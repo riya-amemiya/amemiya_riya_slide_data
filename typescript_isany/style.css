@@ -1,0 +1,223 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+/* Global styles for the presentation */
+:root {
+  --slidev-theme-primary: #3984FD;
+  --slidev-theme-text: #243762;
+  --slidev-theme-bg: #FFFFFF;
+  /* Fixed width for code blocks (px so it doesn't vary by font-size) */
+  --code-block-width: 900px;
+  /* Unify code font-size so width/height look consistent across slides */
+  --code-font-size: 16px;
+}
+
+/* Background color for all slides */
+.slidev-layout {
+  background-color: #FFFFFF;
+}
+
+/* Default body text styles */
+p, li, span, div {
+  color: #243762;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Specific heading styles with higher specificity */
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout h4,
+.slidev-layout h5,
+.slidev-layout h6 {
+  color: #3984FD;
+  font-family: 'Nunito', sans-serif;
+}
+
+.slidev-layout h1 + p {
+  opacity: 1;
+}
+
+/* Special styling for the first slide (cover page) */
+.slidev-layout[data-slide="1"] h1 {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* Ensure proper text color inheritance for non-heading elements */
+.slidev-layout *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre):not(code) {
+  color: inherit;
+}
+
+/* Code blocks should maintain their own colors */
+pre, code {
+  color: initial;
+}
+
+/* Fixed-width code blocks with horizontal scroll */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code,
+.slidev-layout .slidev-code pre {
+  width: var(--code-block-width);
+  max-width: var(--code-block-width);
+  overflow-x: auto;
+  overflow-y: visible;
+  white-space: pre;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Ensure code content maintains full width inside fixed container */
+.slidev-layout pre.shiki > code {
+  display: inline-block;
+  /* expand to content width while keeping at least container width */
+  min-width: 100%;
+}
+
+/* Ensure consistent code font sizing across all code blocks */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code pre,
+.slidev-layout pre.shiki code {
+  font-size: var(--code-font-size);
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 1024px) {
+  :root {
+    --code-block-width: 820px;
+    --code-font-size: 15px;
+  }
+}
+
+/* ========================================================================
+   Deck classes
+   ======================================================================== */
+
+.slidev-layout .muted { color: #8a95ac; }
+.slidev-layout .navy  { color: #243762; }
+.slidev-layout .blue  { color: #3984FD; }
+.slidev-layout .lede { font-size: 1.1em; line-height: 1.5; max-width: 1500px; }
+.slidev-layout .lede + .lede { margin-top: 1em; }
+
+.slidev-layout .eyebrow {
+  font-size: 0.55em;
+  letter-spacing: .14em;
+  margin-bottom: 28px;
+  text-transform: uppercase;
+}
+.slidev-layout .mega {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 2em;
+  line-height: 1.4;
+  color: #3984FD;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+.slidev-layout .mega .accent { color: #243762; }
+.slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762; }
+.slidev-layout .byline .venue { margin-left: 12px; }
+
+.slidev-layout .section-num {
+  font-family: 'Nunito', sans-serif;
+  font-size: 8em;
+  font-weight: 700;
+  color: #3984FD;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.slidev-layout ul.clean { list-style: none; padding: 0; margin: 0; }
+.slidev-layout ul.clean li {
+  padding-left: 28px;
+  position: relative;
+  margin-bottom: 12px;
+}
+.slidev-layout ul.clean li::before {
+  content: '→';
+  color: #3984FD;
+  position: absolute;
+  left: 0; top: 0;
+  font-weight: 700;
+}
+
+.slidev-layout .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+.slidev-layout .two-col.wide { gap: 72px; }
+.slidev-layout .col-label {
+  font-size: 0.85em; color: #3984FD; font-weight: 700;
+  margin-bottom: 12px; letter-spacing: .02em;
+}
+
+.slidev-layout .intro-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.slidev-layout .intro-grid img.avatar {
+  width: 280px; height: 280px; border-radius: 50%;
+  object-fit: cover; justify-self: center;
+}
+.slidev-layout .intro-grid .bio p { font-size: 1.05em; margin: 0 0 8px; }
+.slidev-layout .intro-grid .bio .role { font-size: 0.85em; margin-top: 16px; }
+
+.slidev-layout .lead-q {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 1.9em;
+  line-height: 1.5;
+  color: #243762;
+  font-weight: 700;
+}
+
+.slidev-layout .big-word {
+  margin-top: 36px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 3.4em;
+  font-weight: 700;
+  color: #3984FD;
+  line-height: 1.2;
+}
+
+.slidev-layout ul.takeaways {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 920px;
+}
+.slidev-layout ul.takeaways li {
+  padding: 16px 20px 16px 54px;
+  margin: 12px 0;
+  border-radius: 14px;
+  background: #f6f8fa;
+  position: relative;
+  line-height: 1.5;
+}
+.slidev-layout ul.takeaways li::before {
+  content: '✓';
+  position: absolute;
+  left: 20px;
+  top: 16px;
+  color: #3984FD;
+  font-weight: 700;
+}
+
+.slidev-layout ul.refs {
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.9;
+}
+.slidev-layout ul.refs a { color: #3984FD; font-weight: 700; }
+
+.slidev-layout .thanks {
+  margin-top: 24px;
+  font-size: 1.4em;
+  color: #243762;
+  line-height: 1.7;
+}
+.slidev-layout .thanks strong {
+  display: block;
+  color: #3984FD;
+  font-size: 1.25em;
+}
