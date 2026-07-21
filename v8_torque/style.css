@@ -7,15 +7,63 @@
   --slidev-theme-primary: #3984FD;
   --slidev-theme-text: #243762;
   --slidev-theme-bg: #FFFFFF;
+  --slidev-slide-container-background: #FFFFFF;
   /* Fixed width for code blocks (px so it doesn't vary by font-size) */
   --code-block-width: 900px;
   /* Unify code font-size so width/height look consistent across slides */
   --code-font-size: 16px;
 }
 
-/* Background color for all slides */
+html,
+body,
+.slidev-page,
 .slidev-layout {
-  background-color: #FFFFFF;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+/*
+ * Content frame is centered on the slide (vertical + horizontal).
+ * Text inside the frame is left-aligned.
+ * Do not stretch the frame to full slide width — that pins short
+ * copy to the far left edge with a huge empty right side.
+ */
+.slidev-layout {
+  color: #243762;
+  text-align: left !important;
+}
+
+.slidev-layout.center {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.slidev-layout.center > .my-auto {
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout p,
+.slidev-layout ul,
+.slidev-layout ol {
+  text-align: left !important;
+}
+
+/* Wide layouts need an explicit floor so 1fr columns do not collapse */
+.slidev-layout .two-col {
+  width: min(960px, 100%);
+  min-width: min(720px, 100%);
+}
+.slidev-layout .spec-map {
+  width: min(1000px, 100%);
+  min-width: min(800px, 100%);
 }
 
 /* Default body text styles */
@@ -64,8 +112,8 @@ pre, code {
   overflow-y: visible;
   white-space: pre;
   box-sizing: border-box;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* Ensure code content maintains full width inside fixed container */
@@ -125,12 +173,12 @@ pre, code {
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 2em;
   line-height: 1.4;
-  color: #3984FD;
+  color: #3984FD !important;
   margin: 0;
   letter-spacing: -.01em;
 }
-.slidev-layout .mega .accent { color: #243762; }
-.slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762; }
+.slidev-layout .mega .accent { color: #243762 !important; }
+.slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762 !important; }
 .slidev-layout .byline .venue { margin-left: 12px; }
 
 .slidev-layout .section-num {
@@ -502,28 +550,26 @@ pre, code {
 .slidev-layout ul.takeaways {
   list-style: none;
   padding: 0;
-  margin: 0 auto;
+  margin: 0;
   max-width: 920px;
 }
 .slidev-layout ul.takeaways li {
-  padding: 16px 20px 16px 54px;
-  margin: 12px 0;
-  border-radius: 14px;
-  background: #f6f8fa;
+  padding: 8px 0 8px 28px;
+  margin: 8px 0;
   position: relative;
   line-height: 1.5;
 }
 .slidev-layout ul.takeaways li::before {
-  content: '✓';
+  content: '→';
   position: absolute;
-  left: 20px;
-  top: 16px;
+  left: 0;
+  top: 8px;
   color: #3984FD;
   font-weight: 700;
 }
 .slidev-layout ul.refs {
   max-width: 900px;
-  margin: 0 auto;
+  margin: 0;
   line-height: 1.9;
 }
 .slidev-layout ul.refs a { color: #3984FD; font-weight: 700; }
@@ -571,11 +617,8 @@ pre, code {
   gap: 40px;
   width: 100%;
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0;
   align-items: start;
-}
-.slidev-layout .spec-map .col-label {
-  margin-bottom: 14px;
 }
 .slidev-layout .spec-map ol.spec {
   margin: 0;
