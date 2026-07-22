@@ -3,7 +3,9 @@
 V8のbuiltinsを支える専用言語 **Torque** をテーマにしたSlidevスライドです。
 CSA（CodeStubAssembler）の時代から、なぜTorqueが生まれ、V8の安全性と速度をどう支えているのかを紹介します。
 
-Slidevで作成されています。
+[speakerdeckバージョン](https://speakerdeck.com/riyaamemiya/v8notorquewoyu-ritai)
+
+Slidevで作成されています
 
 <a href="https://github.com/sponsors/riya-amemiya"><img alt="Sponsor" src="https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#white" /></a>
 
