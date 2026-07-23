@@ -294,7 +294,7 @@ IsAnyが検出しているのは、まさにこの「階層の外にいる」と
 
 ---
 
-# おまけ① 条件型は両方の枝を返す
+# おまけ① 条件型は両方の分岐を返す
 
 ```ts
 type X = any extends string ? 1 : 2   // 1 | 2
@@ -313,7 +313,7 @@ type X = any extends string ? 1 : 2   // 1 | 2
 
 ---
 
-# おまけ② any が唯一入れない場所
+# おまけ② any でも代入できない時がある
 
 ```ts
 declare const a: any
@@ -333,11 +333,11 @@ neverは値が存在しないことを表す型なので、ここだけは型チ
 
 ---
 
-# 今日覚えて帰ってほしいこと
+# まとめ
 
 <ul class="takeaways">
   <li>IsAny は <code>0 extends 1 & T</code> の1行で書ける</li>
-  <li>交差型を丸ごと飲み込むのは any だけ</li>
+  <li>どんな型とも交差できるのは any だけ</li>
   <li>「絶対に false」の代入を true にできるのも any だけ</li>
   <li>any は上にも下にも振る舞う、型の階層の外の型</li>
 </ul>

@@ -16,6 +16,31 @@
 /* Background color for all slides */
 .slidev-layout {
   background-color: #FFFFFF;
+  color: #243762;
+  text-align: left !important;
+}
+
+.slidev-layout.center {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.slidev-layout.center > .my-auto {
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout p,
+.slidev-layout ul,
+.slidev-layout ol {
+  text-align: left !important;
 }
 
 /* Default body text styles */
@@ -169,8 +194,69 @@ pre, code {
 .slidev-layout .big-stat .label { font-size: 1.3em; color: #243762; margin-top: 16px; }
 .slidev-layout .big-stat .sub   { font-size: 0.7em; color: #8a95ac; margin-top: 8px; }
 
-.slidev-layout .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-.slidev-layout .two-col.wide { gap: 72px; }
+.slidev-layout .two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  width: min(960px, 100%);
+  min-width: min(720px, 100%);
+  align-items: start;
+}
+.slidev-layout .two-col.wide { gap: 56px; }
+.slidev-layout .two-col > * { min-width: 0; }
+.slidev-layout .two-col pre.shiki,
+.slidev-layout .two-col .slidev-code,
+.slidev-layout .two-col .slidev-code pre,
+.slidev-layout .two-col pre {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* PACKED / HOLEY compare block — lives inside default center layout */
+.slidev-layout .ph-compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 56px;
+  row-gap: 18px;
+  width: min(920px, 100%);
+  text-align: left;
+}
+.slidev-layout .ph-compare .ph-title {
+  grid-column: 1 / -1;
+  color: #3984FD;
+  font-size: 1.8em;
+  font-weight: 700;
+  margin: 0 0 8px;
+  line-height: 1.3;
+  text-align: left !important;
+}
+.slidev-layout .ph-compare .ph-col {
+  min-width: 0;
+}
+.slidev-layout .ph-compare .ph-h {
+  color: #3984FD;
+  font-weight: 700;
+  font-size: 1.25em;
+  margin: 0 0 14px;
+}
+.slidev-layout .ph-compare .code-sample {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.95em;
+  line-height: 1.55;
+  background: #f6f8fa;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 0 0 16px;
+  color: #243762;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.slidev-layout .ph-compare .lede {
+  margin: 0;
+  font-size: 1.05em;
+}
 .slidev-layout .col-label {
   font-size: 0.85em; color: #3984FD; font-weight: 700;
   margin-bottom: 12px; letter-spacing: .02em;
