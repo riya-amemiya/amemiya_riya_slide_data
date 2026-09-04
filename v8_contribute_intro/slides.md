@@ -295,7 +295,7 @@ git cl owners
 <ul class="clean" style="margin-top:24px;">
   <li>変更したディレクトリの <strong>OWNERS</strong> から承認をもらいます</li>
   <li><strong>Commit-Queue +1</strong> は、コミットせずに try bot だけ回します</li>
-  <li><strong>Commit-Queue +2</strong> で、try botが全部緑なら自動でコミットされます</li>
+  <li><strong>Commit-Queue +2</strong> で、testが全て成功したら自動でコミットされます</li>
   <li>(CQを押す権限はcommitterにのみあります)</li>
 </ul>
 
