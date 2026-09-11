@@ -53,9 +53,10 @@ V8はC++で書かれているとよく言われますが、その内側にはTor
 <div class="intro-grid">
   <div class="bio">
     <p><strong>西 悠太</strong> <span>(Nishi Yuta)</span></p>
+    <p><strong>21歳</strong>(重要、important)</p>
     <p>V8 Contributor</p><p>Platform Engineer at Dinii Inc.</p><p>TSKaigi Staff</p>
-    <p style="margin-top:24px;">TypeScriptが好きです。<br>V8の中身をのぞくのも好きです。</p>
-    <div class="role">(実は21歳)</div>
+    <p style="margin-top:24px;">TypeScriptが好きです。<br>V8にパッチを送るのも好きです。</p>
+    <div class="role">@riya-amemiya</div>
   </div>
   <img class="avatar" src="/icon.png" alt="プロフィール画像" />
 </div>
@@ -117,7 +118,7 @@ builtinsは、Array.prototype.forEachのような組み込み関数の実装で�
 
 ---
 
-# これがTorqueです
+# 実際にTorqueを見てみる
 
 ```ts
 // src/builtins/array-foreach.tq より抜粋
@@ -414,7 +415,7 @@ TorqueはCSAと同じ低水準の基盤の上で動きます。
 
 ---
 
-# では、Torqueの強さはどこまでか
+# では、Torqueの強さはどこで発揮されるか
 
 <!--
 ここまでは読みやすさ、型安全、コンパイルで速さを残す、という設計の話でした。
@@ -484,7 +485,7 @@ MaglevやTurboFanが生成するコードからも、Torqueのbuiltinを呼ぶ�
 
 ---
 
-# Torqueが同時に狙ったもの
+# Torqueが解きたかった問題
 
 <div class="two-col" style="grid-template-columns:1fr 1fr 1fr; gap:28px;">
   <div>
@@ -553,11 +554,6 @@ V8の内部実装はバージョンや環境で変わるので、このスライ
 ---
 
 # ご清聴ありがとうございました
-
-<div class="thanks">
-  <div>「V8はC++で書かれている」。</div>
-  <strong>その内側には、Torqueがいる。</strong>
-</div>
 
 <!--
 ご清聴ありがとうございました。
