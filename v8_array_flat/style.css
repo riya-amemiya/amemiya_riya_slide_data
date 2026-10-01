@@ -56,12 +56,6 @@ body,
   text-align: left !important;
 }
 
-/* Wide layouts need an explicit floor so 1fr columns do not collapse */
-.slidev-layout .two-col {
-  width: min(960px, 100%);
-  min-width: min(720px, 100%);
-}
-
 /* Default body text styles */
 p, li, span, div {
   color: #243762;
@@ -140,8 +134,6 @@ pre, code {
    Deck classes
    ======================================================================== */
 
-.slidev-layout .navy  { color: #243762; }
-.slidev-layout .blue  { color: #3984FD; }
 .slidev-layout .lede { font-size: 1.1em; line-height: 1.5; max-width: 1500px; }
 .slidev-layout .lede + .lede { margin-top: 1em; }
 
@@ -157,46 +149,6 @@ pre, code {
 .slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762 !important; }
 .slidev-layout .byline .venue { margin-left: 12px; }
 
-.slidev-layout ul.clean { list-style: none; padding: 0; margin: 0; }
-.slidev-layout ul.clean li {
-  padding-left: 28px;
-  position: relative;
-  margin-bottom: 12px;
-}
-.slidev-layout ul.clean li::before {
-  content: '→';
-  color: #3984FD;
-  position: absolute;
-  left: 0; top: 0;
-  font-weight: 700;
-}
-
-.slidev-layout ol.flow {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  counter-reset: flowstep;
-  max-width: 900px;
-}
-.slidev-layout ol.flow li {
-  counter-increment: flowstep;
-  position: relative;
-  padding-left: 44px;
-  margin-bottom: 14px;
-  line-height: 1.5;
-}
-.slidev-layout ol.flow li::before {
-  content: counter(flowstep);
-  position: absolute;
-  left: 0;
-  top: -0.06em;
-  color: #3984FD;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 1.2em;
-}
-
-.slidev-layout .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
 .slidev-layout .col-label {
   font-size: 0.85em; color: #3984FD; font-weight: 700;
   margin-bottom: 12px; letter-spacing: .02em;
@@ -236,7 +188,7 @@ pre, code {
 
 .slidev-layout table {
   border-collapse: collapse;
-  margin: 0;
+  margin: 0 0 16px;
   font-size: 0.9em;
 }
 .slidev-layout table th,
@@ -251,7 +203,7 @@ pre, code {
   border-bottom: 2px solid #3984FD;
 }
 
-.slidev-layout .array-memory { margin-top: 20px; }
+.slidev-layout .array-memory { margin: 20px 0 16px; }
 .slidev-layout .array-label {
   color: #3984FD;
   font-weight: 700;
@@ -268,8 +220,95 @@ pre, code {
   border: 2px solid #e6e8ef;
 }
 .slidev-layout .cell.copied { background: #f0f7ff; color: #3984FD; border-color: #3984FD; }
+.slidev-layout .cell.hole { border-style: dashed; border-color: #b9c6dd; }
 .slidev-layout .copy-arrow {
   margin: 14px 0;
+  color: #3984FD;
+  font-weight: 700;
+}
+
+.slidev-layout img.anim {
+  display: block;
+  width: 900px;
+  max-width: 100%;
+  margin-bottom: 12px;
+}
+
+.slidev-layout .alloc {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 18px 28px;
+  align-items: start;
+  margin-top: 12px;
+}
+.slidev-layout .alloc-name { color: #3984FD; font-weight: 700; line-height: 24px; }
+.slidev-layout .alloc-bars { display: grid; gap: 10px; }
+.slidev-layout .alloc-row { display: flex; align-items: center; gap: 14px; font-size: 0.85em; }
+.slidev-layout .bar { height: 24px; border-radius: 6px; flex: none; }
+.slidev-layout .bar.old { background: #ffb020; }
+.slidev-layout .bar.new { background: #3984FD; }
+
+.slidev-layout .sum { margin: 8px 0 20px; }
+.slidev-layout .sum-row { display: flex; gap: 28px; }
+.slidev-layout .sum-item .cells { gap: 6px; }
+.slidev-layout .sum-item .cell { min-width: 48px; padding: 8px 6px; }
+.slidev-layout .sum-len {
+  margin-top: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  font-size: 0.85em;
+  color: #3984FD;
+}
+.slidev-layout .sum-total { margin-top: 14px; font-weight: 700; }
+
+.slidev-layout .kinds { margin: 8px 0 20px; }
+.slidev-layout .kind-flow { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.slidev-layout .kind {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  font-size: 0.85em;
+  padding: 8px 12px;
+  border: 2px solid #3984FD;
+  border-radius: 10px;
+  background: #f0f7ff;
+  color: #243762;
+}
+.slidev-layout .kind-flow .step { font-size: 0.8em; line-height: 1.4; text-align: center; }
+.slidev-layout .kind-flow .step::after {
+  content: '→';
+  display: block;
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #3984FD;
+}
+.slidev-layout .kind-flow .tail { font-size: 0.85em; }
+
+.slidev-layout ol.journey {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-left: 3px solid #3984FD;
+  max-width: 900px;
+}
+.slidev-layout ol.journey li {
+  position: relative;
+  padding: 0 0 20px 28px;
+  line-height: 1.5;
+}
+.slidev-layout ol.journey li:last-child { padding-bottom: 0; }
+.slidev-layout ol.journey li::before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: 7px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #3984FD;
+}
+.slidev-layout ol.journey .when {
+  display: inline-block;
+  min-width: 96px;
   color: #3984FD;
   font-weight: 700;
 }
