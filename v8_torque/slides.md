@@ -38,6 +38,7 @@ highlighter: shiki
     語りたい<br>
   </h1>
   <div class="byline">西 悠太 <span class="venue">/ 株式会社ダイニー</span></div>
+  <div class="date">(Browser and UI #4 Anyの替え玉)</div>
 </div>
 
 <!--
@@ -55,7 +56,7 @@ V8はC++で書かれているとよく言われますが、その内側にはTor
     <p><strong>西 悠太</strong> <span>(Nishi Yuta)</span></p>
     <p><strong>21歳</strong>(重要、important)</p>
     <p>V8 Contributor</p><p>Platform Engineer at Dinii Inc.</p><p>TSKaigi Staff</p>
-    <p style="margin-top:24px;">TypeScriptが好きです。<br>V8にパッチを送るのも好きです。</p>
+    <p style="margin-top:24px;">TypeScriptが好きです<br>V8にパッチを送るのも好きです<br>あと野球も好きです</p>
     <div class="role">@riya-amemiya</div>
   </div>
   <img class="avatar" src="/icon.png" alt="プロフィール画像" />
