@@ -227,13 +227,6 @@ pre, code {
   font-weight: 700;
 }
 
-.slidev-layout img.anim {
-  display: block;
-  width: 900px;
-  max-width: 100%;
-  margin-bottom: 12px;
-}
-
 .slidev-layout .alloc {
   display: grid;
   grid-template-columns: max-content 1fr;
@@ -282,89 +275,6 @@ pre, code {
   color: #3984FD;
 }
 .slidev-layout .kind-flow .tail { font-size: 0.85em; }
-
-.slidev-layout ol.journey {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  border-left: 3px solid #3984FD;
-  max-width: 900px;
-}
-.slidev-layout ol.journey li {
-  position: relative;
-  padding: 0 0 20px 28px;
-  line-height: 1.5;
-}
-.slidev-layout ol.journey li:last-child { padding-bottom: 0; }
-.slidev-layout ol.journey li::before {
-  content: '';
-  position: absolute;
-  left: -9px;
-  top: 7px;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: #3984FD;
-}
-.slidev-layout ol.journey .when {
-  display: inline-block;
-  min-width: 96px;
-  color: #3984FD;
-  font-weight: 700;
-}
-
-.slidev-layout .timeline {
-  position: relative;
-  width: 820px;
-  height: 260px;
-  margin: 24px 40px 0;
-}
-.slidev-layout .tl-axis {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 128px;
-  height: 4px;
-  background: #3984FD;
-}
-.slidev-layout .tl-wait {
-  position: absolute;
-  top: 146px;
-  height: 34px;
-  border: 2px dashed #ffb020;
-  border-radius: 8px;
-  background: #fff4dc;
-  font-size: 0.7em;
-  font-weight: 700;
-  line-height: 30px;
-  text-align: center;
-}
-.slidev-layout .tl-ps {
-  position: absolute;
-  top: 121px;
-  width: 18px;
-  height: 18px;
-  margin-left: -9px;
-  border-radius: 50%;
-  background: #3984FD;
-  border: 3px solid #fff;
-}
-.slidev-layout .tl-ev {
-  position: absolute;
-  width: 180px;
-  margin-left: -90px;
-  text-align: center;
-  font-size: 0.75em;
-  line-height: 1.4;
-}
-.slidev-layout .tl-ev.up { bottom: 146px; }
-.slidev-layout .tl-ev.up.hi { bottom: 196px; }
-.slidev-layout .tl-ev.down { top: 192px; font-size: 0.65em; font-weight: 700; color: #3984FD; }
-.slidev-layout .tl-ev .d {
-  display: block;
-  color: #3984FD;
-  font-weight: 700;
-}
 
 .slidev-layout .code-sm {
   --code-font-size: 13px;

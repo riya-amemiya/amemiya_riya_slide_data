@@ -138,7 +138,7 @@ holeは <code>undefined</code> と違い、プロパティ自体がない
 
 ---
 
-<img class="anim" src="/flat-old.gif" alt="最適化前のflatが結果配列を伸ばしながら1個ずつ追加する様子" />
+<FlatAnimation scene="old" />
 
 <p class="lede">新しい容量 = 必要な長さ + 必要な長さの半分 + 16</p>
 
@@ -223,7 +223,7 @@ JSCと同じ2パス方式
 
 ---
 
-<img class="anim" src="/flat-two-pass.gif" alt="2パス方式で長さを数えてから1回だけ確保して書き込む様子" />
+<FlatAnimation scene="twopass" />
 
 ---
 
@@ -365,7 +365,7 @@ if (seenObject) {
 
 ---
 
-<img class="anim" src="/flat-kinds.gif" alt="型が混ざった配列で最適化前は確保し直しが起き、2パス方式は1回だけ確保する様子" />
+<FlatAnimation scene="kinds" />
 
 ---
 
@@ -439,7 +439,7 @@ SmiはDoubleで表せるので、<br><code>PACKED_ELEMENTS</code> まで広げ�
 
 ---
 
-<img class="anim" src="/flat-bulk-copy.gif" alt="サブ配列ごとにmemcpyでまとめてコピーする様子" />
+<FlatAnimation scene="bulk" />
 
 ---
 
@@ -511,7 +511,7 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 ---
 
-<img class="anim" src="/flat-write-barrier.gif" alt="数値配列はmemcpyで一度にコピーし、オブジェクト配列は1個ずつGCに知らせながら書く様子" />
+<FlatAnimation scene="barrier" />
 
 ---
 
@@ -589,7 +589,7 @@ try {
 
 ---
 
-<img class="anim" src="/flat-hole.gif" alt="第1パスでhole以外を数え、第2パスでholeを飛ばして詰めて書き込む様子" />
+<FlatAnimation scene="hole" />
 
 ---
 
@@ -651,7 +651,7 @@ stack.Push(currentDepth);
 
 ---
 
-<img class="anim" src="/flat-stack.gif" alt="サブ配列に入るときに戻り先をスタックに積み、見終わったらスタックから戻る様子" />
+<FlatAnimation scene="stack" />
 
 ---
 
@@ -717,32 +717,6 @@ stack.Push(currentDepth);
 
 ---
 
-# 1本目のCLがマージされるまで
-
-<div class="timeline">
-  <div class="tl-axis"></div>
-  <div class="tl-wait" style="left:3.3%; width:66.7%;"><span>レビュー待ち 約3週間</span></div>
-  <div class="tl-ps" style="left:0%"></div>
-  <div class="tl-ps" style="left:3.3%"></div>
-  <div class="tl-ps" style="left:73.3%"></div>
-  <div class="tl-ps" style="left:83.3%"></div>
-  <div class="tl-ps" style="left:90%"></div>
-  <div class="tl-ps" style="left:100%"></div>
-  <div class="tl-ev up" style="left:0%"><span class="d">1/28</span>CLを出す</div>
-  <div class="tl-ev up" style="left:26.7%"><span class="d">2/5</span>レビューをお願い</div>
-  <div class="tl-ev up" style="left:46.7%"><span class="d">2/11</span>レビュアーを追加</div>
-  <div class="tl-ev up" style="left:70%"><span class="d">2/18</span>Leszekさんのレビュー</div>
-  <div class="tl-ev up" style="left:90%"><span class="d">2/24</span>Olivierさんの+1</div>
-  <div class="tl-ev up hi" style="left:100%"><span class="d">2/27</span>マージ</div>
-  <div class="tl-ev down" style="left:1.6%">PS1〜4</div>
-  <div class="tl-ev down" style="left:73.3%">PS5〜7</div>
-  <div class="tl-ev down" style="left:83.3%">PS8</div>
-  <div class="tl-ev down" style="left:90%">PS9〜11</div>
-  <div class="tl-ev down" style="left:100%">PS12〜14</div>
-</div>
-
----
-
 # まずv8-devで提案する
 
 - 大きな変更は、いきなりパッチを出さない
@@ -765,7 +739,7 @@ stack.Push(currentDepth);
 
 # GerritにCLを出す
 
-- 1/28にCLをアップロード
+- GerritにCLをアップロード
 - レビュアーには、変更したファイルのオーナーであるLeszekさんを入れる
 - 最初の版はC++のruntime関数で書いていた
 
@@ -780,25 +754,10 @@ stack.Push(currentDepth);
 
 ---
 
-# レビューが止まったとき
+# マージまで
 
-- 2/5 Leszekさんにレビューをお願い
-- 2/11 ガイドラインに沿ってレビュアーを追加
-- Leszekさん「大きなコミットなので、レビューにまとまった時間が要る」
-- 2/18 Leszekさんからコメント5件
-
----
-
-# dry runは自分では回せない
-
-- 私にはtry jobを回す権限も、CQに投げる権限もなかった
-- レビュアーに `Commit-Queue+1` でdry runを頼む
-- 2/19 `v8_linux64_sandbox_testing_rel` で失敗
-- 直して2/20に再実行、今度は通る
-
----
-
-# Commit-Queueラベル
+- マージには2人の `Code-Review+1` が要る
+- 私にはtry jobもCQも動かす権限がないので、レビュアーに頼む
 
 | ラベル | 動き |
 | --- | --- |
@@ -807,41 +766,8 @@ stack.Push(currentDepth);
 
 ---
 
-# 2人目のレビュアー
-
-- マージには2人目の+1が要る
-- 2/20 Olivier Flückigerさんがレビューに参加
-- 2/24 Olivierさんの `Code-Review+1`
-
----
-
-# マージ当日の2/27
-
-<ol class="journey">
-  <li><span class="when">16:12</span>LeszekさんがCQに投げる</li>
-  <li><span class="when">16:51</span><code>v8_linux64_asan_rel</code> で失敗</li>
-  <li><span class="when">17:15</span>テストの期待値を直して再アップロード</li>
-  <li><span class="when">17:57</span>dry runが通る</li>
-  <li><span class="when">20:04</span>OlivierさんがCQに投げる</li>
-  <li><span class="when">20:37</span>マージ</li>
-</ol>
-
----
-
-# 数字で見る1本目のCL
-
-| | |
-| --- | --- |
-| 期間 | 1/28〜2/27の30日 |
-| パッチセット | 15 |
-| レビュアー | Leszek Swirskiさん、Olivier Flückigerさん |
-| レビューコメント | Leszekさん10件、Olivierさん20件 |
-| CQで落ちた回数 | 2回 |
-
----
-
 <p class="lede">
-2/27にマージ、Chrome 147（V8 14.7）でリリース
+Chrome 147（V8 14.7）でリリース
 </p>
 
 ```text
@@ -857,23 +783,13 @@ Cr-Commit-Position: refs/heads/main@{#105498}
 
 ---
 
-# 2本目のCL（バルクコピー）
-
-<ol class="journey">
-  <li><span class="when">3/5</span>CLをアップロード</li>
-  <li><span class="when">5/28</span>Olivierさんのレビューが始まる</li>
-  <li><span class="when">6/16</span>Olivierさんの <code>Code-Review+1</code>、dry runが通る</li>
-  <li><span class="when">6/17</span>LeszekさんがCQに投げてマージ</li>
-</ol>
-
----
-
 # ClusterFuzzとの戦い
 
 ---
 
 <p class="lede">
-マージの翌日、GoogleのClusterFuzzがバグを3件発見
+マージの翌日、GoogleのClusterFuzzがバグを3件発見<br>
+buganizer-systemからメールが届く
 </p>
 
 - crbug 488366773
@@ -923,19 +839,11 @@ doubleElements.values[targetIndex] =
 
 ---
 
-# 修正
+# 修正とClose
 
 - `GetPackedElementsKind` を消し、`source.map.elements_kind` を直接見る
 - ショートカットは本当にPACKEDなときだけ
 - 回帰テストを足し、CLの `Bug:` にissue番号を書く
-
----
-
-# Closeまで
-
-- buganizer-systemからメールが届く
-- 2/28に修正のCLを出し、3/3にマージ
-- 4人から `Code-Review+1`
 - マージ後、ClusterFuzzが自動で再評価してClose
 
 ---
@@ -948,10 +856,13 @@ doubleElements.values[targetIndex] =
 
 # まとめ
 
-- ElementsKindを見れば、数値だけのPacked配列は走査しなくていい
-- 長さを先に数えれば、結果配列の確保は1回
+- 従来のflatは、結果配列を確保し直しながら1個ずつ追加していた
+- 2パス方式で長さと型を先に求め、確保を1回にした
 - 数値だけのサブ配列はwrite barrierが要らないので、`memcpy` でまとめてコピー
-- 1本目のCLは30日でマージ、その翌日にClusterFuzzがバグを3件発見
+- holeは第1パスで数えて、第2パスで飛ばす
+- Torqueの `TryFastFlat` で実装し、前提が崩れたらslow pathへ
+- v8-devで方針を合わせてからGerritに出し、2人の `Code-Review+1` とCQでマージ
+- マージ翌日にClusterFuzzが見つけたバグは、回帰テストを足して修正
 
 ---
 
