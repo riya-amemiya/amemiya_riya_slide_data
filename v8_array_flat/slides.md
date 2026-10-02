@@ -130,40 +130,6 @@ holeは <code>undefined</code> と違い、プロパティ自体がない
 
 ---
 
-<p class="lede">長さ0の配列から始める</p>
-
-<div class="code-sm">
-
-```ts
-// src/builtins/array-flat.tq
-const a: JSReceiver = ArraySpeciesCreate(context, o, 0);
-FlattenIntoArrayWithoutMapFn(a, o, len, 0, depthSmi);
-```
-
-</div>
-
-<p class="lede">サブ配列なら再帰、それ以外は1個ずつ追加</p>
-
-<div class="code-sm">
-
-```ts
-// src/builtins/array-flat.tq
-if (shouldFlatten == True) {
-  if (elementLength > 0) {
-    const element = Cast<JSReceiver>(element) otherwise unreachable;
-    targetIndex = FlattenIntoArrayWithoutMapFn(
-        target, element, elementLength, targetIndex, depth - 1);
-  }
-} else {
-  FastCreateDataProperty(target, targetIndex, element);
-  targetIndex++;
-}
-```
-
-</div>
-
----
-
 # どこが遅かったのか
 
 - 容量が足りなくなるたびに確保し直してコピー
@@ -173,8 +139,6 @@ if (shouldFlatten == True) {
 ---
 
 <img class="anim" src="/flat-old.gif" alt="最適化前のflatが結果配列を伸ばしながら1個ずつ追加する様子" />
-
-<p class="lede">新しい容量 = 必要な長さ + 必要な長さの半分 + 16</p>
 
 ---
 
@@ -554,13 +518,6 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 - `AllocateFixedDoubleArrayWithHoles` は全スロットをholeの値で埋めてから返す
 - 2パス方式なら、第2パスで全スロットが必ず埋まる
 - 初期化しない `AllocateFixedArray` で確保して、`FixedDoubleArray` として使う
-
-```diff
- const doubleElements: FixedDoubleArray =
--    AllocateFixedDoubleArrayWithHoles(SmiUntag(flattenedLength));
-+    UnsafeCast<FixedDoubleArray>(AllocateFixedArray(
-+        ElementsKind::PACKED_DOUBLE_ELEMENTS, SmiUntag(flattenedLength)));
-```
 
 ---
 
