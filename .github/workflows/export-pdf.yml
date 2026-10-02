@@ -1,5 +1,4 @@
 name: Export slides to PDF
-
 on:
   push:
     branches: [main]
@@ -18,29 +17,23 @@ on:
         description: "Space-separated project directories (empty exports all)"
         required: false
         default: ""
-
 permissions:
   contents: write
   pull-requests: write
-
 concurrency:
   group: export-slide-pdf
   cancel-in-progress: false
-
 jobs:
   export-pdf:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
       - name: Fetch push base for diff
         if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
         run: git fetch --depth=1 origin "${{ github.event.before }}"
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-
       - name: Resolve target projects
         id: resolve
         env:
@@ -104,7 +97,6 @@ jobs:
             fi
           } >> "$GITHUB_OUTPUT"
           echo "Resolved projects: ${projects:-<none>}"
-
       - name: Export PDFs
         if: steps.resolve.outputs.empty != 'true'
         env:
@@ -131,7 +123,6 @@ jobs:
             cd "$GITHUB_WORKSPACE"
             echo "::endgroup::"
           done
-
       - name: Create pull request
         if: steps.resolve.outputs.empty != 'true'
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
