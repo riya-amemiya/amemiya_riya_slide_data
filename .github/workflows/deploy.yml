@@ -1,31 +1,31 @@
 name: Deploy slides to GitHub Pages
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: true
-
 jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.list.outputs.projects }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: list
+        run: echo "projects=$(printf '%s\n' */slides.md | cut -d/ -f1 | jq -Rnc '[inputs]')" >> "$GITHUB_OUTPUT"
   build:
+    needs: discover
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        project:
-          - residual_heat_night_from_fec_hokkaido_and_tokyo
-          - frontend_conf_hokkaido_2025
-          - frontend_conf_kansai_2025
-          - frontend_conf_nagoya_2026
-          - frontend_conf_tokyo_2025
+        project: ${{ fromJSON(needs.discover.outputs.projects) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
@@ -42,7 +42,6 @@ jobs:
         with:
           name: dist-${{ matrix.project }}
           path: ${{ matrix.project }}/dist
-
   assemble:
     needs: build
     runs-on: ubuntu-latest
@@ -72,7 +71,6 @@ jobs:
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
-
   deploy:
     needs: assemble
     runs-on: ubuntu-latest
