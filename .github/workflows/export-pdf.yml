@@ -103,21 +103,17 @@ jobs:
           PROJECTS: ${{ steps.resolve.outputs.projects }}
         run: |
           set -euo pipefail
-          deps_installed=0
+          bun install --frozen-lockfile
+          if [ -f node_modules/playwright-core/cli.js ]; then
+            node node_modules/playwright-core/cli.js install-deps chromium
+          elif [ -x node_modules/.bin/playwright ]; then
+            bunx playwright install-deps chromium
+          else
+            echo "playwright CLI not found; Chromium system deps may be missing" >&2
+          fi
           for project in $PROJECTS; do
             echo "::group::Export ${project}"
             cd "$project"
-            bun install --frozen-lockfile
-            if [ "$deps_installed" -eq 0 ]; then
-              if [ -f node_modules/playwright-core/cli.js ]; then
-                node node_modules/playwright-core/cli.js install-deps chromium
-              elif [ -x node_modules/.bin/playwright ]; then
-                bunx playwright install-deps chromium
-              else
-                echo "playwright CLI not found in ${project}; Chromium system deps may be missing" >&2
-              fi
-              deps_installed=1
-            fi
             bun run export -- --output slides-export.pdf
             test -f slides-export.pdf
             cd "$GITHUB_WORKSPACE"
