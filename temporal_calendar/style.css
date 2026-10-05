@@ -1,0 +1,304 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+/* Global styles for the presentation */
+:root {
+  --slidev-theme-primary: #3984FD;
+  --slidev-theme-text: #243762;
+  --slidev-theme-bg: #FFFFFF;
+  --slidev-slide-container-background: #FFFFFF;
+  /* Fixed width for code blocks (px so it doesn't vary by font-size) */
+  --code-block-width: 900px;
+  /* Unify code font-size so width/height look consistent across slides */
+  --code-font-size: 16px;
+}
+
+html,
+body,
+.slidev-page,
+.slidev-layout {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+/*
+ * Content frame is centered on the slide (vertical + horizontal).
+ * Text inside the frame is left-aligned.
+ * Do not stretch the frame to full slide width — that pins short
+ * copy to the far left edge with a huge empty right side.
+ */
+.slidev-layout {
+  color: #243762;
+  text-align: left !important;
+}
+
+.slidev-layout.center {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.slidev-layout.center > .my-auto {
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout p,
+.slidev-layout ul,
+.slidev-layout ol {
+  text-align: left !important;
+}
+
+/* Default body text styles */
+p, li, span, div {
+  color: #243762;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Specific heading styles with higher specificity */
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout h4,
+.slidev-layout h5,
+.slidev-layout h6 {
+  color: #3984FD;
+  font-family: 'Nunito', sans-serif;
+}
+
+.slidev-layout h1 + p {
+  opacity: 1;
+}
+
+/* Special styling for the first slide (cover page) */
+.slidev-layout[data-slide="1"] h1 {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* Ensure proper text color inheritance for non-heading elements */
+.slidev-layout *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre):not(code) {
+  color: inherit;
+}
+
+/* Code blocks should maintain their own colors */
+pre, code {
+  color: initial;
+}
+
+/* Fixed-width code blocks with horizontal scroll */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code,
+.slidev-layout .slidev-code pre {
+  width: var(--code-block-width);
+  max-width: var(--code-block-width);
+  overflow-x: auto;
+  overflow-y: visible;
+  white-space: pre;
+  box-sizing: border-box;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Ensure code content maintains full width inside fixed container */
+.slidev-layout pre.shiki > code {
+  display: inline-block;
+  /* expand to content width while keeping at least container width */
+  min-width: 100%;
+}
+
+/* Ensure consistent code font sizing across all code blocks */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code pre,
+.slidev-layout pre.shiki code {
+  font-size: var(--code-font-size);
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 1024px) {
+  :root {
+    --code-block-width: 820px;
+    --code-font-size: 15px;
+  }
+}
+
+/* ========================================================================
+   Deck classes
+   ======================================================================== */
+
+.slidev-layout .lede { font-size: 1.1em; line-height: 1.5; max-width: 1500px; }
+.slidev-layout .lede + .lede { margin-top: 1em; }
+
+.slidev-layout .mega {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 2em;
+  line-height: 1.4;
+  color: #3984FD !important;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+.slidev-layout .mega .accent { color: #243762 !important; }
+.slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762 !important; }
+.slidev-layout .byline .venue { margin-left: 12px; }
+
+.slidev-layout .intro-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.slidev-layout .intro-grid img.avatar {
+  width: 280px; height: 280px; border-radius: 50%;
+  object-fit: cover; justify-self: center;
+}
+.slidev-layout .intro-grid .bio p { font-size: 1.05em; margin: 0 0 8px; }
+.slidev-layout .intro-grid .bio .role { font-size: 0.85em; margin-top: 16px; }
+
+.slidev-layout .lead-q {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 1.9em;
+  line-height: 1.5;
+  color: #243762;
+  font-weight: 700;
+}
+
+.slidev-layout table {
+  border-collapse: collapse;
+  margin: 0 0 16px;
+  font-size: 0.9em;
+}
+.slidev-layout table th,
+.slidev-layout table td {
+  padding: 8px 16px;
+  border-bottom: 1px solid #e6e8ef;
+  text-align: left;
+}
+.slidev-layout table th {
+  color: #3984FD;
+  font-weight: 700;
+  border-bottom: 2px solid #3984FD;
+}
+
+.slidev-layout .code-sm {
+  --code-font-size: 13px;
+}
+
+.slidev-layout ul.refs {
+  max-width: 900px;
+  margin: 0;
+  line-height: 1.9;
+  font-size: 0.85em;
+}
+.slidev-layout ul.refs a { color: #3984FD; font-weight: 700; }
+
+.slidev-layout .span-fig {
+  display: grid;
+  grid-template-columns: max-content 720px;
+  gap: 6px 24px;
+  align-items: center;
+  margin-top: 12px;
+}
+.slidev-layout .span-name { color: #3984FD; font-weight: 700; }
+.slidev-layout .span-track {
+  position: relative;
+  height: 28px;
+}
+.slidev-layout .span-track::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: var(--end);
+  border-left: 2px dashed #243762;
+}
+.slidev-layout .span-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 28px;
+  border-radius: 6px;
+}
+.slidev-layout .span-bar.year { background: #243762; }
+.slidev-layout .span-bar.moon { background: #3984FD; }
+.slidev-layout .span-bar.over { background: #ffb020; border-radius: 0 6px 6px 0; }
+.slidev-layout .span-gap {
+  position: absolute;
+  top: 0;
+  height: 28px;
+  border: 2px dashed #ffb020;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  box-sizing: border-box;
+}
+.slidev-layout .span-note {
+  grid-column: 2;
+  font-size: 0.85em;
+  margin-bottom: 10px;
+}
+
+.slidev-layout .month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 64px);
+  gap: 8px;
+  margin: 12px 0 20px;
+}
+.slidev-layout .month-grid .dow {
+  text-align: center;
+  font-weight: 700;
+  color: #3984FD;
+}
+.slidev-layout .month-grid .day {
+  padding: 10px 0;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 700;
+  border: 2px solid #e6e8ef;
+}
+.slidev-layout .month-grid .day.mark { background: #f0f7ff; color: #3984FD; border-color: #3984FD; }
+.slidev-layout .month-grid .day.blank { border: none; }
+
+.slidev-layout .cell-row {
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: 10px 20px;
+  align-items: center;
+  margin: 12px 0 20px;
+}
+.slidev-layout .cell-row-name { color: #3984FD; font-weight: 700; }
+.slidev-layout .cells { display: flex; gap: 6px; }
+.slidev-layout .cell {
+  min-width: 40px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  font-size: 0.8em;
+  line-height: 1.4;
+  border: 2px solid #e6e8ef;
+}
+.slidev-layout .cell .sub { display: block; font-weight: 400; font-size: 0.8em; }
+.slidev-layout .cell.mark { color: #3984FD; border-color: #3984FD; }
+.slidev-layout .cell.leap { background: #fff4dc; }
+.slidev-layout .cells.tight { gap: 4px; }
+.slidev-layout .cells.tight .cell { min-width: 36px; padding: 6px 0; }
+
+.slidev-layout .era-strip { display: flex; gap: 8px; margin: 12px 0 20px; }
+.slidev-layout .era {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 2px solid #e6e8ef;
+  line-height: 1.5;
+}
+.slidev-layout .era .date { font-size: 0.8em; }
+.slidev-layout .era .name { font-weight: 700; }
+.slidev-layout .era.mark { background: #f0f7ff; border-color: #3984FD; }
+.slidev-layout .era.mark .name { color: #3984FD; }
