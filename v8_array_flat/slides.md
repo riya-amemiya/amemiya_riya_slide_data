@@ -589,11 +589,15 @@ stack.Push(currentDepth);
 # 3つの実装の比較
 
 <table class="ba-table">
+<thead>
   <tr><th></th><th>最適化前</th><th>2パス方式</th><th>バルクコピー</th></tr>
+</thead>
+<tbody>
   <tr><td>結果配列の確保</td><td class="bad">足りなくなるたびに作り直す</td><td class="good">長さを数えて1回だけ</td><td class="good">1回だけ</td></tr>
   <tr><td>サブ配列の処理</td><td class="bad">再帰で中へ入り1個ずつ追加</td><td class="bad">1個ずつ直接書く</td><td class="good">数値配列は <code>memcpy</code> でまとめて</td></tr>
   <tr><td>要素ごとの確認</td><td class="bad">ある</td><td class="bad">ある</td><td class="good">数値配列ではない</td></tr>
   <tr><td>速度の目安</td><td class="bad">1x</td><td>約5x</td><td class="good">約20x</td></tr>
+</tbody>
 </table>
 
 ---
