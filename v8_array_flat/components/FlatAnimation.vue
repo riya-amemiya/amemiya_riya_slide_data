@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useNav } from '@slidev/client'
 
-type SceneName = 'old' | 'twopass' | 'bulk' | 'hole' | 'kinds' | 'barrier' | 'stack'
+type SceneName = 'old' | 'twopass' | 'bulk' | 'hole' | 'kinds' | 'barrier' | 'stack' | 'compare-twopass' | 'compare-bulk'
 type Frame = { html: string; delay: number }
 type Counter = [string, number, string]
 
@@ -77,14 +78,25 @@ const renderArrays = (title: string, s: ArrayState) =>
     .join('')}</div>` +
   counterHtml(s.counters)
 
-const buildOld = (): Frame[] => {
+const renderLane = (title: string, s: ArrayState) =>
+  `<div class="fa-race-lane"><div class="fa-race-head"><span class="fa-race-title">${title}</span><span class="fa-race-phase">${s.phase}</span></div>` +
+  `<div class="fa-race-dst">${range(s.capacity)
+    .map((i) => `<div class="fa-rd ${dstCellClass(s, i)}"></div>`)
+    .join('')}</div>` +
+  `<div class="fa-race-counters">${s.counters
+    .map(([k, v, u]) => `<span>${k}<span class="fa-v">${v}</span>${u}</span>`)
+    .join('')}</div></div>`
+
+type Render = (s: ArrayState) => string
+
+const buildOld = (render: Render): Frame[] => {
   const alloc: Counter = ['確保', 0, '回']
   const write: Counter = ['書き込み', 0, '回']
   const recopy: Counter = ['コピーし直し', 0, '個']
   const recurse: Counter = ['再帰呼び出し', 0, '回']
   const s = arrayState([alloc, write, recopy, recurse])
   const frames: Frame[] = []
-  const push = (delay: number) => frames.push({ html: renderArrays('最適化前', s), delay })
+  const push = (delay: number) => frames.push({ html: render(s), delay })
   s.dstLabel = '結果配列の容量は 0'
   s.phase = '長さ0の配列から始める'
   push(120)
@@ -132,13 +144,13 @@ const buildOld = (): Frame[] => {
   return frames
 }
 
-const buildTwoPass = (bulk: boolean): Frame[] => {
+const buildTwoPass = (bulk: boolean, render: Render): Frame[] => {
   const alloc: Counter = ['確保', 0, '回']
   const work: Counter = bulk ? ['memcpy', 0, '回'] : ['書き込み', 0, '回']
   const check: Counter = ['確認', 0, '回']
   const s = arrayState([alloc, work, check])
   const frames: Frame[] = []
-  const push = (delay: number) => frames.push({ html: renderArrays(bulk ? 'バルクコピー' : '2パス方式', s), delay })
+  const push = (delay: number) => frames.push({ html: render(s), delay })
   s.dstLabel = '第1パスで数えた長さは 0'
   s.phase = '第1パスで長さを数える'
   push(100)
@@ -475,30 +487,58 @@ const buildStack = (): Frame[] => {
   return frames
 }
 
-const builders: Record<SceneName, () => Frame[]> = {
-  old: buildOld,
-  twopass: () => buildTwoPass(false),
-  bulk: () => buildTwoPass(true),
-  hole: buildHole,
-  kinds: buildKinds,
-  barrier: buildBarrier,
-  stack: buildStack,
+const builders: Record<SceneName, () => Frame[][]> = {
+  old: () => [buildOld((s) => renderArrays('最適化前', s))],
+  twopass: () => [buildTwoPass(false, (s) => renderArrays('2パス方式', s))],
+  bulk: () => [buildTwoPass(true, (s) => renderArrays('バルクコピー', s))],
+  hole: () => [buildHole()],
+  kinds: () => [buildKinds()],
+  barrier: () => [buildBarrier()],
+  stack: () => [buildStack()],
+  'compare-twopass': () => [
+    buildOld((s) => renderLane('最適化前', s)),
+    buildTwoPass(false, (s) => renderLane('2パス方式', s)),
+  ],
+  'compare-bulk': () => [
+    buildTwoPass(false, (s) => renderLane('2パス方式', s)),
+    buildTwoPass(true, (s) => renderLane('バルクコピー', s)),
+  ],
 }
 
-const frames = builders[props.scene]()
-const index = ref(0)
-const html = computed(() => frames[index.value].html)
-const timer = ref<ReturnType<typeof setTimeout>>()
-
-const tick = () => {
-  timer.value = setTimeout(() => {
-    index.value = (index.value + 1) % frames.length
-    tick()
-  }, frames[index.value].delay * 10)
+const raceTitles: Partial<Record<SceneName, string>> = {
+  'compare-twopass': '最適化前と2パス方式を同時に動かす',
+  'compare-bulk': '2パス方式とバルクコピーを同時に動かす',
 }
 
-onMounted(tick)
-onUnmounted(() => clearTimeout(timer.value))
+const lanes = builders[props.scene]()
+const raceTitle = raceTitles[props.scene]
+const header = raceTitle ? headHtml(raceTitle, '入力は要素10個のサブ配列6個') : ''
+const ends = lanes.map((fs) =>
+  fs.reduce<number[]>((acc, f) => [...acc, (acc[acc.length - 1] ?? 0) + f.delay * 10], []),
+)
+const cycle = Math.max(...ends.map((e) => e[e.length - 1]))
+const { isPrintMode } = useNav()
+const elapsed = ref(isPrintMode.value ? cycle : 0)
+const html = computed(
+  () =>
+    header +
+    lanes
+      .map((fs, i) => {
+        const at = ends[i].findIndex((end) => elapsed.value < end)
+        return fs[at < 0 ? fs.length - 1 : at].html
+      })
+      .join(''),
+)
+const timer = ref<ReturnType<typeof setInterval>>()
+
+onMounted(() => {
+  if (isPrintMode.value) return
+  const start = performance.now()
+  timer.value = setInterval(() => {
+    elapsed.value = (performance.now() - start) % cycle
+  }, 30)
+})
+onUnmounted(() => clearInterval(timer.value))
 </script>
 
 <template>
@@ -795,5 +835,57 @@ onUnmounted(() => clearTimeout(timer.value))
 }
 .flat-anim .fa-mono {
   font-family: ui-monospace, Menlo, monospace;
+}
+.flat-anim .fa-race-lane {
+  margin-top: 14px;
+}
+.flat-anim .fa-race-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.flat-anim .fa-race-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fa-blue);
+}
+.flat-anim .fa-race-phase {
+  font-size: 14px;
+  font-weight: 700;
+}
+.flat-anim .fa-race-dst {
+  display: grid;
+  grid-template-columns: repeat(41, 14px);
+  gap: 2px;
+  min-height: 30px;
+}
+.flat-anim .fa-rd {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+.flat-anim .fa-rd.empty {
+  border: 1px dashed var(--fa-dash);
+  background: #fff;
+}
+.flat-anim .fa-rd.filled {
+  background: #9cc2fd;
+}
+.flat-anim .fa-rd.new {
+  background: var(--fa-blue);
+}
+.flat-anim .fa-rd.copying {
+  background: var(--fa-copy);
+}
+.flat-anim .fa-race-counters {
+  display: flex;
+  gap: 22px;
+  margin-top: 6px;
+  font-size: 14px;
+}
+.flat-anim .fa-race-counters .fa-v {
+  font: 700 18px 'Nunito', 'Noto Sans JP', sans-serif;
+  margin: 0 2px 0 6px;
 }
 </style>

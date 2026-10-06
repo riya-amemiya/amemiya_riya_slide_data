@@ -164,20 +164,7 @@ V8は配列の中身を<br>「整数だけ」「浮動小数点を含む」「Ho
 | 文字列やオブジェクトを含む | `PACKED_ELEMENTS` | `HOLEY_ELEMENTS` |
 
 <p class="lede" style="margin-top:24px;">
-遷移は原則として一方向<br>HOLEYになったら、holeを埋めてもPACKEDには戻らない
-</p>
-
----
-
-<p class="lede">
-<code>PACKED_SMI_ELEMENTS</code> と <code>PACKED_DOUBLE_ELEMENTS</code> には<br>数値しか入らない
-</p>
-
-- サブ配列は入らない
-- Proxyも入らない
-- holeもない
-
-<p class="lede">
+<code>PACKED_SMI_ELEMENTS</code> と <code>PACKED_DOUBLE_ELEMENTS</code> には、サブ配列もProxyもholeも入らない<br>
 この保証を使って最適化する
 </p>
 
@@ -187,18 +174,36 @@ V8は配列の中身を<br>「整数だけ」「浮動小数点を含む」「Ho
 
 ---
 
-# 最適化の戦略
+# 最適化前と2パス方式
 
-<p class="lede">
-JSCと同じ2パス方式
-</p>
+<div class="ba">
+  <div>
+    <div class="ba-col-title">最適化前</div>
+    <div class="ba-steps">
+      <div class="ba-step">長さ0の配列を作る</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">要素を1個ずつ見る<br>配列なら再帰呼び出しで中を見る</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">結果配列の末尾に1個追加</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">容量が足りなければ<br>確保し直してコピー</div>
+    </div>
+    <div class="ba-loop">↑ 要素の数だけくり返す</div>
+  </div>
+  <div>
+    <div class="ba-col-title">2パス方式</div>
+    <div class="ba-steps">
+      <div class="ba-step">第1パスで長さと型を数える</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step win">その長さで1回だけ確保</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">第2パスで直接書き込む</div>
+    </div>
+  </div>
+</div>
 
-1. 第1パスで結果の長さとElementsKindを求める
-2. その長さで1回だけ確保
-3. 第2パスで要素を書き込む
-
-<p class="lede">
-参考にしたSosuke SuzukiさんのPR<br>
+<p class="lede" style="margin-top:20px;">
+JSCでSosuke Suzukiさんが実装した2パス方式を参考にした<br>
 <a href="https://github.com/WebKit/WebKit/pull/56035">https://github.com/WebKit/WebKit/pull/56035</a>
 </p>
 
@@ -223,17 +228,7 @@ JSCと同じ2パス方式
 
 ---
 
-<FlatAnimation scene="twopass" />
-
----
-
-# 2パス方式で変わること
-
-| | 最適化前 | 2パス方式 |
-| --- | --- | --- |
-| メモリ割り当て | O(log n)回 | 1回 |
-| 要素の書き込み | 汎用のプロパティ書き込み | 確保した領域に直接書く |
-| ElementsKindの遷移 | 起こりうる | 起こらない |
+<FlatAnimation scene="compare-twopass" />
 
 ---
 
@@ -256,30 +251,9 @@ if (sourceKind == ElementsKind::PACKED_SMI_ELEMENTS ||
 
 ---
 
-# サブ配列に対するショートカット
-
-<p class="lede">
-数値だけのサブ配列は、中を読まずに <code>.length</code> を足す
-</p>
-
-```ts
-// src/builtins/array-flat.tq
-if (rawKind == ElementsKind::PACKED_SMI_ELEMENTS) {
-  seenSmi = true;
-  const subLen: Smi =
-      Cast<Smi>(elementArray.length) otherwise goto Bailout;
-  targetLength =
-      math::TrySmiAdd(targetLength, subLen) otherwise goto Bailout;
-  index++;
-  continue;
-}
-```
-
----
-
 # `[[1,2,3], [4,5,6], [7,8,9]].flat()`
 
-<p class="lede">見るのは外側の3要素だけ</p>
+<p class="lede">数値だけのサブ配列は、中を読まずに <code>.length</code> を足す</p>
 
 <div class="sum">
   <div class="array-label">外側の配列は PACKED_ELEMENTS</div>
@@ -319,23 +293,6 @@ if (!IsNumber(element)) {
 }
 ```
 
----
-
-<p class="lede">
-走査が終わったら、フラグから結果のElementsKindを決める
-</p>
-
-```ts
-// src/builtins/array-flat.tq
-if (seenObject) {
-  targetKind = ElementsKind::PACKED_ELEMENTS;
-} else if (seenDouble) {
-  targetKind = ElementsKind::PACKED_DOUBLE_ELEMENTS;
-} else {
-  targetKind = ElementsKind::PACKED_SMI_ELEMENTS;
-}
-```
-
 <p class="lede" style="margin-top:24px;">
 <code>[[1], [2], [3]].flat()</code> の結果は <code>PACKED_SMI_ELEMENTS</code>
 </p>
@@ -369,55 +326,37 @@ if (seenObject) {
 
 ---
 
-<p class="lede">
-SmiとDoubleが混ざると <code>PACKED_DOUBLE_ELEMENTS</code>
-</p>
-
-```js
-// test/mjsunit/array-flat-elements-kind.js
-assertSmiElementsKind([[1],[1]].flat());
-assertDoubleElementsKind([[1],[1.1]].flat());
-assertObjectElementsKind([["hello"]].flat());
-```
-
-<p class="lede" style="margin-top:24px;">
-SmiはDoubleで表せるので、<br><code>PACKED_ELEMENTS</code> まで広げない
-</p>
-
----
-
-# flatのあとの処理も速くなる
-
-- JITはElementsKindに合わせて特殊化したコードを作る
-- 結果が `PACKED_SMI_ELEMENTS` なら、後のループで型チェックを省ける
-
----
-
 # 第2パスはまだ1個ずつコピーしていた
 
-- `[1, 2, 3]` はメモリ上では整数が3つ並んでいるだけ
-- まとめて移せば済むのに、1個ずつ読み書きしていた
-
----
-
-# 要素1個ごとに4つ確認する
-
-- 配列の構造が変わっていないか（Recheck）
-- holeでないか
-- Proxyでないか
-- 書き込み先からあふれないか
-
----
-
-# 2パス方式があるからできること
-
-- 第1パスでコピー先の長さと型はもう決まっている
-- 配列を作り直さなくていい
-- 要素ごとに型をそろえ直さなくていい
+<div class="ba">
+  <div>
+    <div class="ba-col-title">2パス方式の第2パス</div>
+    <div class="ba-steps">
+      <div class="ba-step">サブ配列の中へ入る</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">要素を1個読む</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">4つの確認<br>構造の変化、hole、Proxy、書き込み先の範囲</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">結果配列に1個書く</div>
+    </div>
+    <div class="ba-loop">↑ 要素の数だけくり返す</div>
+  </div>
+  <div>
+    <div class="ba-col-title">バルクコピー</div>
+    <div class="ba-steps">
+      <div class="ba-step">サブ配列の型を1回だけ確認</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step win">memcpyでまとめてコピー</div>
+    </div>
+  </div>
+</div>
 
 ---
 
 # 数値のサブ配列はまとめてコピー
+
+<p class="lede">第1パスで長さと型が決まっているので、ブロックごと流し込める</p>
 
 <div class="array-memory">
   <div class="array-label">サブ配列 [1, 2, 3] のメモリ</div>
@@ -439,7 +378,7 @@ SmiはDoubleで表せるので、<br><code>PACKED_ELEMENTS</code> まで広げ�
 
 ---
 
-<FlatAnimation scene="bulk" />
+<FlatAnimation scene="compare-bulk" />
 
 ---
 
@@ -477,31 +416,7 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 ---
 
-# まとめてコピーできるのは数値配列だけ
-
-- 対象は `PACKED_SMI_ELEMENTS` と `PACKED_DOUBLE_ELEMENTS`
-- `PACKED_ELEMENTS` は対象外
-- 分かれ目はwrite barrier
-
----
-
-# write barrier
-
-- V8のGCは世代別で、若い世代と古い世代を別々に掃除する
-- だからGCは、どのオブジェクトがどこを指しているかを知っておく必要がある
-- ポインタを書くたびにGCへ知らせる仕組みがwrite barrier
-
----
-
-# memcpyでポインタを運ぶと
-
-- `memcpy` はビット列を写すだけで、GCに知らせない
-- GCは新しくできた参照に気づけない
-- まだ使っているオブジェクトが回収され、use-after-freeになる
-
----
-
-# どの型ならmemcpyできるか
+# memcpyできるのは数値配列だけ
 
 | ElementsKind | 中身 | ポインタ | memcpy |
 | --- | --- | --- | --- |
@@ -509,17 +424,19 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 | `PACKED_DOUBLE_ELEMENTS` | 生のdouble | なし | できる |
 | `PACKED_ELEMENTS` | 文字列やオブジェクトへの参照 | あり | できない |
 
+<p class="lede" style="margin-top:20px;">分かれ目はwrite barrier</p>
+
+---
+
+# write barrier
+
+- V8のGCは世代別なので、どのオブジェクトがどこを指しているかを知っておく必要がある
+- ポインタを書くたびにGCへ知らせる仕組みがwrite barrier
+- `memcpy` はGCに知らせないので、ポインタを運ぶと使用中のオブジェクトが回収されてuse-after-freeになる
+
 ---
 
 <FlatAnimation scene="barrier" />
-
----
-
-# hole埋めをやめる
-
-- `AllocateFixedDoubleArrayWithHoles` は全スロットをholeの値で埋めてから返す
-- 2パス方式なら、第2パスで全スロットが必ず埋まる
-- 初期化しない `AllocateFixedArray` で確保して、`FixedDoubleArray` として使う
 
 ---
 
@@ -566,11 +483,7 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 # HOLEY配列の扱い
 
-- `.length` をそのまま結果の長さにできない
-- 1個ずつ見て、hole以外を数える
-- HOLEYなサブ配列は `memcpy` できず、1個ずつコピー
-
----
+<p class="lede">HOLEY配列は1個ずつ見て、hole以外を数える</p>
 
 ```ts
 // src/builtins/array-flat.tq
@@ -584,7 +497,7 @@ try {
 ```
 
 - `LoadElementNoHole` はholeを見つけると `FoundHole` へ飛ぶ
-- そのインデックスを飛ばすので、holeが詰まる
+- HOLEYなサブ配列は `memcpy` できず、1個ずつコピー
 - HOLEY配列でも確保は1回だけ
 
 ---
@@ -622,17 +535,6 @@ const a: JSReceiver = ArraySpeciesCreate(context, o, 0);
 
 ---
 
-# slow pathに戻るとき
-
-- `Symbol.species` が上書きされている
-- ソース配列がProxy
-- サブ配列にProxyがある
-- 配列がfast modeでない（dictionary modeなど）
-- 長さがSmiに収まらない
-- ネストが深すぎる
-
----
-
 # 明示的スタックによる反復処理
 
 - 再帰で書くと、Torqueコンパイラがスタックオーバーフローで落ちた
@@ -655,37 +557,19 @@ stack.Push(currentDepth);
 
 ---
 
-# 安全性の担保とBailout
-
-- 前提がそろっている間だけ速いコードで進む
-- 前提が崩れたら、その場でslow pathへ
-
----
-
 # どこでbailoutするか
+
+<p class="lede">前提がそろっている間だけ速いコードで進み、崩れたらその場でslow pathへ</p>
 
 | 場所 | 確認すること |
 | --- | --- |
-| fast pathの入口 | 長さがSmiの範囲内か、配列がfast modeか |
-| 走査中 | `Recheck()` で配列の構造が変わっていないか |
+| fast pathの入口 | 長さがSmiの範囲内か、配列がfast modeか、`Symbol.species` が標準か |
+| 走査中 | `Recheck()` で配列の構造が変わっていないか、Proxyがないか |
 | 第2パスの最後 | 書き込んだ要素数と、第1パスで数えた長さが一致するか |
 
 ---
 
-# 2パス方式のベンチマーク
-
-- d8で、要素1,024個のサブ配列20,000個を `flat()` して計測
-- 50回の中央値
-
-| 配列型 | パッチ適用 (median) | main (median) | 改善倍率 |
-| --- | --- | --- | --- |
-| SMI (整数) | 39.32 ms | 181.06 ms | ~4.6x |
-| DOUBLE (浮動小数点数) | 48.21 ms | 224.80 ms | ~4.7x |
-| OBJECT (文字列) | 79.56 ms | 190.80 ms | ~2.4x |
-
----
-
-# バルクコピーまで入れたベンチマーク
+# ベンチマーク
 
 - d8（arm64）で、V8 14.6.206とmainを比較
 - 要素1,000個のサブ配列1,000個を `flat(2)` して計測
@@ -704,12 +588,17 @@ stack.Push(currentDepth);
 
 # 3つの実装の比較
 
-| | 最適化前 | 2パス方式 | バルクコピー |
-| --- | --- | --- | --- |
-| 結果配列の確保 | 足りなくなるたびに作り直す | 長さを数えて1回だけ | 1回だけ |
-| サブ配列の処理 | 再帰で中へ入り1個ずつ追加 | 1個ずつ直接書く | 数値配列は `memcpy` でまとめて |
-| 要素ごとの確認 | ある | ある | 数値配列ではない |
-| 速度の目安 | 1x | 約5x | 約20x |
+<table class="ba-table">
+<thead>
+  <tr><th></th><th>最適化前</th><th>2パス方式</th><th>バルクコピー</th></tr>
+</thead>
+<tbody>
+  <tr><td>結果配列の確保</td><td class="bad">足りなくなるたびに作り直す</td><td class="good">長さを数えて1回だけ</td><td class="good">1回だけ</td></tr>
+  <tr><td>サブ配列の処理</td><td class="bad">再帰で中へ入り1個ずつ追加</td><td class="bad">1個ずつ直接書く</td><td class="good">数値配列は <code>memcpy</code> でまとめて</td></tr>
+  <tr><td>要素ごとの確認</td><td class="bad">ある</td><td class="bad">ある</td><td class="good">数値配列ではない</td></tr>
+  <tr><td>速度の目安</td><td class="bad">1x</td><td>約5x</td><td class="good">約20x</td></tr>
+</tbody>
+</table>
 
 ---
 
@@ -724,16 +613,10 @@ stack.Push(currentDepth);
 - v8-devに投稿すると、誰かが反応してくれる
 
 <p class="lede">
+Leszek Swirskiさんの返信<br>
+「良さそうだね、パッチ出して、議論はそっちでしようか」<br>
 <a href="https://groups.google.com/g/v8-dev/c/8ROaTLSDXkM">https://groups.google.com/g/v8-dev/c/8ROaTLSDXkM</a>
 </p>
-
----
-
-<p class="lead-q">
-「良さそうだね<br>パッチ出して、議論はそっちでしようか」
-</p>
-
-<p class="lede">Leszek Swirskiさんの返信</p>
 
 ---
 
@@ -845,12 +728,6 @@ doubleElements.values[targetIndex] =
 - ショートカットは本当にPACKEDなときだけ
 - 回帰テストを足し、CLの `Bug:` にissue番号を書く
 - マージ後、ClusterFuzzが自動で再評価してClose
-
----
-
-<p class="lead-q">
-マージ後も<br>ClusterFuzzが品質を守っている
-</p>
 
 ---
 

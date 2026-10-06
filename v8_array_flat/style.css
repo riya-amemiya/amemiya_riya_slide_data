@@ -276,6 +276,47 @@ pre, code {
 }
 .slidev-layout .kind-flow .tail { font-size: 0.85em; }
 
+.slidev-layout .ba {
+  display: grid;
+  grid-template-columns: 380px 380px;
+  gap: 48px;
+  margin-top: 12px;
+}
+.slidev-layout .ba-col-title {
+  color: #3984FD;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.slidev-layout .ba-steps {
+  display: flex;
+  flex-direction: column;
+}
+.slidev-layout .ba-step {
+  padding: 8px 14px;
+  border: 2px solid #b5d0fb;
+  border-radius: 10px;
+  background: #f0f7ff;
+  font-size: 0.8em;
+  line-height: 1.4;
+}
+.slidev-layout .ba-step.cost { border-color: #ffb020; background: #fff4dc; }
+.slidev-layout .ba-step.win { border-color: #3984FD; background: #3984FD; color: #fff; font-weight: 700; }
+.slidev-layout .ba-arrow {
+  text-align: center;
+  color: #3984FD;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.slidev-layout .ba-loop {
+  margin-top: 8px;
+  font-size: 0.75em;
+  font-weight: 700;
+  color: #e69500;
+}
+
+.slidev-layout table.ba-table td.bad { background: #fff4dc; }
+.slidev-layout table.ba-table td.good { background: #f0f7ff; color: #3984FD; font-weight: 700; }
+
 .slidev-layout .code-sm {
   --code-font-size: 13px;
 }
