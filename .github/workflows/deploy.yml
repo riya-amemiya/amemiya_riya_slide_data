@@ -59,13 +59,20 @@ jobs:
       - name: Generate index
         run: |
           {
-            echo '<!doctype html><meta charset="utf-8"><title>Slides</title><h1>Slides</h1><ul>'
+            echo '<!doctype html><head><meta charset="utf-8"><title>Slides</title></head><h1>Slides</h1><ul>'
             for d in dist/*/; do
               name=$(basename "$d")
               echo "<li><a href=\"./${name}/\">${name}</a></li>"
             done
             echo '</ul>'
           } > dist/index.html
+      - name: Inject Google Analytics
+        env:
+          GA_MEASUREMENT_ID: G-EJMPVHNJ0S
+        run: |
+          shopt -s globstar
+          tag="<script async src=\"https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}\"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');</script>"
+          sed -i "s#</head>#${tag}</head>#" dist/**/*.html
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
