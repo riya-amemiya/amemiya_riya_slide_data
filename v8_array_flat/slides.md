@@ -423,6 +423,37 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 ---
 
+# hole埋めの省略
+
+<p class="lede">結果が <code>FixedDoubleArray</code> のときは、確保のしかたも変えた</p>
+
+<div class="ba">
+  <div>
+    <div class="ba-col-title">2パス方式</div>
+    <div class="ba-steps">
+      <div class="ba-step"><code>AllocateFixedDoubleArrayWithHoles</code> で確保</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">全スロットをholeの値で埋める<br>書かれないスロットでゴミを読まないため</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">第2パスで全スロットを書く</div>
+    </div>
+  </div>
+  <div>
+    <div class="ba-col-title">バルクコピー</div>
+    <div class="ba-steps">
+      <div class="ba-step win">初期化しない <code>AllocateFixedArray</code> で確保</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step"><code>FixedDoubleArray</code> として使う</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">第2パスで全スロットを書く</div>
+    </div>
+  </div>
+</div>
+
+<p class="lede" style="margin-top:20px;">第1パスで長さを正確に数えているので、第2パスで全スロットが必ず埋まる</p>
+
+---
+
 # holeの扱い
 
 <p class="lede">
