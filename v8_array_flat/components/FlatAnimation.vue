@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 import { useNav } from '@slidev/client'
 
 type SceneName = 'old' | 'twopass' | 'bulk' | 'hole' | 'kinds' | 'barrier' | 'stack' | 'compare-twopass' | 'compare-bulk'
@@ -531,18 +531,20 @@ const html = computed(
 )
 const timer = ref<ReturnType<typeof setInterval>>()
 
-onMounted(() => {
-  if (isPrintMode.value) return
+const play = () => {
+  clearInterval(timer.value)
   const start = performance.now()
   timer.value = setInterval(() => {
-    elapsed.value = (performance.now() - start) % cycle
+    elapsed.value = performance.now() - start
+    if (elapsed.value >= cycle) clearInterval(timer.value)
   }, 30)
-})
+}
 onUnmounted(() => clearInterval(timer.value))
 </script>
 
 <template>
   <div class="flat-anim" v-html="html" />
+  <button v-if="!isPrintMode" class="flat-anim-play" @click="play">再生</button>
 </template>
 
 <style>
@@ -887,5 +889,16 @@ onUnmounted(() => clearInterval(timer.value))
 .flat-anim .fa-race-counters .fa-v {
   font: 700 18px 'Nunito', 'Noto Sans JP', sans-serif;
   margin: 0 2px 0 6px;
+}
+.slidev-layout .flat-anim-play {
+  display: block;
+  margin: 0 0 12px 20px;
+  padding: 4px 20px;
+  border: 2px solid #3984fd;
+  border-radius: 8px;
+  background: #fff;
+  color: #3984fd;
+  font: 700 15px 'Noto Sans JP', sans-serif;
+  cursor: pointer;
 }
 </style>
