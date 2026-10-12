@@ -63,6 +63,16 @@ highlighter: shiki
 
 ---
 
+```sh
+❯ node -v
+v26.11.1
+
+❯ node -p process.versions.v8
+14.6.202.34-node.37
+```
+
+---
+
 <p class="lead-q">
 Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが最大約20倍速くなります
 </p>
