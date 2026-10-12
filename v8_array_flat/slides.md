@@ -104,23 +104,6 @@ v8-devでの提案からGerritレビュー、マージまでの流れも紹介�
 
 ---
 
-# holeの扱い
-
-<p class="lede">
-JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
-</p>
-
-```js
-> [1, , 3]
-[ 1, <1 empty item>, 3 ]
-```
-
-<p class="lede" style="margin-top:24px;">
-holeは <code>undefined</code> と違い、プロパティ自体がない
-</p>
-
----
-
 # 従来のflatの実装
 
 1. 長さ0の配列を作る
@@ -437,6 +420,23 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 ---
 
 <FlatAnimation scene="barrier" />
+
+---
+
+# holeの扱い
+
+<p class="lede">
+JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
+</p>
+
+```js
+> [1, , 3]
+[ 1, <1 empty item>, 3 ]
+```
+
+<p class="lede" style="margin-top:24px;">
+holeは <code>undefined</code> と違い、プロパティ自体がない
+</p>
 
 ---
 
