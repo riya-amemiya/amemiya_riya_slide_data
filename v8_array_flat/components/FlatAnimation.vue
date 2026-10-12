@@ -1,8 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 import { useNav } from '@slidev/client'
 
-type SceneName = 'old' | 'twopass' | 'bulk' | 'hole' | 'kinds' | 'barrier' | 'stack' | 'compare-twopass' | 'compare-bulk'
+type SceneName =
+  | 'old'
+  | 'twopass'
+  | 'bulk'
+  | 'hole'
+  | 'kinds'
+  | 'barrier'
+  | 'stack'
+  | 'compare-twopass'
+  | 'compare-bulk'
+  | 'flow-old'
+  | 'flow-new'
 type Frame = { html: string; delay: number }
 type Counter = [string, number, string]
 
@@ -487,6 +498,299 @@ const buildStack = (): Frame[] => {
   return frames
 }
 
+const FLOW_SRC: (number | null)[][] = [
+  [1, 2, 3, 4, 5, 6, 7],
+  [8, null, 10, 11, 12, 13, 14],
+  [15, 16, 17, 18, 19, 20, 21],
+]
+const FLOW_KINDS = ['PACKED_SMI', 'HOLEY_SMI', 'PACKED_SMI']
+const FLOW_PER = 7
+
+type FlowState = {
+  phase: string
+  step: number
+  checks: number[]
+  active: number[]
+  readGroup: number
+  readCell: number
+  copyGroup: number
+  capacity: number
+  out: number[]
+  newFrom: number
+  newTo: number
+  newStyle: string
+  copyingUpTo: number
+  dstLabel: string
+  counters: Counter[]
+}
+
+const flowState = (checkCount: number, counters: Counter[]): FlowState => ({
+  phase: '',
+  step: 0,
+  checks: Array(checkCount).fill(0),
+  active: [],
+  readGroup: -1,
+  readCell: -1,
+  copyGroup: -1,
+  capacity: 0,
+  out: [],
+  newFrom: -1,
+  newTo: -1,
+  newStyle: 'new',
+  copyingUpTo: 0,
+  dstLabel: '',
+  counters,
+})
+
+const flowDstClass = (s: FlowState, i: number) => {
+  if (i < s.copyingUpTo) return 'copy'
+  if (i >= s.newFrom && i <= s.newTo) return s.newStyle
+  return i < s.out.length ? 'filled' : 'empty'
+}
+
+const flowSrcCell = (s: FlowState, g: number, i: number, v: number | null) => {
+  const cur = g * FLOW_PER + i === s.readCell
+  return v === null
+    ? `<div class="fa-fc hole${cur ? ' skip' : ''}">hole</div>`
+    : `<div class="fa-fc${cur ? ' read' : ''}${g === s.copyGroup ? ' copy' : ''}">${v}</div>`
+}
+
+const renderFlow = (title: string, steps: string[], checkNames: string[]) => (s: FlowState) =>
+  headHtml(title, s.phase) +
+  `<div class="fa-flow-row"><span class="fa-flow-name">処理</span><div class="fa-flow-items">${steps
+    .map((t, i) => `<span class="fa-flow-step${i === s.step ? ' on' : ''}">${t}</span>`)
+    .join('<span class="fa-arrow">→</span>')}</div></div>` +
+  `<div class="fa-flow-row"><span class="fa-flow-name">チェック</span><div class="fa-flow-items">${checkNames
+    .map(
+      (t, i) =>
+        `<span class="fa-flow-check${s.active.includes(i) ? ' on' : ''}">${t}<span class="fa-v">${s.checks[i]}</span></span>`,
+    )
+    .join('')}</div></div>` +
+  '<div class="fa-label">入力は <span class="fa-mono">[[1, …, 7], [8, , 10, …, 14], [15, …, 21]]</span></div>' +
+  `<div class="fa-flow-src">${FLOW_SRC.map(
+    (arr, g) =>
+      `<div class="fa-flow-group${g === s.readGroup ? ' active' : ''}${g === s.copyGroup ? ' copying' : ''}"><div class="fa-flow-cells">${arr
+        .map((v, i) => flowSrcCell(s, g, i, v))
+        .join('')}</div><div class="fa-flow-kind">${FLOW_KINDS[g]}</div></div>`,
+  ).join('')}</div>` +
+  `<div class="fa-label">${s.dstLabel.replace(/(\d+)(\D*)$/, '<span class="fa-cap">$1</span>$2')}</div>` +
+  `<div class="fa-flow-dst">${range(s.capacity)
+    .map((i) => `<div class="fa-fc ${flowDstClass(s, i)}">${i < s.out.length ? s.out[i] : ''}</div>`)
+    .join('')}</div>` +
+  counterHtml(s.counters)
+
+const buildFlowOld = (): Frame[] => {
+  const alloc: Counter = ['確保', 0, '回']
+  const recopy: Counter = ['コピーし直し', 0, '個']
+  const write: Counter = ['書き込み', 0, '回']
+  const recurse: Counter = ['再帰呼び出し', 0, '回']
+  const s = flowState(4, [alloc, recopy, write, recurse])
+  const render = renderFlow(
+    '最適化前の全体の流れ',
+    ['長さ0の配列を作る', '要素を読む', '配列なら再帰呼び出し', '末尾に1個追加', '足りなければ確保し直す'],
+    ['構造の変化', 'hole', '配列か', '容量'],
+  )
+  const frames: Frame[] = []
+  const push = (delay: number) => frames.push({ html: render(s), delay })
+  const check = (...ids: number[]) => {
+    s.active = ids
+    ids.forEach((id) => s.checks[id]++)
+  }
+  s.dstLabel = '結果配列の容量は 0'
+  s.phase = '長さ0の配列から始める'
+  push(120)
+  FLOW_SRC.forEach((arr, g) => {
+    s.readGroup = g
+    s.readCell = -1
+    s.newFrom = -1
+    s.newTo = -1
+    s.step = 1
+    check(0, 1, 2)
+    s.phase = '外側の要素を読んで確認'
+    push(70)
+    s.step = 2
+    s.active = []
+    recurse[1]++
+    s.phase = 'サブ配列なので再帰呼び出し'
+    push(60)
+    arr.forEach((v, i) => {
+      s.readCell = g * FLOW_PER + i
+      s.newFrom = -1
+      s.newTo = -1
+      if (v === null) {
+        s.step = 1
+        check(0, 1)
+        s.phase = 'holeなので飛ばす'
+        push(60)
+        return
+      }
+      check(0, 1, 3)
+      if (s.out.length === s.capacity) {
+        const cap = newCapacity(s.out.length + 1)
+        s.step = 4
+        alloc[1]++
+        recopy[1] += s.out.length
+        s.copyingUpTo = s.out.length
+        s.capacity = cap
+        s.dstLabel = `結果配列の容量は ${cap}`
+        s.phase = s.out.length === 0 ? `容量${cap}で確保` : `足りないので容量${cap}で確保し直し、中身をコピー`
+        push(s.out.length === 0 ? 80 : 130)
+        s.copyingUpTo = 0
+        s.active = []
+      }
+      s.step = 3
+      s.out.push(v)
+      write[1]++
+      s.newFrom = s.out.length - 1
+      s.newTo = s.newFrom
+      s.phase = '末尾に1個追加'
+      push(30)
+    })
+  })
+  s.readGroup = -1
+  s.readCell = -1
+  s.newFrom = -1
+  s.newTo = -1
+  s.active = []
+  s.phase = '完了'
+  push(350)
+  return frames
+}
+
+const buildFlowNew = (): Frame[] => {
+  const alloc: Counter = ['確保', 0, '回']
+  const bulk: Counter = ['memcpy', 0, '回']
+  const write: Counter = ['書き込み', 0, '回']
+  const s = flowState(6, [alloc, bulk, write])
+  const render = renderFlow(
+    '最適化後の全体の流れ',
+    ['入口で条件を確認', '第1パスで長さと型を調べる', '1回だけ確保', '第2パスで書き込む', '書いた数を確かめる'],
+    ['入口の条件', '構造の変化', 'hole', '配列か', '書き込み先の範囲', '長さの一致'],
+  )
+  const frames: Frame[] = []
+  const push = (delay: number) => frames.push({ html: render(s), delay })
+  const check = (...ids: number[]) => {
+    s.active = ids
+    ids.forEach((id) => s.checks[id]++)
+  }
+  const counted = { len: 0 }
+  s.step = 0
+  check(0)
+  s.dstLabel = '第1パスで数えた長さは 0'
+  s.phase = '長さ、配列の状態、speciesを確認'
+  push(120)
+  s.step = 1
+  check(1)
+  s.phase = '外側の配列の構造を確認'
+  push(60)
+  FLOW_SRC.forEach((arr, g) => {
+    s.readGroup = g
+    s.readCell = -1
+    check(2, 3)
+    if (FLOW_KINDS[g] === 'PACKED_SMI') {
+      counted.len += arr.length
+      s.dstLabel = `第1パスで数えた長さは ${counted.len}`
+      s.phase = `PACKED_SMI なので .length の${arr.length}を足す`
+      push(90)
+      return
+    }
+    s.phase = 'HOLEY_SMI なので中に入る'
+    push(80)
+    check(1)
+    s.phase = 'サブ配列の構造を確認'
+    push(50)
+    arr.forEach((v, i) => {
+      s.readCell = g * FLOW_PER + i
+      check(2)
+      counted.len += v === null ? 0 : 1
+      s.dstLabel = `第1パスで数えた長さは ${counted.len}`
+      s.phase = v === null ? 'holeは数えない' : 'holeでない要素を数える'
+      push(v === null ? 60 : 35)
+    })
+    s.readCell = -1
+    check(1)
+    s.phase = '外側の配列に戻って構造を確認'
+    push(60)
+  })
+  s.readGroup = -1
+  s.active = []
+  s.phase = `長さは${counted.len}、型は PACKED_SMI`
+  push(100)
+  s.step = 2
+  alloc[1]++
+  s.capacity = counted.len
+  s.dstLabel = `結果配列の容量は ${counted.len}`
+  s.phase = `容量${counted.len}で1回だけ確保`
+  push(120)
+  s.step = 3
+  check(1)
+  s.phase = '外側の配列の構造を確認'
+  push(60)
+  FLOW_SRC.forEach((arr, g) => {
+    s.readGroup = g
+    s.readCell = -1
+    s.newFrom = -1
+    s.newTo = -1
+    if (FLOW_KINDS[g] === 'PACKED_SMI') {
+      check(2, 3, 4)
+      bulk[1]++
+      s.copyGroup = g
+      s.newFrom = s.out.length
+      arr.forEach((v) => {
+        if (v !== null) s.out.push(v)
+      })
+      s.newTo = s.out.length - 1
+      s.newStyle = 'copy'
+      s.phase = `PACKED_SMI なので${arr.length}個をmemcpyでまとめてコピー`
+      push(100)
+      s.copyGroup = -1
+      s.newStyle = 'new'
+      return
+    }
+    check(2, 3)
+    s.phase = 'HOLEY_SMI なので中に入る'
+    push(80)
+    check(1)
+    s.phase = 'サブ配列の構造を確認'
+    push(50)
+    arr.forEach((v, i) => {
+      s.readCell = g * FLOW_PER + i
+      s.newFrom = -1
+      s.newTo = -1
+      if (v === null) {
+        check(2)
+        s.phase = 'holeを飛ばす'
+        push(60)
+        return
+      }
+      check(2, 4)
+      s.out.push(v)
+      write[1]++
+      s.newFrom = s.out.length - 1
+      s.newTo = s.newFrom
+      s.phase = '1個ずつ書き込む'
+      push(40)
+    })
+    s.readCell = -1
+    s.newFrom = -1
+    s.newTo = -1
+    check(1)
+    s.phase = '外側の配列に戻って構造を確認'
+    push(60)
+  })
+  s.readGroup = -1
+  s.newFrom = -1
+  s.newTo = -1
+  s.step = 4
+  check(5)
+  s.phase = `書いた数${s.out.length}と長さ${counted.len}が一致`
+  push(120)
+  s.active = []
+  s.phase = '完了'
+  push(350)
+  return frames
+}
+
 const builders: Record<SceneName, () => Frame[][]> = {
   old: () => [buildOld((s) => renderArrays('最適化前', s))],
   twopass: () => [buildTwoPass(false, (s) => renderArrays('2パス方式', s))],
@@ -503,6 +807,8 @@ const builders: Record<SceneName, () => Frame[][]> = {
     buildTwoPass(false, (s) => renderLane('2パス方式', s)),
     buildTwoPass(true, (s) => renderLane('バルクコピー', s)),
   ],
+  'flow-old': () => [buildFlowOld()],
+  'flow-new': () => [buildFlowNew()],
 }
 
 const raceTitles: Partial<Record<SceneName, string>> = {
@@ -531,18 +837,20 @@ const html = computed(
 )
 const timer = ref<ReturnType<typeof setInterval>>()
 
-onMounted(() => {
-  if (isPrintMode.value) return
+const play = () => {
+  clearInterval(timer.value)
   const start = performance.now()
   timer.value = setInterval(() => {
-    elapsed.value = (performance.now() - start) % cycle
+    elapsed.value = performance.now() - start
+    if (elapsed.value >= cycle) clearInterval(timer.value)
   }, 30)
-})
+}
 onUnmounted(() => clearInterval(timer.value))
 </script>
 
 <template>
-  <div class="flat-anim" v-html="html" />
+  <div class="flat-anim" :class="{ 'fa-tall': scene.startsWith('flow-') }" v-html="html" />
+  <button v-if="!isPrintMode" class="flat-anim-play" @click="play">再生</button>
 </template>
 
 <style>
@@ -887,5 +1195,133 @@ onUnmounted(() => clearInterval(timer.value))
 .flat-anim .fa-race-counters .fa-v {
   font: 700 18px 'Nunito', 'Noto Sans JP', sans-serif;
   margin: 0 2px 0 6px;
+}
+.flat-anim.fa-tall {
+  height: 390px;
+}
+.flat-anim .fa-flow-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.flat-anim .fa-flow-name {
+  width: 64px;
+  flex: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fa-blue);
+}
+.flat-anim .fa-flow-items {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.flat-anim .fa-flow-step,
+.flat-anim .fa-flow-check {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border: 1px solid var(--fa-dash);
+  border-radius: 6px;
+  color: var(--fa-dash);
+  background: #fff;
+}
+.flat-anim .fa-flow-step.on {
+  border-color: var(--fa-blue);
+  background: var(--fa-blue);
+  color: #fff;
+}
+.flat-anim .fa-flow-check {
+  color: var(--fa-navy);
+}
+.flat-anim .fa-flow-check.on {
+  border-color: var(--fa-copy);
+  background: var(--fa-copy-bg);
+}
+.flat-anim .fa-flow-check .fa-v {
+  margin-left: 6px;
+}
+.flat-anim .fa-flow-src {
+  display: flex;
+  gap: 12px;
+}
+.flat-anim .fa-flow-group {
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+}
+.flat-anim .fa-flow-group.active {
+  border-color: var(--fa-blue);
+}
+.flat-anim .fa-flow-group.copying {
+  border-color: var(--fa-copy);
+  background: var(--fa-copy-bg);
+}
+.flat-anim .fa-flow-cells {
+  display: flex;
+  gap: 2px;
+}
+.flat-anim .fa-flow-kind {
+  font: 700 11px ui-monospace, Menlo, monospace;
+  margin-top: 3px;
+  text-align: center;
+}
+.flat-anim .fa-flow-dst {
+  display: grid;
+  grid-template-columns: repeat(22, 26px);
+  gap: 3px;
+  min-height: 55px;
+}
+.flat-anim .fa-fc {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  font: 700 12px/24px 'Nunito', sans-serif;
+  text-align: center;
+  border: 1px solid #b5d0fb;
+  background: var(--fa-light);
+  color: var(--fa-blue);
+}
+.flat-anim .fa-fc.hole {
+  border: 1px dashed var(--fa-dash);
+  background: #fff;
+  color: var(--fa-dash);
+  font-size: 8px;
+}
+.flat-anim .fa-fc.read {
+  border: 2px solid var(--fa-blue);
+  line-height: 22px;
+}
+.flat-anim .fa-fc.skip {
+  border: 2px dashed var(--fa-copy);
+  color: var(--fa-copy);
+  line-height: 22px;
+}
+.flat-anim .fa-fc.empty {
+  border: 1px dashed var(--fa-dash);
+  background: #fff;
+}
+.flat-anim .fa-fc.new {
+  border-color: var(--fa-blue);
+  background: var(--fa-blue);
+  color: #fff;
+}
+.flat-anim .fa-fc.copy {
+  border-color: var(--fa-copy);
+  background: var(--fa-copy);
+  color: #fff;
+}
+.slidev-layout .flat-anim-play {
+  display: block;
+  margin: 0 0 12px 20px;
+  padding: 4px 20px;
+  border: 2px solid #3984fd;
+  border-radius: 8px;
+  background: #fff;
+  color: #3984fd;
+  font: 700 15px 'Noto Sans JP', sans-serif;
+  cursor: pointer;
 }
 </style>

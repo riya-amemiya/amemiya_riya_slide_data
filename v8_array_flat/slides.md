@@ -104,29 +104,16 @@ v8-devでの提案からGerritレビュー、マージまでの流れも紹介�
 
 ---
 
-# holeの扱い
-
-<p class="lede">
-JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
-</p>
-
-```js
-> [1, , 3]
-[ 1, <1 empty item>, 3 ]
-```
-
-<p class="lede" style="margin-top:24px;">
-holeは <code>undefined</code> と違い、プロパティ自体がない
-</p>
-
----
-
 # 従来のflatの実装
 
 1. 長さ0の配列を作る
 2. ソース配列を先頭から1個ずつ見る
 3. 要素が配列なら、再帰呼び出しでその中を見る
 4. 配列でなければ、結果配列の末尾に1個追加する
+
+---
+
+<FlatAnimation scene="flow-old" />
 
 ---
 
@@ -440,6 +427,54 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 ---
 
+# hole埋めの省略
+
+<p class="lede">結果が <code>FixedDoubleArray</code> のときは、確保のしかたも変えた</p>
+
+<div class="ba">
+  <div>
+    <div class="ba-col-title">2パス方式</div>
+    <div class="ba-steps">
+      <div class="ba-step"><code>AllocateFixedDoubleArrayWithHoles</code> で確保</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">全スロットをholeの値で埋める<br>書かれないスロットでゴミを読まないため</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">第2パスで全スロットを書く</div>
+    </div>
+  </div>
+  <div>
+    <div class="ba-col-title">バルクコピー</div>
+    <div class="ba-steps">
+      <div class="ba-step win">初期化しない <code>AllocateFixedArray</code> で確保</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step"><code>FixedDoubleArray</code> として使う</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">第2パスで全スロットを書く</div>
+    </div>
+  </div>
+</div>
+
+<p class="lede" style="margin-top:20px;">第1パスで長さを正確に数えているので、第2パスで全スロットが必ず埋まる</p>
+
+---
+
+# holeの扱い
+
+<p class="lede">
+JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
+</p>
+
+```js
+> [1, , 3]
+[ 1, <1 empty item>, 3 ]
+```
+
+<p class="lede" style="margin-top:24px;">
+holeは <code>undefined</code> と違い、プロパティ自体がない
+</p>
+
+---
+
 # holeを詰める<br>flat特有の仕様との格闘
 
 ---
@@ -566,6 +601,10 @@ stack.Push(currentDepth);
 | fast pathの入口 | 長さがSmiの範囲内か、配列がfast modeか、`Symbol.species` が標準か |
 | 走査中 | `Recheck()` で配列の構造が変わっていないか、Proxyがないか |
 | 第2パスの最後 | 書き込んだ要素数と、第1パスで数えた長さが一致するか |
+
+---
+
+<FlatAnimation scene="flow-new" />
 
 ---
 
