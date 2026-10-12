@@ -113,6 +113,10 @@ v8-devでの提案からGerritレビュー、マージまでの流れも紹介�
 
 ---
 
+<FlatAnimation scene="flow-old" />
+
+---
+
 # どこが遅かったのか
 
 - 容量が足りなくなるたびに確保し直してコピー
@@ -597,6 +601,10 @@ stack.Push(currentDepth);
 | fast pathの入口 | 長さがSmiの範囲内か、配列がfast modeか、`Symbol.species` が標準か |
 | 走査中 | `Recheck()` で配列の構造が変わっていないか、Proxyがないか |
 | 第2パスの最後 | 書き込んだ要素数と、第1パスで数えた長さが一致するか |
+
+---
+
+<FlatAnimation scene="flow-new" />
 
 ---
 
