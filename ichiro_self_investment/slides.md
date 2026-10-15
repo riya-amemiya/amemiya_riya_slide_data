@@ -37,6 +37,7 @@ highlighter: shiki
   <div class="bio">
     <p><strong>西 悠太</strong> <span>(Nishi Yuta)</span></p>
     <p><strong>21歳</strong>(重要、important)</p>
+    <p>FindyでDiniiに転職しました</p>
     <p>V8 Contributor</p><p>Platform Engineer at Dinii Inc.</p><p>TSKaigi Staff</p>
     <p style="margin-top:24px;">TypeScriptが好きです<br>V8にパッチを送るのも好きです<br>あと野球も好きです</p>
     <div class="role">@riya-amemiya</div>
@@ -123,16 +124,8 @@ highlighter: shiki
 # 志望度のアピールに
 
 導入店舗に行った話はできなくても、ライバルプロダクトも研究したことで、
-「ダイニーをどう思いましたか？」という質問に
+最後の逆質問の際に
 「ダイニーは他社のAやBよりもXな点で優れていると感じていおり~」など面接でとても自然に志望度のアピールができました
-
----
-
-# 30万円のノートPCを買った
-
-- WSLを触ってみたかった
-- Windowsの開発機が欲しかった
-- CTF用にLinux環境も欲しかった
 
 ---
 
@@ -145,13 +138,6 @@ highlighter: shiki
 ---
 
 <InvestAnimation scene="green" />
-
----
-
-# いっぱい遠征してみる
-
-東京のイベントを中心に参加してましたが、最近は地方のイベントもたくさん参加するようにしてます
-もちろん痛い出費ではありますが、自己投資だと思って楽しんでいます
 
 ---
 
@@ -200,6 +186,13 @@ highlighter: shiki
 例えばランチとディナー両方の予約をもらってるとか、別店舗で後日予約があるなどはシステム的に表現できるはず
 ↓
 これができるようになれば、「ディナーのご予約もありがとうございます」みたいな接客が自然とできるようになる
+
+---
+
+# いっぱい遠征してみる
+
+東京のイベントを中心に参加してましたが、最近は地方のイベントもたくさん参加するようにしてます
+もちろん痛い出費ではありますが、自己投資だと思って楽しんでいます
 
 ---
 
