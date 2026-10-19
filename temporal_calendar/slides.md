@@ -49,6 +49,10 @@ highlighter: shiki
 
 ---
 
+# 座学 8割、JS 2割ぐらい
+
+---
+
 # Temporalが対応している主な暦
 
 <div class="table-sm">
