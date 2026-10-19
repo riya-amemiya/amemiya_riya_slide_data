@@ -105,6 +105,24 @@ highlighter: shiki
 
 ---
 
+# グレゴリオ暦が生まれた背景
+
+<div class="cell-row-name">1582年10月</div>
+<div class="month-grid">
+  <div class="dow">日</div><div class="dow">月</div><div class="dow">火</div><div class="dow">水</div><div class="dow">木</div><div class="dow">金</div><div class="dow">土</div>
+  <div class="day blank"></div><div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day mark">4</div><div class="day mark">15</div><div class="day">16</div>
+  <div class="day">17</div><div class="day">18</div><div class="day">19</div><div class="day">20</div><div class="day">21</div><div class="day">22</div><div class="day">23</div>
+  <div class="day">24</div><div class="day">25</div><div class="day">26</div><div class="day">27</div><div class="day">28</div><div class="day">29</div><div class="day">30</div>
+  <div class="day">31</div>
+</div>
+
+- 前のユリウス暦は4年に1回うるう年で、太陽年より約11分長い
+- 128年で1日ずれて、1582年には春分が3月11日ごろまで早まった
+- 復活祭の日付を決める春分を、ニカイア公会議が決めた3月21日に戻す改暦
+- 10月4日の次の日を10月15日にして、10日を消した
+
+---
+
 # グレゴリオ暦
 
 | 年 | 4で割り切れる | 100で割り切れる | 400で割り切れる | 判定 |
@@ -119,6 +137,16 @@ highlighter: shiki
 
 ---
 
+# タイの仏滅紀元が生まれた背景
+
+- 仏滅紀元は釈迦の入滅を起点に年を数える紀年
+- アユタヤ王朝の時代から使われてきた
+- ラーマ5世が太陽暦を公式の暦にした
+- 1912年、ラーマ6世が年の数え方を仏滅紀元に戻した
+- 1941年に新年を1月1日へ移した
+
+---
+
 # タイの仏滅紀元
 
 - 月日はグレゴリオ暦と同じ
@@ -126,18 +154,12 @@ highlighter: shiki
 
 ---
 
-# 和暦
+# インド国定暦が生まれた背景
 
-<div class="era-strip">
-  <div class="era"><div class="date">1989年1月7日まで</div><div class="name">昭和64年</div></div>
-  <div class="era mark"><div class="date">1989年1月8日から</div><div class="name">平成元年</div></div>
-  <div class="era"><div class="date">2019年4月30日まで</div><div class="name">平成31年</div></div>
-  <div class="era mark"><div class="date">2019年5月1日から</div><div class="name">令和元年</div></div>
-</div>
-
-- 月日はグレゴリオ暦と同じ
-- 年は元号で数える
-- 元号法では皇位の継承があったときだけ元号を改める
+- 当時のインドには30種類の暦があった
+- 1952年、政府の科学産業研究評議会が暦法改革委員会を作った
+- 委員長はメグナード・サハ
+- インド全土で使う、正確で統一した暦として作られた
 
 ---
 
@@ -160,6 +182,15 @@ highlighter: shiki
 
 ---
 
+# コプト暦とエチオピア暦が生まれた背景
+
+- コプト暦はエジプトのコプト正教会が使ってきた暦
+- ディオクレティアヌスが皇帝になった284年を元年にした
+- この皇帝の時代の迫害にちなんで「殉教者紀元」と呼ぶ
+- エチオピア暦は月の切り方が同じで、元年の置き方が違う
+
+---
+
 # コプト暦とエチオピア暦
 
 <div class="cell-row">
@@ -175,6 +206,16 @@ highlighter: shiki
 
 - どちらも新年は9月11日、年によって9月12日
 - 元年はコプト暦が西暦284年、エチオピア暦が西暦8年
+
+---
+
+# イスラム暦が生まれた背景
+
+- 622年、ムハンマドがメッカからメディナへ移住した
+- この移住をヒジュラと呼び、その年を元年にした
+- 637年か638年に、第2代カリフのウマルが決めた
+- それまでのアラビアでは必要に応じて月を1つ足していた
+- コーラン9章37節がこの月の入れ替えを禁じた
 
 ---
 
@@ -206,6 +247,16 @@ highlighter: shiki
 
 ---
 
+# 中国暦と韓国の旧暦の天文計算
+
+- 月の始まりは天文計算で求めた新月の日
+- 太陽の通り道を15度ずつ24に分けた24節気で季節を表す
+- 24節気のうち12個を中気と呼び、中気を含まない月をうるう月にする
+- 中国の計算方法は国家規格GB/T 33661-2017で決まっている
+- 韓国の旧暦は韓国天文研究院が公表するデータを使う
+
+---
+
 # 中国暦と韓国の旧暦
 
 - どちらも月を満ち欠けに合わせる太陰太陽暦
@@ -213,6 +264,15 @@ highlighter: shiki
 - 2025年は6月のあとにうるう6月が入って13か月
 - 中国と韓国で計算に使うデータが違う
 - 2027年の旧正月は中国で2月6日、韓国で2月7日
+
+---
+
+# ヘブライ暦が生まれた背景
+
+- もとは毎月、賢者たちが新しい月の始まりを決め、使者で各地に知らせていた
+- 359年からはこの先の月と年をすべて計算で決めている
+- 計算に使う1か月の平均は29日12時間44分3と1/3秒
+- 観測で求めた平均29日12時間44分3秒との差は1秒未満
 
 ---
 
@@ -237,6 +297,37 @@ highlighter: shiki
 
 ---
 
+# 和暦が生まれた背景
+
+<div class="era-strip">
+  <div class="era"><div class="date">1872年12月30日</div><div class="name">明治5年12月1日</div></div>
+  <div class="era"><div class="date">1872年12月31日</div><div class="name">明治5年12月2日</div></div>
+  <div class="era mark"><div class="date">1873年1月1日</div><div class="name">明治6年1月1日</div></div>
+</div>
+
+- 日本も明治5年までは太陰太陽暦の天保暦を使っていた
+- 明治5年12月3日を明治6年1月1日にして、太陽暦に切り替えた
+- 改暦の布告から切り替えまで、わずか3週間ほど
+- 年を数える元号は645年の大化のころから使われ始めた
+- 明治からは天皇1代につき元号は1つ
+
+---
+
+# 和暦
+
+<div class="era-strip">
+  <div class="era"><div class="date">1989年1月7日まで</div><div class="name">昭和64年</div></div>
+  <div class="era mark"><div class="date">1989年1月8日から</div><div class="name">平成元年</div></div>
+  <div class="era"><div class="date">2019年4月30日まで</div><div class="name">平成31年</div></div>
+  <div class="era mark"><div class="date">2019年5月1日から</div><div class="name">令和元年</div></div>
+</div>
+
+- 月日はグレゴリオ暦と同じ
+- 年は元号で数える
+- 元号法では皇位の継承があったときだけ元号を改める
+
+---
+
 <p class="lead-q">
 これだけバラバラな暦を<br>Temporalはどう吸収してるのか？
 </p>
@@ -255,7 +346,6 @@ Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId)
 | --- | --- |
 | `gregory` | 2026年10月5日 |
 | `buddhist` | 2569年10月5日 |
-| `japanese` | 令和8年10月5日 |
 | `indian` | 1948年7月13日 |
 | `coptic` | 1743年1月25日 |
 | `ethiopic` | 2019年1月25日 |
@@ -263,6 +353,7 @@ Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId)
 | `chinese` | 2026年8月25日 |
 | `dangi` | 2026年8月25日 |
 | `hebrew` | 5787年1月24日 |
+| `japanese` | 令和8年10月5日 |
 
 </div>
 
@@ -331,9 +422,27 @@ Uncaught RangeError
   <li>Temporal: <a href="https://tc39.es/proposal-temporal/">tc39.es/proposal-temporal</a></li>
   <li>Intl era and monthCode: <a href="https://tc39.es/proposal-intl-era-monthcode/">tc39.es/proposal-intl-era-monthcode</a></li>
   <li>British Astronomical Association: <a href="https://britastro.org/computing/data.html">Astronomical &amp; physical constants</a></li>
+  <li>NASA: <a href="https://eclipse.gsfc.nasa.gov/SEhelp/moonorbit.html">Eclipses and the Moon's Orbit</a></li>
   <li>Inter gravissimas: <a href="https://en.wikisource.org/wiki/Translation:Inter_gravissimas">Wikisource</a></li>
+  <li>Royal Society of Thailand: <a href="https://www.orst.go.th/FILEROOM/CABROYINWEB/DRAWER004/GENERAL/DATA0000/00000647.FLP/html/160/">Thai calendar eras</a></li>
+  <li>CSIR: <a href="https://archive.org/details/HistoryOfCalendarPanchangaCommittee">History of Calendar</a></li>
+  <li>Coptic Orthodox Church: <a href="https://copticorthodox.church/en/?p=9747">Diocletian and the Coptic calendar</a></li>
+  <li>Dar al-Ifta: <a href="https://dar-alifta.org/en/article/details/4310/the-hijra-and-the-islamic-calendar">The Hijra and the Islamic Calendar</a></li>
+</ul>
+
+---
+
+# 参考資料
+
+<ul class="refs">
+  <li>Quran.com: <a href="https://quran.com/9/37">9:37</a></li>
   <li>CLDR: <a href="https://cldr.unicode.org/development/development-process/design-proposals/islamic-calendar-types">Islamic Calendar Types</a></li>
+  <li>香港天文台: <a href="https://www.hko.gov.hk/tc/gts/time/24solarterms.htm">二十四節氣</a></li>
+  <li>Hong Kong Observatory: <a href="https://www.hko.gov.hk/en/gts/time/conversion.htm">Gregorian-Lunar Calendar Conversion Table</a></li>
   <li>My Jewish Learning: <a href="https://www.myjewishlearning.com/article/the-jewish-leap-year-explained/">The Jewish Leap Year Explained</a></li>
+  <li>Peninei Halakha: <a href="https://ph.yhb.org.il/en/05-01-03/">The History of the Sanctification of the Moon</a></li>
+  <li>Sefaria: <a href="https://www.sefaria.org/Mishneh_Torah%2C_Sanctification_of_the_New_Month.6.3">Mishneh Torah, Sanctification of the New Month 6:3</a></li>
+  <li>国立天文台 暦Wiki: <a href="https://eco.mtk.nao.ac.jp/koyomi/wiki/CEF2BBCB2FB8B5B9E6.html">元号</a>、<a href="https://eco.mtk.nao.ac.jp/koyomi/wiki/B7EEA4CECBFEA4C1B7E7A4B12FB7EECEF0A4ACC0B8A4DEA4ECA4EBA4DEA4C7.html">明治改暦</a></li>
   <li>e-Gov法令検索: <a href="https://laws.e-gov.go.jp/law/354AC0000000043">元号法</a></li>
 </ul>
 
