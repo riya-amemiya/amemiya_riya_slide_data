@@ -51,28 +51,46 @@ highlighter: shiki
 
 # Dateのつらいところ
 
-- 月が0始まり
-- 値をあとから書き換えられる
-- 文字列の書き方で、UTCとして読むかローカル時刻として読むかが変わる
+---
+
+<p class="lead-q">
+2026年1月31日の1か月後は<br>何月何日？
+</p>
 
 ---
 
-# 2月31日が3月3日になる
+# Dateに聞くと3月3日
 
 ```js
 > const d = new Date(2026, 0, 31)
 > d.setMonth(1)
+1772463600000
 > d.toDateString()
 'Tue Mar 03 2026'
 ```
 
-- 0が1月、1が2月
-- `setMonth` は `d` そのものを書き換える
-- 存在しない2月31日は、エラーにならずに3月3日へ進む
+- `0` が1月で、`1` が2月
+- `setMonth` は `d` そのものを書き換えて、ミリ秒の数値を返す
+- 2月31日はないので、2月1日から数えて31日目の3月3日になる
 
 ---
 
-# 日付だけの文字列はUTCになる
+# 来週を計算したら今日も来週になる
+
+```js
+> const addWeek = (d) => { d.setDate(d.getDate() + 7); return d }
+> const today = new Date(2026, 9, 19)
+> const nextWeek = addWeek(today)
+> today.toDateString()
+'Mon Oct 26 2026'
+```
+
+- Dateは値をあとから書き換えられる
+- `addWeek` の中で書き換えたので、渡した `today` も変わる
+
+---
+
+# 日付だけの文字列はUTCで読む
 
 ```js
 > new Date("2026-10-05").getHours()
@@ -81,8 +99,90 @@ highlighter: shiki
 0
 ```
 
-- 日本時間で実行した結果
-- 日付だけの形式はUTC、時刻付きの形式はローカル時刻として解釈する
+- 東京で実行した結果
+- 日付だけならUTC、時刻を付けるとローカル時刻として読む
+
+---
+
+# ニューヨークで実行すると4日になる
+
+```sh
+$ TZ=America/New_York node -p 'new Date("2026-10-05").getDate()'
+4
+```
+
+- Dateが持っているのは、1970年1月1日0時UTCからのミリ秒だけ
+- UTCの10月5日0時は、ニューヨークでは10月4日の20時
+
+---
+
+# Dateが扱えるタイムゾーンは2つだけ
+
+- UTCと、実行している環境のローカル時刻
+- `getHours` はローカル時刻で、`getUTCHours` はUTCで読む
+- ほかのタイムゾーンを指定できるのは、`toLocaleString` などで文字列にするときだけ
+
+---
+
+# 26年と書くと1926年になる
+
+```js
+> new Date(26, 0, 1).getFullYear()
+1926
+> new Date(2026, 0, 1).getYear()
+126
+```
+
+- 0から99までの年には1900を足す
+- `getYear` は、西暦から1900を引いた値を返す
+
+---
+
+# なぜDateはこうなったのか
+
+- 1995年5月、Brendan EichがNetscapeでJavaScriptを10日間で試作した
+- DateはJava 1.0の `java.util.Date` を、バグも含めてそのまま写した
+- 月が0から11なのも、2000年問題のある年の扱いも、Javaから来ている
+- Javaとやり取りする必要があったから
+
+---
+
+# Java側は次のバージョンで非推奨にした
+
+- `getYear` や `setMonth` はJDK 1.1で非推奨になった
+- 代わりに `Calendar` クラスを使う
+
+---
+
+<p class="lead-q">
+Javaが次のバージョンで手放したAPIを<br>JavaScriptは30年以上使っている
+</p>
+
+---
+
+# Maggie Pintさんが挙げたDateの問題
+
+- UTCとローカル時刻以外のタイムゾーンを扱えない
+- 文字列の解析があてにならない
+- 値を書き換えられる
+- 夏時間での動きを予測できない
+- 計算のAPIが使いにくい
+- グレゴリオ暦以外の暦に対応していない
+
+<p class="lede">
+書き換えと解析は、既存のWebサイトとの互換性を保つために、Dateのままでは直せない
+</p>
+
+---
+
+# Temporalのすごいところ
+
+---
+
+# Temporalはもう使える
+
+- TC39でStage 4
+- Firefox 139、Chrome 144、Node.js 26では、フラグなしで使える
 
 ---
 
@@ -101,7 +201,7 @@ highlighter: shiki
 
 ---
 
-# 値は書き換わらない
+# 月は1始まりで、値は書き換わらない
 
 ```js
 > const d = Temporal.PlainDate.from("2026-01-31")
@@ -113,9 +213,103 @@ highlighter: shiki
 '2026-01-31'
 ```
 
-- 月は1始まり
 - `add` は新しい値を返し、`d` はそのまま
 - 2月31日は2月28日に丸める
+
+---
+
+<CalendarAnimation scene="overflow" />
+
+---
+
+# 丸めるか、エラーにするかを選べる
+
+| `overflow` | 存在しない日付を指定したとき |
+| --- | --- |
+| `"constrain"`（既定） | 月と日を有効な範囲に収める |
+| `"reject"` | RangeErrorを投げる |
+
+```js
+> Temporal.PlainDate.from({ year: 2026, month: 2, day: 31 }).toString()
+'2026-02-28'
+> Temporal.PlainDate.from({ year: 2026, month: 2, day: 31 }, { overflow: "reject" })
+Uncaught RangeError
+```
+
+---
+
+# 日付は日付のまま持てる
+
+```js
+> Temporal.PlainDate.from("2026-10-05").day
+5
+> Temporal.Instant.from("2026-10-05")
+Uncaught RangeError
+```
+
+- `PlainDate` はタイムゾーンを持たないので、どこで実行しても5日
+- 時間軸上の1点を表す `Instant` は、オフセットのない文字列を受け付けない
+
+---
+
+# タイムゾーンを名前で指定できる
+
+```js
+> const t = Temporal.Instant.from("2026-10-05T00:00Z")
+> t.toZonedDateTimeISO("Asia/Tokyo").toString()
+'2026-10-05T09:00:00+09:00[Asia/Tokyo]'
+> t.toZonedDateTimeISO("America/New_York").toString()
+'2026-10-04T20:00:00-04:00[America/New_York]'
+```
+
+- 同じ `Instant` を、東京とニューヨークの日時に直せる
+
+---
+
+# 1日足すのと24時間足すのは違う
+
+```js
+> const z = Temporal.ZonedDateTime.from("2026-03-07T12:00[America/New_York]")
+> z.add({ days: 1 }).toString()
+'2026-03-08T12:00:00-04:00[America/New_York]'
+> z.add({ hours: 24 }).toString()
+'2026-03-08T13:00:00-04:00[America/New_York]'
+```
+
+- ニューヨークでは2026年3月8日に夏時間が始まるので、この日は23時間しかない
+- `days` は時計の日付を進め、`hours` は経過した時間を進める
+
+---
+
+<CalendarAnimation scene="dst" />
+
+---
+
+# ない時刻も、2回ある時刻も扱える
+
+```js
+> const s = "2026-03-08T02:30[America/New_York]"
+> Temporal.ZonedDateTime.from(s).toString()
+'2026-03-08T03:30:00-04:00[America/New_York]'
+> Temporal.ZonedDateTime.from(s, { disambiguation: "reject" })
+Uncaught RangeError
+```
+
+- ニューヨークでは、夏時間が始まる日に2時台がなく、終わる日に1時台が2回ある
+- `disambiguation` は `"compatible"`（既定）、`"earlier"`、`"later"`、`"reject"` から選ぶ
+
+---
+
+# 暦も切り替えられる
+
+```js
+> const d = Temporal.PlainDate.from("2026-10-05")
+> const j = d.withCalendar("japanese")
+> [j.era, j.eraYear, j.month, j.day]
+[ 'reiwa', 8, 10, 5 ]
+```
+
+- Node.js 26では16種類の暦を指定できる
 
 ---
 
@@ -125,7 +319,13 @@ Temporal 最高!
 
 ---
 
-# でも見慣れないプロパティがある
+<p class="lead-q">
+でも、なんでこんな機能が<br>必要になったんだっけ？
+</p>
+
+---
+
+# 日付を作っただけで暦が付いてくる
 
 ```js
 > const d = Temporal.PlainDate.from("2026-10-05")
@@ -135,18 +335,13 @@ Temporal 最高!
 'M10'
 ```
 
-- 日付を作っただけなのに、暦を表す `calendarId` がある
+- 暦を表す `calendarId` がある
 - `month` とは別に `monthCode` がある
-- `Temporal.Calendar` は2024年6月に削除され、暦は文字列で指定する
-
-<p class="lede">
-なぜ日付のAPIに暦の指定が要るのか
-</p>
 
 ---
 
 <p class="lead-q">
-調べてみたら<br>天文学と歴史が積み上げた<br>数千年分の負債が出てきた
+暦を調べてみたら<br>天文学と歴史が積み上げた<br>数千年分の負債が出てきた
 </p>
 
 ---
@@ -278,7 +473,35 @@ const isLeapYear = (year) =>
 ```
 
 - 1582年10月5日から14日は、その年に改暦した国には存在しない
-- DateもTemporalも、グレゴリオ暦を1582年より前にも当てはめるので、エラーにならない
+- DateもTemporalも、1582年より前にもグレゴリオ暦を当てはめるので、エラーにならない
+
+---
+
+# 日本は明治6年に太陽暦へ切り替えた
+
+<div class="era-strip">
+  <div class="era"><div class="date">1872年12月30日</div><div class="name">明治5年12月1日</div></div>
+  <div class="era"><div class="date">1872年12月31日</div><div class="name">明治5年12月2日</div></div>
+  <div class="era mark"><div class="date">1873年1月1日</div><div class="name">明治6年1月1日</div></div>
+</div>
+
+- 明治5年11月9日に、改暦の布告が出た
+- 12月3日を明治6年1月1日にしたので、明治5年の12月は2日で終わった
+- 布告から切り替えまで、3週間ほどしかなかった
+
+---
+
+# Temporalの和暦は明治6年から
+
+```js
+> Temporal.PlainDate.from("1873-01-01").withCalendar("japanese").era
+'meiji'
+> Temporal.PlainDate.from("1872-12-31").withCalendar("japanese").era
+'ce'
+```
+
+- 1872年12月31日までは、西暦と同じ紀元と年を使う
+- `meiji` の年は6から始まる
 
 ---
 
@@ -294,10 +517,6 @@ const isLeapYear = (year) =>
 | 月の満ち欠け（太陰暦） | イスラム暦 | `islamic-umalqura` など |
 | 両方（太陰太陽暦） | ヘブライ暦、中国暦 | `hebrew`, `chinese` |
 | 元号で年を数える | 和暦 | `japanese` |
-
-<p class="lede" style="margin-top:24px;">
-Intlに対応した処理系では、16種類の暦を指定できる
-</p>
 
 ---
 
@@ -429,6 +648,10 @@ Intlに対応した処理系では、16種類の暦を指定できる
 
 ---
 
+<CalendarAnimation scene="convert" />
+
+---
+
 # 暦を変えても同じ日
 
 ```js
@@ -513,43 +736,14 @@ Uncaught RangeError
 
 ---
 
-# overflowで丸めるか、エラーにするかを選ぶ
-
-| `overflow` | 存在しない日付を指定したとき |
-| --- | --- |
-| `"constrain"`（既定） | 月と日を有効な範囲に収める |
-| `"reject"` | RangeErrorを投げる |
-
-```js
-> Temporal.PlainDate.from({ year: 2026, month: 2, day: 31 }).toString()
-'2026-02-28'
-> Temporal.PlainDate.from({ year: 2026, month: 2, day: 31 }, { overflow: "reject" })
-Uncaught RangeError
-```
-
-<p class="lede">
-Dateの <code>setMonth</code> は、2月31日をエラーなしで3月3日にしていた
-</p>
-
----
-
-# 存在しない時刻はdisambiguationで扱う
-
-```js
-> const s = "2026-03-08T02:30[America/New_York]"
-> Temporal.ZonedDateTime.from(s).toString()
-'2026-03-08T03:30:00-04:00[America/New_York]'
-> Temporal.ZonedDateTime.from(s, { disambiguation: "reject" })
-Uncaught RangeError
-```
-
-- ニューヨークでは、夏時間が始まる日に2時台がなく、終わる日に1時台が2回ある
-- `disambiguation` は `"compatible"`（既定）、`"earlier"`、`"later"`、`"reject"` から選ぶ
+<CalendarAnimation scene="addyear" />
 
 ---
 
 # まとめ
 
+- Dateは1995年に `java.util.Date` を写したまま、月の0始まりも値の書き換えも残っている
+- Temporalは用途ごとに型を分け、値を書き換えず、タイムゾーンと暦を指定できる
 - 1日と1か月と1年の周期が互いに割り切れないので、暦はずれる
 - うるう年も1582年の10日間の削除も、ずれを直すための補正
 - イスラム暦は季節を追わず、ヘブライ暦と中国暦はうるう月を入れ、和暦は改元で年が1に戻る
@@ -568,9 +762,22 @@ Uncaught RangeError
 
 <ul class="refs">
   <li>Temporal: <a href="https://tc39.es/proposal-temporal/">tc39.es/proposal-temporal</a></li>
+  <li>tc39/proposal-temporal: <a href="https://github.com/tc39/proposal-temporal">README</a></li>
   <li>Intl era and monthCode: <a href="https://tc39.es/proposal-intl-era-monthcode/">tc39.es/proposal-intl-era-monthcode</a></li>
   <li>ECMA-262 Date: <a href="https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-time-values-and-time-range">Time Values and Time Range</a></li>
+  <li>ECMA-262 Annex B: <a href="https://tc39.es/ecma262/multipage/additional-ecmascript-features-for-web-browsers.html#sec-date.prototype.getyear">Date.prototype.getYear</a></li>
+  <li>Wirfs-Brock, Eich: <a href="https://doi.org/10.1145/3386327">JavaScript: The First 20 Years</a></li>
+  <li>Java SE 8: <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Date.html">java.util.Date</a></li>
+  <li>Maggie Pint: <a href="https://maggiepint.com/2017/04/09/fixing-javascript-date-getting-started/">Fixing JavaScript Date – Getting Started</a></li>
   <li>Temporal polyfill 0.5.0: <a href="https://github.com/js-temporal/temporal-polyfill/blob/main/CHANGELOG.md">CHANGELOG</a></li>
+</ul>
+
+---
+
+# 参考資料
+
+<ul class="refs">
+  <li>国立天文台 暦Wiki: <a href="https://eco.mtk.nao.ac.jp/koyomi/wiki/B7EEA4CECBFEA4C1B7E7A4B12FB7EECEF0A4ACC0B8A4DEA4ECA4EBA4DEA4C7.html">月齢が生まれるまで</a></li>
   <li>British Astronomical Association: <a href="https://britastro.org/computing/data.html">Astronomical &amp; physical constants</a></li>
   <li>Inter gravissimas: <a href="https://en.wikisource.org/wiki/Translation:Inter_gravissimas">Wikisource</a></li>
   <li>CLDR: <a href="https://cldr.unicode.org/development/development-process/design-proposals/islamic-calendar-types">Islamic Calendar Types</a></li>

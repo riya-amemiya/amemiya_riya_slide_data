@@ -1,7 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
+import { useNav } from '@slidev/client'
 
-type SceneName = 'cycles' | 'drift' | 'ramadan' | 'metonic' | 'leapmonth' | 'pawukon'
+type SceneName =
+  | 'cycles'
+  | 'drift'
+  | 'ramadan'
+  | 'metonic'
+  | 'leapmonth'
+  | 'pawukon'
+  | 'overflow'
+  | 'dst'
+  | 'convert'
+  | 'addyear'
 type Frame = { html: string; delay: number }
 type Counter = [string, string, string]
 
@@ -19,6 +30,14 @@ const counterHtml = (cs: Counter[]) =>
     .join('')}</div>`
 const laneHtml = (name: string, body: string) =>
   `<div class="ca-lane"><div class="ca-lane-name">${name}</div>${body}</div>`
+const raceHtml = (title: string, phase: string, body: string, cs: Counter[]) =>
+  `<div class="ca-race"><div class="ca-race-head"><span class="ca-race-title">${title}</span><span class="ca-race-phase">${phase}</span></div>${body}<div class="ca-race-counters">${cs
+    .map(([k, v, u]) => `<span>${k}<span class="ca-v">${v}</span>${u}</span>`)
+    .join('')}</div></div>`
+const dayLabelsHtml = (count: number, labels: [number, string][]) =>
+  `<div class="ca-days ca-day-labels">${range(count)
+    .map((i) => `<div class="ca-dl">${labels.find(([at]) => at === i)?.[1] ?? ''}</div>`)
+    .join('')}</div>`
 
 const buildCycles = (): Frame[] => {
   const scale = 1.75
@@ -297,33 +316,215 @@ const buildPawukon = (): Frame[] => {
   return frames
 }
 
-const builders: Record<SceneName, () => Frame[]> = {
-  cycles: buildCycles,
-  drift: buildDrift,
-  ramadan: buildRamadan,
-  metonic: buildMetonic,
-  leapmonth: buildLeapMonth,
-  pawukon: buildPawukon,
+const buildOverflow = (lib: 'date' | 'temporal'): Frame[] => {
+  const days: [number, number][] = [...range(28).map((i): [number, number] => [2, i + 1]), [3, 1], [3, 2], [3, 3]]
+  const title =
+    lib === 'date'
+      ? '<span>Date</span><span class="ca-code">setMonth(1)</span>'
+      : '<span>Temporal</span><span class="ca-code">add({ months: 1 })</span>'
+  const draw = (cursor: number, hit: number, month: boolean, walked: boolean, phase: string, cs: Counter[]) =>
+    raceHtml(
+      title,
+      phase,
+      dayLabelsHtml(days.length, [
+        [0, '2月'],
+        [28, '3月'],
+      ]) +
+        `<div class="ca-days">${days
+          .map(([m, d], i) => {
+            const state =
+              i === hit ? ' hit' : i === cursor ? ' cursor' : walked && i < cursor ? ' past' : month && m === 2 ? ' month' : ''
+            return `<div class="ca-d${m === 3 ? ' next' : ''}${state}">${d}</div>`
+          })
+          .join('')}</div>`,
+      cs,
+    )
+  const frames: Frame[] = []
+  const push = (delay: number, ...args: Parameters<typeof draw>) => frames.push({ html: draw(...args), delay })
+  if (lib === 'date') {
+    push(120, -1, -1, false, false, '2月1日から数えて31日目にする', [['数えた日', '0', '日目']])
+    range(31).forEach((i) =>
+      push(i < 28 ? 7 : 45, i, -1, false, true, i < 28 ? '2月1日から数えて31日目にする' : '2月を越えて3月に入る', [
+        ['数えた日', String(i + 1), '日目'],
+      ]),
+    )
+    push(350, 30, 30, false, true, '3月3日になる', [['数えた日', '31', '日目']])
+    return frames
+  }
+  push(120, -1, -1, false, false, '2月31日を作ろうとする', [['2月の日数', '-', '']])
+  push(200, -1, -1, true, false, '2月は28日まで', [['2月の日数', '28', '日']])
+  push(350, -1, 27, true, false, '31日を28日に丸める', [['2月の日数', '28', '日']])
+  return frames
 }
 
-const frames = builders[props.scene]()
-const index = ref(0)
-const html = computed(() => frames[index.value].html)
-const timer = ref<ReturnType<typeof setTimeout>>()
-
-const tick = () => {
-  timer.value = setTimeout(() => {
-    index.value = (index.value + 1) % frames.length
-    tick()
-  }, frames[index.value].delay * 10)
+const buildDst = (unit: 'days' | 'hours'): Frame[] => {
+  const clock: [number, number][] = [...range(12).map((i): [number, number] => [7, 12 + i]), ...range(14).map((i): [number, number] => [8, i])]
+  const gone = 14
+  const draw = (cursor: number, hit: boolean, walked: boolean, phase: string, hours: string) =>
+    raceHtml(
+      `<span class="ca-code">${unit === 'days' ? 'add({ days: 1 })' : 'add({ hours: 24 })'}</span>`,
+      phase,
+      dayLabelsHtml(clock.length, [
+        [0, '3月7日'],
+        [12, '3月8日'],
+      ]) +
+        `<div class="ca-days">${clock
+          .map(([d, h], i) => {
+            const state =
+              i === gone ? ' gone' : i === cursor ? (hit ? ' hit' : ' cursor') : walked && i < cursor ? ' past' : ''
+            return `<div class="ca-d${d === 8 ? ' next' : ''}${state}">${h}</div>`
+          })
+          .join('')}</div>`,
+      [
+        ['経過した時間', hours, '時間'],
+        ['時計', `3月${clock[Math.max(cursor, 0)][0]}日${clock[Math.max(cursor, 0)][1]}時`, ''],
+      ],
+    )
+  const frames: Frame[] = []
+  const push = (delay: number, ...args: Parameters<typeof draw>) => frames.push({ html: draw(...args), delay })
+  if (unit === 'days') {
+    push(120, 0, false, false, '時計の日付を1日進める', '0')
+    push(160, 24, true, false, '3月8日の12時にする', '-')
+    push(350, 24, true, false, '2時台がないので23時間', '23')
+    return frames
+  }
+  push(120, 0, false, true, '1時間ずつ24回進める', '0')
+  range(24).forEach((k) => {
+    const elapsed = k + 1
+    push(elapsed === 14 ? 140 : 14, elapsed < 14 ? elapsed : elapsed + 1, false, true, elapsed === 14 ? '1時の次は3時' : '1時間ずつ24回進める', String(elapsed))
+  })
+  push(350, 25, true, true, '3月8日の13時になる', '24')
+  return frames
 }
 
-onMounted(tick)
-onUnmounted(() => clearTimeout(timer.value))
+const CONVERT: [string, [number, string, number][]][] = [
+  ['iso8601', range(14).map((i): [number, string, number] => [2026, 'M09', 10 + i])],
+  ['hebrew', [[5786, 'M12', 28], [5786, 'M12', 29], ...range(12).map((i): [number, string, number] => [5787, 'M01', i + 1])]],
+  ['chinese', [[2026, 'M07', 29], ...range(13).map((i): [number, string, number] => [2026, 'M08', i + 1])]],
+  [
+    'islamic-umalqura',
+    [[1448, 'M03', 28], [1448, 'M03', 29], ...range(12).map((i): [number, string, number] => [1448, 'M04', i + 1])],
+  ],
+  ['persian', [...range(13).map((i): [number, string, number] => [1405, 'M06', 19 + i]), [1405, 'M07', 1]]],
+]
+
+const buildConvert = (): Frame[] => {
+  const draw = (cursor: number, phase: string) =>
+    headHtml('ISO 8601の2026年9月10日から14日間', phase) +
+    `<div class="ca-conv">${CONVERT.map(([id, days]) => {
+      const [y, code, d] = days[Math.max(cursor, 0)]
+      return (
+        `<div class="ca-conv-name">${id}</div>` +
+        `<div class="ca-conv-cells">${days
+          .map(
+            ([, , day], i) =>
+              `<div class="ca-cv${i > cursor ? ' later' : day === 1 ? ' first' : ''}${i === cursor ? ' cursor' : ''}">${day}</div>`,
+          )
+          .join('')}</div>` +
+        `<div class="ca-conv-val">${cursor < 0 ? '' : `${y}年 ${code} ${d}日`}</div>`
+      )
+    }).join('')}</div>`
+  const special: Record<number, string> = {
+    1: '中国暦で8月が始まる',
+    2: 'ヘブライ暦で5787年が始まり、イスラム暦で4月が始まる',
+    13: 'ペルシャ暦で7月が始まる',
+  }
+  const frames: Frame[] = [{ html: draw(-1, '同じ日付を暦ごとに読む'), delay: 120 }]
+  range(14).forEach((i) =>
+    frames.push({ html: draw(i, special[i] ?? `9月${10 + i}日`), delay: special[i] ? 170 : 40 }),
+  )
+  frames.push({ html: draw(13, '月が変わる日は暦ごとに違う'), delay: 400 })
+  return frames
+}
+
+const buildAddYear = (overflow: 'constrain' | 'reject'): Frame[] => {
+  const common = range(12).map((i) => `M${String(i + 1).padStart(2, '0')}`)
+  const leap = [...common.slice(0, 5), 'M05L', ...common.slice(5)]
+  const steps = ['暦の年月日に直す', '年に1を足す', 'monthCodeを探す', 'ISO 8601の日付に戻す']
+  const draw = (step: number, year: number, codes: string[], cursor: number, hit: number, phase: string, result: string) =>
+    raceHtml(
+      `<span class="ca-code">overflow: "${overflow}"</span>`,
+      phase,
+      `<div class="ca-steps">${steps
+        .map((t, i) => `<span class="ca-step${i === step ? ' on' : ''}">${t}</span>`)
+        .join('<span class="ca-arrow">→</span>')}</div>` +
+        `<div class="ca-months ca-months-sm"><span class="ca-yr">${year}年</span>${codes
+          .map(
+            (c, i) =>
+              `<div class="ca-mo code${c.endsWith('L') ? ' leap' : ''}${i === hit ? ' hit' : i === cursor ? ' cursor' : ''}">${c}</div>`,
+          )
+          .join('')}</div>`,
+      [['結果', result, '']],
+    )
+  const frames: Frame[] = []
+  const push = (delay: number, ...args: Parameters<typeof draw>) => frames.push({ html: draw(...args), delay })
+  push(130, 0, 5787, leap, 5, -1, '5787年 M05L 1日から始める', '-')
+  push(120, 1, 5788, common, -1, -1, '5788年は12か月', '-')
+  range(12).forEach((i) => push(12, 2, 5788, common, i, -1, 'M05Lを探す', '-'))
+  if (overflow === 'constrain') {
+    push(160, 2, 5788, common, -1, 5, 'M05LがないのでM06にする', '-')
+    push(350, 3, 5788, common, -1, 5, '5788年 M06 1日', '2028-02-28')
+    return frames
+  }
+  push(350, 2, 5788, common, -1, -1, 'M05LがないのでRangeErrorを投げる', 'RangeError')
+  return frames
+}
+
+const builders: Record<SceneName, () => Frame[][]> = {
+  cycles: () => [buildCycles()],
+  drift: () => [buildDrift()],
+  ramadan: () => [buildRamadan()],
+  metonic: () => [buildMetonic()],
+  leapmonth: () => [buildLeapMonth()],
+  pawukon: () => [buildPawukon()],
+  overflow: () => [buildOverflow('date'), buildOverflow('temporal')],
+  dst: () => [buildDst('days'), buildDst('hours')],
+  convert: () => [buildConvert()],
+  addyear: () => [buildAddYear('constrain'), buildAddYear('reject')],
+}
+
+const raceTitles: Partial<Record<SceneName, string>> = {
+  overflow: '2026年1月31日に1か月足す',
+  dst: 'ニューヨークの3月7日12時に足す',
+  addyear: 'ヘブライ暦5787年 M05L 1日に1年足す',
+}
+
+const lanes = builders[props.scene]()
+const raceTitle = raceTitles[props.scene]
+const header = raceTitle ? headHtml(raceTitle, '') : ''
+const tall = ['overflow', 'dst', 'convert', 'addyear'].includes(props.scene)
+const ends = lanes.map((fs) =>
+  fs.reduce<number[]>((acc, f) => [...acc, (acc[acc.length - 1] ?? 0) + f.delay * 10], []),
+)
+const cycle = Math.max(...ends.map((e) => e[e.length - 1]))
+const { isPrintMode } = useNav()
+const elapsed = ref(isPrintMode.value ? cycle : 0)
+const html = computed(
+  () =>
+    header +
+    lanes
+      .map((fs, i) => {
+        const at = ends[i].findIndex((end) => elapsed.value < end)
+        return fs[at < 0 ? fs.length - 1 : at].html
+      })
+      .join(''),
+)
+const timer = ref<ReturnType<typeof setInterval>>()
+
+const play = () => {
+  clearInterval(timer.value)
+  const start = performance.now()
+  timer.value = setInterval(() => {
+    elapsed.value = performance.now() - start
+    if (elapsed.value >= cycle) clearInterval(timer.value)
+  }, 30)
+}
+onUnmounted(() => clearInterval(timer.value))
 </script>
 
 <template>
-  <div class="cal-anim" v-html="html" />
+  <div class="cal-anim" :class="{ 'ca-tall': tall }" v-html="html" />
+  <button v-if="!isPrintMode" class="cal-anim-play" @click="play">再生</button>
 </template>
 
 <style>
@@ -618,5 +819,193 @@ onUnmounted(() => clearTimeout(timer.value))
   background: var(--ca-copy);
   border-color: var(--ca-copy);
   color: #fff;
+}
+.cal-anim.ca-tall {
+  height: 390px;
+}
+.cal-anim .ca-race {
+  margin-top: 16px;
+}
+.cal-anim .ca-race-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.cal-anim .ca-race-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ca-blue);
+}
+.cal-anim .ca-code {
+  font: 700 16px ui-monospace, Menlo, monospace;
+  color: var(--ca-blue);
+}
+.cal-anim .ca-race-title .ca-code:not(:first-child) {
+  margin-left: 10px;
+}
+.cal-anim .ca-race-phase {
+  font-size: 14px;
+  font-weight: 700;
+}
+.cal-anim .ca-race-counters {
+  display: flex;
+  gap: 22px;
+  margin-top: 6px;
+  font-size: 14px;
+  min-height: 24px;
+}
+.cal-anim .ca-race-counters .ca-v {
+  font-size: 18px;
+  margin: 0 2px 0 6px;
+}
+.cal-anim .ca-days {
+  display: flex;
+  gap: 2px;
+}
+.cal-anim .ca-day-labels {
+  height: 18px;
+}
+.cal-anim .ca-dl {
+  width: 24px;
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cal-anim .ca-d {
+  width: 24px;
+  height: 30px;
+  flex: none;
+  border-radius: 5px;
+  border: 1px solid #b5d0fb;
+  background: var(--ca-light);
+  color: var(--ca-blue);
+  font: 700 12px/28px 'Nunito', sans-serif;
+  text-align: center;
+}
+.cal-anim .ca-d.next {
+  border-style: dashed;
+  background: #fff;
+}
+.cal-anim .ca-d.month {
+  border: 2px solid var(--ca-navy);
+  line-height: 26px;
+}
+.cal-anim .ca-d.past {
+  background: #9cc2fd;
+  border-color: #9cc2fd;
+  color: #fff;
+}
+.cal-anim .ca-d.cursor {
+  background: var(--ca-blue);
+  border-color: var(--ca-blue);
+  color: #fff;
+}
+.cal-anim .ca-d.hit {
+  background: var(--ca-copy);
+  border-color: var(--ca-copy);
+  color: #fff;
+}
+.cal-anim .ca-d.gone {
+  border: 1px dashed var(--ca-dash);
+  background: #fff;
+  color: var(--ca-dash);
+  text-decoration: line-through;
+}
+.cal-anim .ca-conv {
+  display: grid;
+  grid-template-columns: 150px max-content 1fr;
+  gap: 8px 14px;
+  align-items: center;
+  margin-top: 18px;
+}
+.cal-anim .ca-conv-name {
+  font: 700 14px ui-monospace, Menlo, monospace;
+  color: var(--ca-blue);
+}
+.cal-anim .ca-conv-cells {
+  display: flex;
+  gap: 3px;
+}
+.cal-anim .ca-cv {
+  width: 32px;
+  height: 36px;
+  border-radius: 5px;
+  border: 1px solid #b5d0fb;
+  background: var(--ca-light);
+  color: var(--ca-blue);
+  font: 700 13px/34px 'Nunito', sans-serif;
+  text-align: center;
+}
+.cal-anim .ca-cv.later {
+  border: 1px dashed var(--ca-dash);
+  background: #fff;
+  color: var(--ca-dash);
+}
+.cal-anim .ca-cv.first {
+  background: var(--ca-copy-bg);
+  border-color: var(--ca-copy);
+  color: var(--ca-navy);
+}
+.cal-anim .ca-cv.cursor {
+  border: 2px solid var(--ca-blue);
+  line-height: 32px;
+}
+.cal-anim .ca-conv-val {
+  font: 700 14px 'Nunito', 'Noto Sans JP', sans-serif;
+  white-space: nowrap;
+}
+.cal-anim .ca-steps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.cal-anim .ca-step {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border: 1px solid var(--ca-dash);
+  border-radius: 6px;
+  color: var(--ca-dash);
+}
+.cal-anim .ca-step.on {
+  border-color: var(--ca-blue);
+  background: var(--ca-blue);
+  color: #fff;
+}
+.cal-anim .ca-arrow {
+  font-weight: 700;
+  color: var(--ca-blue);
+}
+.cal-anim .ca-months-sm {
+  align-items: center;
+}
+.cal-anim .ca-months-sm .ca-mo {
+  width: 46px;
+  height: 32px;
+  line-height: 30px;
+}
+.cal-anim .ca-yr {
+  width: 64px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.cal-anim .ca-mo.hit {
+  background: var(--ca-copy);
+  border-color: var(--ca-copy);
+  color: #fff;
+}
+.slidev-layout .cal-anim-play {
+  display: block;
+  margin: 0 0 12px 20px;
+  padding: 4px 20px;
+  border: 2px solid #3984fd;
+  border-radius: 8px;
+  background: #fff;
+  color: #3984fd;
+  font: 700 15px 'Noto Sans JP', sans-serif;
+  cursor: pointer;
 }
 </style>
