@@ -49,109 +49,35 @@ highlighter: shiki
 
 ---
 
-# Dateのつらいところ
-
-- 月が0始まり
-- 値をあとから書き換えられる
-- 文字列の書き方で、UTCとして読むかローカル時刻として読むかが変わる
+# 座学 8割、JS 2割ぐらい
 
 ---
 
-# 2月31日が3月3日になる
+# Temporalが対応している主な暦
 
-```js
-> const d = new Date(2026, 0, 31)
-> d.setMonth(1)
-> d.toDateString()
-'Tue Mar 03 2026'
-```
+<div class="table-sm">
 
-- 0が1月、1が2月
-- `setMonth` は `d` そのものを書き換える
-- 存在しない2月31日は、エラーにならずに3月3日へ進む
-
----
-
-# 日付だけの文字列はUTCになる
-
-```js
-> new Date("2026-10-05").getHours()
-9
-> new Date("2026-10-05T00:00").getHours()
-0
-```
-
-- 日本時間で実行した結果
-- 日付だけの形式はUTC、時刻付きの形式はローカル時刻として解釈する
-
----
-
-# Temporalは用途ごとに型を分けた
-
-| 型 | 表すもの |
+| calendarId | 暦 |
 | --- | --- |
-| `PlainDate` | 日付 |
-| `PlainTime` | 時刻 |
-| `PlainDateTime` | 日付と時刻 |
-| `PlainYearMonth` | 年と月 |
-| `PlainMonthDay` | 月と日 |
-| `ZonedDateTime` | タイムゾーン付きの日付と時刻 |
-| `Instant` | 時間軸上の1点 |
-| `Duration` | 期間 |
+| `iso8601` | 拡張ISO 8601暦（デフォルト） |
+| `gregory` | グレゴリオ暦 |
+| `buddhist` | 仏滅紀元（タイなど） |
+| `japanese` | 日本の和暦（令和、平成など） |
+| `chinese` | 中国暦（旧暦） |
+| `dangi` | 韓国の旧暦 |
+| `hebrew` | ヘブライ暦（ユダヤ暦） |
+| `islamic-umalqura` / `islamic-civil` / `islamic-tbla` | イスラム暦（ヒジュラ暦） |
+| `indian` | インド国定暦 |
+| `coptic` | コプト暦 |
+| `ethiopic` / `ethioaa` | エチオピア暦 |
 
----
-
-# 値は書き換わらない
-
-```js
-> const d = Temporal.PlainDate.from("2026-01-31")
-> d.month
-1
-> d.add({ months: 1 }).toString()
-'2026-02-28'
-> d.toString()
-'2026-01-31'
-```
-
-- 月は1始まり
-- `add` は新しい値を返し、`d` はそのまま
-- 2月31日は2月28日に丸める
+</div>
 
 ---
 
 <p class="lead-q">
-Temporal 最高!
+なんでこんなに種類があるんだっけ？
 </p>
-
----
-
-# でも見慣れないプロパティがある
-
-```js
-> const d = Temporal.PlainDate.from("2026-10-05")
-> d.calendarId
-'iso8601'
-> d.monthCode
-'M10'
-```
-
-- 日付を作っただけなのに、暦を表す `calendarId` がある
-- `month` とは別に `monthCode` がある
-- `Temporal.Calendar` は2024年6月に削除され、暦は文字列で指定する
-
-<p class="lede">
-なぜ日付のAPIに暦の指定が要るのか
-</p>
-
----
-
-<p class="lead-q">
-調べてみたら<br>天文学と歴史が積み上げた<br>数千年分の負債が出てきた
-</p>
-
----
-
-# なぜ暦はずれるのか
 
 ---
 
@@ -169,62 +95,23 @@ Temporal 最高!
 
 ---
 
-# 1年に月も日も収まらない
-
-<div class="span-fig">
-  <div class="span-name">太陽年</div>
-  <div class="span-track" style="--end:657px"><div class="span-bar year" style="width:657px"></div></div>
-  <div class="span-note">365.24219日</div>
-  <div class="span-name">12か月</div>
-  <div class="span-track" style="--end:657px"><div class="span-bar moon" style="width:638px"></div><div class="span-gap" style="left:638px;width:19px"></div></div>
-  <div class="span-note">354.37日で、10.88日足りない</div>
-  <div class="span-name">13か月</div>
-  <div class="span-track" style="--end:657px"><div class="span-bar moon" style="width:657px"></div><div class="span-bar over" style="left:657px;width:34px"></div></div>
-  <div class="span-note">383.90日で、18.66日はみ出す</div>
-</div>
-
-<p class="lede">
-1年を365日にしても、0.24219日余る
-</p>
-
----
-
 <CalendarAnimation scene="cycles" />
 
 ---
 
-# ユリウス暦は4年に1回うるう年
+# 暦の3つの種類
 
-- 平年は365日、4年に1回366日
-- 平均すると1年は365.25日
-- 太陽年より0.00781日長く、128年で1日ずれる
-
----
-
-# 春分の日が10日早まった
-
-<div class="cell-row">
-  <div class="cell-row-name">325年</div>
-  <div class="cells">
-    <div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div><div class="cell">18</div><div class="cell">19</div><div class="cell">20</div><div class="cell mark">21</div>
-  </div>
-  <div class="cell-row-name">1582年</div>
-  <div class="cells">
-    <div class="cell">10</div><div class="cell mark">11</div><div class="cell">12</div><div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div><div class="cell">18</div><div class="cell">19</div><div class="cell">20</div><div class="cell">21</div>
-  </div>
-</div>
-
-- ニカイア公会議（325年）は春分を3月21日とした
-- 1582年には、春分が3月11日ごろに来ていた
+| 合わせるもの | calendarId |
+| --- | --- |
+| 季節（太陽暦） | `iso8601`、`gregory`、`buddhist`、`japanese`、`indian`、`coptic`、`ethiopic`、`ethioaa` |
+| 月の満ち欠け（太陰暦） | `islamic-umalqura`、`islamic-civil`、`islamic-tbla` |
+| 両方（太陰太陽暦） | `chinese`、`dangi`、`hebrew` |
 
 ---
 
-<CalendarAnimation scene="drift" />
+# グレゴリオ暦が生まれた背景
 
----
-
-# 1582年10月、10日間を消した
-
+<div class="cell-row-name">1582年10月</div>
 <div class="month-grid">
   <div class="dow">日</div><div class="dow">月</div><div class="dow">火</div><div class="dow">水</div><div class="dow">木</div><div class="dow">金</div><div class="dow">土</div>
   <div class="day blank"></div><div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day mark">4</div><div class="day mark">15</div><div class="day">16</div>
@@ -233,18 +120,14 @@ Temporal 最高!
   <div class="day">31</div>
 </div>
 
-<p class="lede">
-春分を3月21日に戻すため、グレゴリウス13世が改暦した
-</p>
+- 前のユリウス暦は4年に1回うるう年で、太陽年より約11分長い
+- 128年で1日ずれて、1582年には春分が3月11日ごろまで早まった
+- 復活祭の日付を決める春分を、ニカイア公会議が決めた3月21日に戻す改暦
+- 10月4日の次の日を10月15日にして、10日を消した
 
 ---
 
-# グレゴリオ暦のうるう年
-
-```js
-const isLeapYear = (year) =>
-  (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
-```
+# グレゴリオ暦
 
 | 年 | 4で割り切れる | 100で割り切れる | 400で割り切れる | 判定 |
 | --- | --- | --- | --- | --- |
@@ -252,94 +135,101 @@ const isLeapYear = (year) =>
 | 1900 | ○ | ○ | × | 平年 |
 | 2000 | ○ | ○ | ○ | うるう年 |
 
----
-
-# 400年に97回
-
-- 400年は146,097日
-- 平均すると1年は365.2425日
-- 太陽年より0.00031日長い
+- 1582年にローマ教皇グレゴリウス13世が定めた太陽暦
+- 400年に97回うるう年を入れて、平均すると1年は365.2425日
+- `iso8601` と `gregory` はどちらもこのグレゴリオ暦
 
 ---
 
-<p class="lead-q">
-うるう年の条件を3つ重ねても<br>約3,200年で1日ずれる
-</p>
+# タイの仏滅紀元が生まれた背景
+
+- 仏滅紀元は釈迦の入滅を起点に年を数える紀年
+- アユタヤ王朝の時代から使われてきた
+- ラーマ5世が太陽暦を公式の暦にした
+- 1912年、ラーマ6世が年の数え方を仏滅紀元に戻した
+- 1941年に新年を1月1日へ移した
 
 ---
 
-# JavaScriptでは1582年10月5日も作れる
+# タイの仏滅紀元
 
-```js
-> new Date(1582, 9, 5).toDateString()
-'Tue Oct 05 1582'
-> Temporal.PlainDate.from("1582-10-05").toString()
-'1582-10-05'
-```
-
-- 1582年10月5日から14日は、その年に改暦した国には存在しない
-- DateもTemporalも、グレゴリオ暦を1582年より前にも当てはめるので、エラーにならない
+- 月日はグレゴリオ暦と同じ
+- 年は西暦に543を足して数える
 
 ---
 
-# グレゴリオ暦の外側
+# インド国定暦が生まれた背景
+
+- 当時のインドには30種類の暦があった
+- 1952年、政府の科学産業研究評議会が暦法改革委員会を作った
+- 委員長はメグナード・サハ
+- インド全土で使う、正確で統一した暦として作られた
 
 ---
 
-# 暦は何に合わせるかで分かれる
+# インド国定暦
 
-| 合わせるもの | 暦の例 | calendarId |
-| --- | --- | --- |
-| 季節（太陽暦） | グレゴリオ暦、ペルシャ暦 | `gregory`, `persian` |
-| 月の満ち欠け（太陰暦） | イスラム暦 | `islamic-umalqura` など |
-| 両方（太陰太陽暦） | ヘブライ暦、中国暦 | `hebrew`, `chinese` |
-| 元号で年を数える | 和暦 | `japanese` |
+<div class="cell-row">
+  <div class="cell-row-name">月</div>
+  <div class="cells tight">
+    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div>
+  </div>
+  <div class="cell-row-name">日数</div>
+  <div class="cells tight">
+    <div class="cell mark leap">30か31</div><div class="cell">31</div><div class="cell">31</div><div class="cell">31</div><div class="cell">31</div><div class="cell">31</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div>
+  </div>
+</div>
 
-<p class="lede" style="margin-top:24px;">
-Intlに対応した処理系では、16種類の暦を指定できる
-</p>
-
----
-
-# 太陽暦は季節に合わせる
-
-```js
-> const d = Temporal.PlainDate.from("2026-03-21").withCalendar("persian")
-> [d.year, d.month, d.day]
-[ 1405, 1, 1 ]
-```
-
-- ペルシャ暦は春分のころに年が変わる
-- 2026年3月21日がペルシャ暦1405年の元日
+- サカ紀元を使う太陽暦
+- 西暦から78を引いた年で数える
+- 新年は3月22日で、うるう年だけ3月21日
 
 ---
 
-# 太陰暦は月の満ち欠けだけに合わせる
+# コプト暦とエチオピア暦が生まれた背景
 
-```js
-> const d = Temporal.PlainDate.from("2026-10-05").withCalendar("islamic-umalqura")
-> [d.year, d.month, d.day, d.daysInYear]
-[ 1448, 4, 24, 355 ]
-```
-
-- イスラム暦（ヒジュラ暦）は12か月で1年
-- 1年は354日か355日で、太陽年より約11日短い
-- 季節とのずれを直さないので、同じ月が来る時期が毎年約11日ずつ早まる
+- コプト暦はエジプトのコプト正教会が使ってきた暦
+- ディオクレティアヌスが皇帝になった284年を元年にした
+- この皇帝の時代の迫害にちなんで「殉教者紀元」と呼ぶ
+- エチオピア暦は月の切り方が同じで、元年の置き方が違う
 
 ---
 
-# ラマダンの時期が毎年早まる
+# コプト暦とエチオピア暦
 
-| ヒジュラ暦 | ラマダンの初日 |
-| --- | --- |
-| 1445年 | 2024年3月11日 |
-| 1446年 | 2025年3月1日 |
-| 1447年 | 2026年2月18日 |
-| 1448年 | 2027年2月8日 |
+<div class="cell-row">
+  <div class="cell-row-name">月</div>
+  <div class="cells tight">
+    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell mark">13</div>
+  </div>
+  <div class="cell-row-name">日数</div>
+  <div class="cells tight">
+    <div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell mark leap">5か6</div>
+  </div>
+</div>
 
-<p class="lede">
-<code>islamic-umalqura</code> で計算した日付
-</p>
+- どちらも新年は9月11日、年によって9月12日
+- 元年はコプト暦が西暦284年、エチオピア暦が西暦8年
+
+---
+
+# イスラム暦が生まれた背景
+
+- 622年、ムハンマドがメッカからメディナへ移住した
+- この移住をヒジュラと呼び、その年を元年にした
+- 637年か638年に、第2代カリフのウマルが決めた
+- それまでのアラビアでは必要に応じて月を1つ足していた
+- コーラン9章37節がこの月の入れ替えを禁じた
+
+---
+
+# イスラム暦
+
+- 月の満ち欠けだけに合わせる太陰暦
+- 1年は12か月で354日か355日
+- 西暦622年が元年
+- 季節とのずれは直さない
+- 同じ月が毎年約11日ずつ早く来る
 
 ---
 
@@ -347,28 +237,50 @@ Intlに対応した処理系では、16種類の暦を指定できる
 
 ---
 
-# イスラム暦にも種類がある
+# イスラム暦の計算方法
 
-| calendarId | 決め方 | 2026年10月5日 |
-| --- | --- | --- |
-| `islamic-umalqura` | サウジアラビアが行政に使う計算方式 | 1448年4月24日 |
-| `islamic-civil` | 30年に11回うるう年を入れる表で計算し、金曜日を起点にする | 1448年4月22日 |
-| `islamic-tbla` | 同じ表で、木曜日を起点にする | 1448年4月23日 |
+| calendarId | 決め方 |
+| --- | --- |
+| `islamic-umalqura` | サウジアラビアが行政で使う方式 |
+| `islamic-civil` | 30年に11回うるう年を入れる表で計算し、金曜日を元年の初日にする |
+| `islamic-tbla` | `islamic-civil` と同じ表で、木曜日を元年の初日にする |
 
 <p class="lede" style="margin-top:24px;">
-多くのイスラム教国では、日没後に三日月が見えた日から月を始める<br>だから実際の日付は地域で変わる
+多くのイスラム教国では日没後に三日月が見えた日から月を始める<br>だから実際の日付は地域で変わる
 </p>
 
 ---
 
-# 太陰太陽暦はうるう月を入れる
+# 中国暦と韓国の旧暦の天文計算
 
-- ヘブライ暦と中国暦は、月を満ち欠けに合わせる
-- 季節とずれてきたら1か月まるごと足して、13か月の年にする
+- 月の始まりは天文計算で求めた新月の日
+- 太陽の通り道を15度ずつ24に分けた24節気で季節を表す
+- 24節気のうち12個を中気と呼び、中気を含まない月をうるう月にする
+- 中国の計算方法は国家規格GB/T 33661-2017で決まっている
+- 韓国の旧暦は韓国天文研究院が公表するデータを使う
 
 ---
 
-# ヘブライ暦は19年に7回
+# 中国暦と韓国の旧暦
+
+- どちらも月を満ち欠けに合わせる太陰太陽暦
+- 季節とずれてきたらうるう月を入れる
+- 2025年は6月のあとにうるう6月が入って13か月
+- 中国と韓国で計算に使うデータが違う
+- 2027年の旧正月は中国で2月6日、韓国で2月7日
+
+---
+
+# ヘブライ暦が生まれた背景
+
+- もとは毎月、賢者たちが新しい月の始まりを決め、使者で各地に知らせていた
+- 359年からはこの先の月と年をすべて計算で決めている
+- 計算に使う1か月の平均は29日12時間44分3と1/3秒
+- 観測で求めた平均29日12時間44分3秒との差は1秒未満
+
+---
+
+# ヘブライ暦
 
 <div class="cell-row">
   <div class="cell-row-name">年目</div>
@@ -381,16 +293,31 @@ Intlに対応した処理系では、16種類の暦を指定できる
   </div>
 </div>
 
-- 12か月 × 12年 + 13か月 × 7年 = 235か月
-- 235朔望月は6939.69日、19太陽年は6939.60日
+- 月を満ち欠けに合わせる太陰太陽暦
+- 新年は秋で、グレゴリオ暦の9月か10月
+- うるう年は5番目の月のあとにうるう月を足して13か月
+- 19年の6939.60日と235か月の6939.69日がほぼ同じ
+- 19年たつと日付と季節がまた合う
 
 ---
 
-<CalendarAnimation scene="metonic" />
+# 和暦が生まれた背景
+
+<div class="era-strip">
+  <div class="era"><div class="date">1872年12月30日</div><div class="name">明治5年12月1日</div></div>
+  <div class="era"><div class="date">1872年12月31日</div><div class="name">明治5年12月2日</div></div>
+  <div class="era mark"><div class="date">1873年1月1日</div><div class="name">明治6年1月1日</div></div>
+</div>
+
+- 日本も明治5年までは太陰太陽暦の天保暦を使っていた
+- 明治5年12月3日を明治6年1月1日にして、太陽暦に切り替えた
+- 改暦の布告から切り替えまで、わずか3週間ほど
+- 年を数える元号は645年の大化のころから使われ始めた
+- 明治からは天皇1代につき元号は1つ
 
 ---
 
-# 和暦は改元で年が1に戻る
+# 和暦
 
 <div class="era-strip">
   <div class="era"><div class="date">1989年1月7日まで</div><div class="name">昭和64年</div></div>
@@ -399,37 +326,44 @@ Intlに対応した処理系では、16種類の暦を指定できる
   <div class="era mark"><div class="date">2019年5月1日から</div><div class="name">令和元年</div></div>
 </div>
 
+- 月日はグレゴリオ暦と同じ
+- 年は元号で数える
+- 元号法では皇位の継承があったときだけ元号を改める
+
+---
+
+<p class="lead-q">
+これだけバラバラな暦を<br>Temporalはどう吸収してるのか？
+</p>
+
+---
+
+# 2026年10月5日をそれぞれの暦で表す
+
 ```js
-> const d = Temporal.PlainDate.from("2019-05-01").withCalendar("japanese")
-> [d.era, d.eraYear]
-[ 'reiwa', 1 ]
+Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId)
 ```
 
-- 月日はグレゴリオ暦と同じで、年だけ元号で数える
-- 元号法では、元号は皇位の継承があったときに限り改める
+<div class="table-sm">
+
+| calendarId | 年月日 |
+| --- | --- |
+| `gregory` | 2026年10月5日 |
+| `buddhist` | 2569年10月5日 |
+| `indian` | 1948年7月13日 |
+| `coptic` | 1743年1月25日 |
+| `ethiopic` | 2019年1月25日 |
+| `islamic-umalqura` | 1448年4月24日 |
+| `chinese` | 2026年8月25日 |
+| `dangi` | 2026年8月25日 |
+| `hebrew` | 5787年1月24日 |
+| `japanese` | 令和8年10月5日 |
+
+</div>
 
 ---
 
-# Temporalは暦をどう扱うか
-
----
-
-# 日付の実体はISO 8601の年月日
-
-- `PlainDate` が持つのは、ISO 8601の年月日と暦の2つ
-- `year` や `month` は、ISO 8601の年月日から暦に従って計算する
-
-| calendarId | year | month | monthCode | day |
-| --- | --- | --- | --- | --- |
-| `iso8601` | 2026 | 10 | `M10` | 5 |
-| `hebrew` | 5787 | 1 | `M01` | 24 |
-| `chinese` | 2026 | 8 | `M08` | 25 |
-| `islamic-umalqura` | 1448 | 4 | `M04` | 24 |
-| `persian` | 1405 | 7 | `M07` | 13 |
-
----
-
-# 暦を変えても同じ日
+# `PlainDate` の中身
 
 ```js
 > const d = Temporal.PlainDate.from("2026-10-05")
@@ -440,12 +374,12 @@ Intlに対応した処理系では、16種類の暦を指定できる
 0
 ```
 
-- `withCalendar` は暦だけを差し替える
-- `compare` はISO 8601の年月日で比べる
+- `PlainDate` が持つのはISO 8601の年月日と暦の2つ
+- `year` や `month` はISO 8601の年月日から暦に従って計算する
 
 ---
 
-# monthだけでは区別できない
+# `month` と `monthCode`
 
 <div class="cell-row">
   <div class="cell-row-name">5786年</div>
@@ -458,46 +392,14 @@ Intlに対応した処理系では、16種類の暦を指定できる
   </div>
 </div>
 
-- ヘブライ暦の5787年（2026年9月から）は13か月
-- 5786年の6番目の月はアダル、5787年の6番目の月はアダル1
+- 5786年は平年、5787年はうるう年
+- 5787年は6番目がうるう月で、`M06` の月は7番目にずれる
+- `month` が同じ6でも別の月
+- `monthCode` は同じ月ならどの年でも同じで、うるう月は `M05L`
 
 ---
 
-<CalendarAnimation scene="leapmonth" />
-
----
-
-# monthCodeの決まり
-
-- 普通の月は `M01` から `M12`
-- うるう月は、直前の月のコードに `L` を付ける
-- ヘブライ暦のアダル1は `M05L`、アダル2は `M06`
-
-```js
-> Temporal.PlainDate.from({ calendar: "hebrew", year: 5786, month: 6, day: 1 }).monthCode
-'M06'
-> Temporal.PlainDate.from({ calendar: "hebrew", year: 5787, month: 6, day: 1 }).monthCode
-'M05L'
-```
-
----
-
-# 中国暦の閏6月
-
-```js
-> const d = Temporal.PlainDate.from({ calendar: "chinese", year: 2025, monthCode: "M06L", day: 1 })
-> d.toString()
-'2025-07-25[u-ca=chinese]'
-> d.month
-7
-```
-
-- 2025年は6月のあとに閏6月が入った
-- 閏6月は7番目の月なので、`month` は7
-
----
-
-# 1年後に同じ月がない
+# うるう月の1年後
 
 ```js
 > const d = Temporal.PlainDate.from({ calendar: "hebrew", year: 5787, monthCode: "M05L", day: 1 })
@@ -507,59 +409,13 @@ Intlに対応した処理系では、16種類の暦を指定できる
 Uncaught RangeError
 ```
 
-- 5788年は12か月の年なので、アダル1がない
-- 既定の `"constrain"` では、アダル（`M06`）に丸める
-- `"reject"` ではRangeErrorを投げる
-
----
-
-# overflowで丸めるか、エラーにするかを選ぶ
-
-| `overflow` | 存在しない日付を指定したとき |
-| --- | --- |
-| `"constrain"`（既定） | 月と日を有効な範囲に収める |
-| `"reject"` | RangeErrorを投げる |
-
-```js
-> Temporal.PlainDate.from({ year: 2026, month: 2, day: 31 }).toString()
-'2026-02-28'
-> Temporal.PlainDate.from({ year: 2026, month: 2, day: 31 }, { overflow: "reject" })
-Uncaught RangeError
-```
-
-<p class="lede">
-Dateの <code>setMonth</code> は、2月31日をエラーなしで3月3日にしていた
-</p>
-
----
-
-# 存在しない時刻はdisambiguationで扱う
-
-```js
-> const s = "2026-03-08T02:30[America/New_York]"
-> Temporal.ZonedDateTime.from(s).toString()
-'2026-03-08T03:30:00-04:00[America/New_York]'
-> Temporal.ZonedDateTime.from(s, { disambiguation: "reject" })
-Uncaught RangeError
-```
-
-- ニューヨークでは、夏時間が始まる日に2時台がなく、終わる日に1時台が2回ある
-- `disambiguation` は `"compatible"`（既定）、`"earlier"`、`"later"`、`"reject"` から選ぶ
-
----
-
-# まとめ
-
-- 1日と1か月と1年の周期が互いに割り切れないので、暦はずれる
-- うるう年も1582年の10日間の削除も、ずれを直すための補正
-- イスラム暦は季節を追わず、ヘブライ暦と中国暦はうるう月を入れ、和暦は改元で年が1に戻る
-- Temporalは日付をISO 8601の年月日で持ち、暦は計算するときに当てはめる
-- うるう月は `monthCode`、存在しない日付は `overflow` で扱う
+- 5788年は平年なので `M05L` の月がない
+- 既定の `"constrain"` では `M06` に丸める
 
 ---
 
 <p class="lead-q">
-人類の負債に怯えず<br>Temporalを使おう
+人類の負債を吸収して<br>いい感じに返してくれる<br>Temporal、すごい
 </p>
 
 ---
@@ -569,103 +425,31 @@ Uncaught RangeError
 <ul class="refs">
   <li>Temporal: <a href="https://tc39.es/proposal-temporal/">tc39.es/proposal-temporal</a></li>
   <li>Intl era and monthCode: <a href="https://tc39.es/proposal-intl-era-monthcode/">tc39.es/proposal-intl-era-monthcode</a></li>
-  <li>ECMA-262 Date: <a href="https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-time-values-and-time-range">Time Values and Time Range</a></li>
-  <li>Temporal polyfill 0.5.0: <a href="https://github.com/js-temporal/temporal-polyfill/blob/main/CHANGELOG.md">CHANGELOG</a></li>
   <li>British Astronomical Association: <a href="https://britastro.org/computing/data.html">Astronomical &amp; physical constants</a></li>
+  <li>NASA: <a href="https://eclipse.gsfc.nasa.gov/SEhelp/moonorbit.html">Eclipses and the Moon's Orbit</a></li>
   <li>Inter gravissimas: <a href="https://en.wikisource.org/wiki/Translation:Inter_gravissimas">Wikisource</a></li>
+  <li>Royal Society of Thailand: <a href="https://www.orst.go.th/FILEROOM/CABROYINWEB/DRAWER004/GENERAL/DATA0000/00000647.FLP/html/160/">Thai calendar eras</a></li>
+  <li>CSIR: <a href="https://archive.org/details/HistoryOfCalendarPanchangaCommittee">History of Calendar</a></li>
+  <li>Coptic Orthodox Church: <a href="https://copticorthodox.church/en/?p=9747">Diocletian and the Coptic calendar</a></li>
+  <li>Dar al-Ifta: <a href="https://dar-alifta.org/en/article/details/4310/the-hijra-and-the-islamic-calendar">The Hijra and the Islamic Calendar</a></li>
+</ul>
+
+---
+
+# 参考資料
+
+<ul class="refs">
+  <li>Quran.com: <a href="https://quran.com/9/37">9:37</a></li>
   <li>CLDR: <a href="https://cldr.unicode.org/development/development-process/design-proposals/islamic-calendar-types">Islamic Calendar Types</a></li>
+  <li>香港天文台: <a href="https://www.hko.gov.hk/tc/gts/time/24solarterms.htm">二十四節氣</a></li>
+  <li>Hong Kong Observatory: <a href="https://www.hko.gov.hk/en/gts/time/conversion.htm">Gregorian-Lunar Calendar Conversion Table</a></li>
   <li>My Jewish Learning: <a href="https://www.myjewishlearning.com/article/the-jewish-leap-year-explained/">The Jewish Leap Year Explained</a></li>
+  <li>Peninei Halakha: <a href="https://ph.yhb.org.il/en/05-01-03/">The History of the Sanctification of the Moon</a></li>
+  <li>Sefaria: <a href="https://www.sefaria.org/Mishneh_Torah%2C_Sanctification_of_the_New_Month.6.3">Mishneh Torah, Sanctification of the New Month 6:3</a></li>
+  <li>国立天文台 暦Wiki: <a href="https://eco.mtk.nao.ac.jp/koyomi/wiki/CEF2BBCB2FB8B5B9E6.html">元号</a>、<a href="https://eco.mtk.nao.ac.jp/koyomi/wiki/B7EEA4CECBFEA4C1B7E7A4B12FB7EECEF0A4ACC0B8A4DEA4ECA4EBA4DEA4C7.html">明治改暦</a></li>
   <li>e-Gov法令検索: <a href="https://laws.e-gov.go.jp/law/354AC0000000043">元号法</a></li>
-  <li>Fondation Napoléon: <a href="https://www.napoleon.org/histoire-des-2-empires/calendrier-republicain">Le calendrier républicain</a></li>
-  <li>Calendrical Calculations: <a href="https://www.cambridge.org/core/books/calendrical-calculations/balinese-pawukon-calendar/AE3E7D55A609FFA3017A40C70A15A758">The Balinese Pawukon Calendar</a></li>
-  <li>Library and Archives Canada: <a href="https://thediscoverblog.com/2024/02/29/no-leap-of-faith/">No Leap of Faith</a></li>
-  <li>NASA GISS: <a href="https://www.giss.nasa.gov/tools/mars24/help/notes.html">Mars24 Technical Notes</a></li>
 </ul>
 
 ---
 
 # ご清聴ありがとうございました
-
----
-
-# Temporalにない暦
-
----
-
-# Temporalで使える暦は組み込みのものだけ
-
-- 2024年6月に、独自の暦を定義する機能が削除された
-- ここから先の暦は、Temporalでは扱えない
-
----
-
-# フランス革命暦
-
-<div class="cell-row">
-  <div class="cell-row-name">1デカード目</div>
-  <div class="cells tight">
-    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div>
-  </div>
-  <div class="cell-row-name">2デカード目</div>
-  <div class="cells tight">
-    <div class="cell">11</div><div class="cell">12</div><div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div><div class="cell">18</div><div class="cell">19</div><div class="cell">20</div>
-  </div>
-  <div class="cell-row-name">3デカード目</div>
-  <div class="cells tight">
-    <div class="cell">21</div><div class="cell">22</div><div class="cell">23</div><div class="cell">24</div><div class="cell">25</div><div class="cell">26</div><div class="cell">27</div><div class="cell">28</div><div class="cell">29</div><div class="cell">30</div>
-  </div>
-</div>
-
-- 1793年10月5日に国民公会が導入を決め、1792年9月22日を起点にした
-- 30日の月を12か月並べ、年末に5日か6日を足す
-- 7日の週をやめて、10日のデカードにした
-- 1806年1月1日にグレゴリオ暦へ戻った
-
----
-
-# 時刻も10進法にした
-
-- 1日10時間、1時間100分、1分100秒
-- 1795年4月7日に、国民公会が十進時刻を無期限に停止した
-
----
-
-# バリ島のパウコン暦
-
-- 1日から10日まで、長さの違う10種類の週が同時に進む
-- 基本は5日、6日、7日の週で、210日はその最小公倍数
-- ほかの週は、日を繰り返すなどして210日に合わせる
-- 5日の週のKliwonと7日の週のSaniscaraが重なる日がTumpekで、35日ごとに来る
-
----
-
-<CalendarAnimation scene="pawukon" />
-
----
-
-# 国際固定暦
-
-<div class="month-grid">
-  <div class="dow">日</div><div class="dow">月</div><div class="dow">火</div><div class="dow">水</div><div class="dow">木</div><div class="dow">金</div><div class="dow">土</div>
-  <div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div>
-  <div class="day">8</div><div class="day">9</div><div class="day">10</div><div class="day">11</div><div class="day">12</div><div class="day mark">13</div><div class="day">14</div>
-  <div class="day">15</div><div class="day">16</div><div class="day">17</div><div class="day">18</div><div class="day">19</div><div class="day">20</div><div class="day">21</div>
-  <div class="day">22</div><div class="day">23</div><div class="day">24</div><div class="day">25</div><div class="day">26</div><div class="day">27</div><div class="day">28</div>
-</div>
-
-- Moses B. Cotsworthの案で、28日の月が13か月
-- 13番目の月Solは6月と7月のあいだ
-- 毎月1日が日曜日なので、13日はいつも金曜日
-- コダックは1989年まで、社内会計に13か月暦を使っていた
-
----
-
-# 火星の暦
-
-| | 地球 | 火星 |
-| --- | --- | --- |
-| 1日 | 24時間 | 24時間39分35.244秒（1ソル） |
-| 1年 | 約365.24日 | 約668.6ソル |
-
-- Thomas Gangaleのダリアン暦は、1年を24か月に分ける
-- 地球の1日と1年を前提にした日付のAPIは、そのままでは使えない
