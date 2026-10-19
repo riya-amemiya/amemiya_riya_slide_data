@@ -105,12 +105,7 @@ highlighter: shiki
 
 ---
 
-# グレゴリオ暦はうるう年で季節に合わせる
-
-```js
-const isLeapYear = (year) =>
-  (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
-```
+# グレゴリオ暦と `iso8601`
 
 | 年 | 4で割り切れる | 100で割り切れる | 400で割り切れる | 判定 |
 | --- | --- | --- | --- | --- |
@@ -118,61 +113,67 @@ const isLeapYear = (year) =>
 | 1900 | ○ | ○ | × | 平年 |
 | 2000 | ○ | ○ | ○ | うるう年 |
 
-<p class="lede">
-400年に97回うるう年を入れて、平均すると1年は365.2425日
-</p>
+- 1582年にローマ教皇グレゴリウス13世が定めた太陽暦
+- 400年に97回うるう年を入れて、平均すると1年は365.2425日
+- `iso8601` はISOの週番号を持ち、`gregory` は紀元の `ce` と `bce` を持つ
 
 ---
 
-# 月日は同じで、年の数え方が違う
+# `buddhist` はタイの仏滅紀元
 
-```js
-> const d = Temporal.PlainDate.from("2026-10-05")
-> const b = d.withCalendar("buddhist")
-> [b.era, b.eraYear, b.month, b.day]
-[ 'be', 2569, 10, 5 ]
-> const j = d.withCalendar("japanese")
-> [j.era, j.eraYear, j.year, j.month, j.day]
-[ 'reiwa', 8, 2026, 10, 5 ]
-```
-
-- `gregory` は `iso8601` とほぼ同じで、紀元がある
-- `buddhist` は西暦に543を足して数える
-- `japanese` の `year` は西暦のままで、元号の年は `eraYear` に入る
-- `japanese` でも、1872年12月31日までは西暦と同じ紀元と年を使う
+- 月日はグレゴリオ暦と同じで、年だけ西暦に543を足して数える
+- 2026年10月5日は仏滅紀元2569年10月5日
+- 1941年より前の日付は、タイで1940年までに改暦があったので史実と合わないことがある
 
 ---
 
-# 月の分け方から違う太陽暦
+# `japanese` は年を元号で数える
+
+<div class="era-strip">
+  <div class="era"><div class="date">1989年1月7日まで</div><div class="name">昭和64年</div></div>
+  <div class="era mark"><div class="date">1989年1月8日から</div><div class="name">平成元年</div></div>
+  <div class="era"><div class="date">2019年4月30日まで</div><div class="name">平成31年</div></div>
+  <div class="era mark"><div class="date">2019年5月1日から</div><div class="name">令和元年</div></div>
+</div>
+
+- 月日はグレゴリオ暦と同じで、年だけ元号で数える
+- 元号法では、元号は皇位の継承があったときに限り改める
+- Temporalの元号は明治、大正、昭和、平成、令和の5つで、明治は6年から始まる
+
+---
+
+# 中国暦と韓国の旧暦
+
+- どちらも月を満ち欠けに合わせ、季節とずれたらうるう月を入れる太陰太陽暦
+- 2025年は6月のあとに閏6月が入って、13か月の年だった
+- `chinese` は紫金山天文台、`dangi` は韓国天文研究院のデータで計算する
+- 2027年の旧正月は、`chinese` では2月6日、`dangi` では2月7日
+
+---
+
+# ヘブライ暦は19年に7回うるう月を入れる
 
 <div class="cell-row">
-  <div class="cell-row-name">月</div>
+  <div class="cell-row-name">年目</div>
   <div class="cells tight">
-    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell mark">13</div>
+    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div><div class="cell">18</div><div class="cell">19</div>
   </div>
-  <div class="cell-row-name">日数</div>
+  <div class="cell-row-name">月の数</div>
   <div class="cells tight">
-    <div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell mark leap">5か6</div>
+    <div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell leap">13</div>
   </div>
 </div>
 
-- `coptic` と `ethiopic` は30日の月を12か月並べ、13番目の月を5日か6日にする
-- 2026年はどちらも9月11日に年が変わる
-- `ethiopic` と `ethioaa` は年の数え始めが違い、2026年10月5日は2019年と7519年
-- `indian` は12か月の暦で、2026年は3月22日に年が変わって1948年になった
+- 月を満ち欠けに合わせる太陰太陽暦で、1年はティシュレー月から始まる
+- うるう年は5番目の月のあとにうるう月を足して、13か月にする
+- 235朔望月の6939.69日と19太陽年の6939.60日がほぼ同じなので、19年で季節に戻る
 
 ---
 
 # イスラム暦は月の満ち欠けだけに合わせる
 
-```js
-> const d = Temporal.PlainDate.from("2026-10-05").withCalendar("islamic-umalqura")
-> [d.year, d.month, d.day, d.daysInYear]
-[ 1448, 4, 24, 355 ]
-```
-
-- イスラム暦（ヒジュラ暦）は12か月で1年
-- 1年は354日か355日で、太陽年より約11日短い
+- 12か月で1年、1年は354日か355日
+- 西暦622年を元年として数える
 - 季節とのずれを直さないので、同じ月が来る時期が毎年約11日ずつ早まる
 
 ---
@@ -195,41 +196,42 @@ const isLeapYear = (year) =>
 
 ---
 
-# ヘブライ暦は19年に7回うるう月を入れる
+# インド国定暦はサカ紀元の太陽暦
 
 <div class="cell-row">
-  <div class="cell-row-name">年目</div>
+  <div class="cell-row-name">月</div>
   <div class="cells tight">
-    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div><div class="cell">18</div><div class="cell">19</div>
+    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div>
   </div>
-  <div class="cell-row-name">月の数</div>
+  <div class="cell-row-name">日数</div>
   <div class="cells tight">
-    <div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell leap">13</div>
+    <div class="cell mark leap">30か31</div><div class="cell">31</div><div class="cell">31</div><div class="cell">31</div><div class="cell">31</div><div class="cell">31</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div>
   </div>
 </div>
 
-- 月を満ち欠けに合わせ、季節とずれてきたら1か月まるごと足す
-- 12か月 × 12年 + 13か月 × 7年 = 235か月
-- 235朔望月は6939.69日、19太陽年は6939.60日
+- 西暦から78を引いた年で数え、2026年3月22日からは1948年
+- 新年は3月22日で、うるう年だけ3月21日
+- 1番目の月はうるう年だけ31日になる
 
 ---
 
-<CalendarAnimation scene="metonic" />
+# コプト暦とエチオピア暦は13か月
 
----
+<div class="cell-row">
+  <div class="cell-row-name">月</div>
+  <div class="cells tight">
+    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell mark">13</div>
+  </div>
+  <div class="cell-row-name">日数</div>
+  <div class="cells tight">
+    <div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell">30</div><div class="cell mark leap">5か6</div>
+  </div>
+</div>
 
-# 中国暦と韓国の旧暦で旧正月がずれる
-
-```js
-> Temporal.PlainDate.from({ calendar: "chinese", year: 2027, month: 1, day: 1 }).toString()
-'2027-02-06[u-ca=chinese]'
-> Temporal.PlainDate.from({ calendar: "dangi", year: 2027, month: 1, day: 1 }).toString()
-'2027-02-07[u-ca=dangi]'
-```
-
-- どちらも月の満ち欠けと季節の両方に合わせる太陰太陽暦
-- `chinese` は紫金山天文台、`dangi` は韓国天文研究院のデータで計算する
-- 2026年10月10日も、`chinese` では9月1日、`dangi` では8月30日
+- 30日の月を12か月並べ、13番目の月を5日か6日にする
+- 2026年はどちらも9月11日に年が変わる
+- `coptic` は西暦284年、`ethiopic` は西暦8年を元年とする
+- `ethioaa` は同じエチオピア暦を紀元前5493年から数えるので、年が5500大きい
 
 ---
 
@@ -250,7 +252,32 @@ const isLeapYear = (year) =>
 
 ---
 
-<CalendarAnimation scene="convert" />
+# 2026年10月5日を全部の暦で読む
+
+```js
+Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId)
+```
+
+<div class="table-sm">
+
+| calendarId | `era` | `eraYear` | `year` | `monthCode` | `day` |
+| --- | --- | --- | --- | --- | --- |
+| `iso8601` | | | 2026 | `M10` | 5 |
+| `gregory` | `ce` | 2026 | 2026 | `M10` | 5 |
+| `buddhist` | `be` | 2569 | 2569 | `M10` | 5 |
+| `japanese` | `reiwa` | 8 | 2026 | `M10` | 5 |
+| `chinese` | | | 2026 | `M08` | 25 |
+| `dangi` | | | 2026 | `M08` | 25 |
+| `hebrew` | `am` | 5787 | 5787 | `M01` | 24 |
+| `islamic-umalqura` | `ah` | 1448 | 1448 | `M04` | 24 |
+| `islamic-civil` | `ah` | 1448 | 1448 | `M04` | 22 |
+| `islamic-tbla` | `ah` | 1448 | 1448 | `M04` | 23 |
+| `indian` | `shaka` | 1948 | 1948 | `M07` | 13 |
+| `coptic` | `am` | 1743 | 1743 | `M01` | 25 |
+| `ethiopic` | `am` | 2019 | 2019 | `M01` | 25 |
+| `ethioaa` | `aa` | 7519 | 7519 | `M01` | 25 |
+
+</div>
 
 ---
 
@@ -289,10 +316,6 @@ Uncaught RangeError
 
 ---
 
-<CalendarAnimation scene="addyear" />
-
----
-
 <p class="lead-q">
 人類の負債を吸収して<br>いい感じに返してくれる<br>Temporal、すごい
 </p>
@@ -308,6 +331,7 @@ Uncaught RangeError
   <li>Inter gravissimas: <a href="https://en.wikisource.org/wiki/Translation:Inter_gravissimas">Wikisource</a></li>
   <li>CLDR: <a href="https://cldr.unicode.org/development/development-process/design-proposals/islamic-calendar-types">Islamic Calendar Types</a></li>
   <li>My Jewish Learning: <a href="https://www.myjewishlearning.com/article/the-jewish-leap-year-explained/">The Jewish Leap Year Explained</a></li>
+  <li>e-Gov法令検索: <a href="https://laws.e-gov.go.jp/law/354AC0000000043">元号法</a></li>
 </ul>
 
 ---

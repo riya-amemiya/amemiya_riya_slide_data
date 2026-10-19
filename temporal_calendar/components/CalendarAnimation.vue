@@ -2,7 +2,7 @@
 import { computed, onUnmounted, ref } from 'vue'
 import { useNav } from '@slidev/client'
 
-type SceneName = 'cycles' | 'ramadan' | 'metonic' | 'convert' | 'addyear'
+type SceneName = 'cycles' | 'ramadan'
 type Frame = { html: string; delay: number }
 type Counter = [string, string, string]
 
@@ -20,10 +20,6 @@ const counterHtml = (cs: Counter[]) =>
     .join('')}</div>`
 const laneHtml = (name: string, body: string) =>
   `<div class="ca-lane"><div class="ca-lane-name">${name}</div>${body}</div>`
-const raceHtml = (title: string, phase: string, body: string, cs: Counter[]) =>
-  `<div class="ca-race"><div class="ca-race-head"><span class="ca-race-title">${title}</span><span class="ca-race-phase">${phase}</span></div>${body}<div class="ca-race-counters">${cs
-    .map(([k, v, u]) => `<span>${k}<span class="ca-v">${v}</span>${u}</span>`)
-    .join('')}</div></div>`
 
 const buildCycles = (): Frame[] => {
   const scale = 1.75
@@ -144,157 +140,20 @@ const buildRamadan = (): Frame[] => {
   return frames
 }
 
-const buildMetonic = (): Frame[] => {
-  const leapYears = [3, 6, 8, 11, 14, 17, 19]
-  const yearGap = SOLAR_YEAR - 12 * SYNODIC_MONTH
-  const gaugeScale = 17
-  const st = { year: 0, gap: 0, leaps: 0, inserting: false }
-  const draw = (phase: string) =>
-    headHtml('ヘブライ暦の19年周期', phase) +
-    `<div class="ca-label">各年の月の数</div>` +
-    `<div class="ca-years">${range(19)
-      .map((i) => {
-        const y = i + 1
-        const done = y < st.year || (y === st.year && !st.inserting)
-        const months = leapYears.includes(y) ? 13 : 12
-        return `<div class="ca-y${y === st.year ? ' now' : ''}${done && months === 13 ? ' leap' : ''}"><div class="ca-y-n">${y}</div><div class="ca-y-m">${done ? months : ''}</div></div>`
-      })
-      .join('')}</div>` +
-    `<div class="ca-label">12か月の年を重ねたときの季節とのずれ</div>` +
-    `<div class="ca-gauge"><div class="ca-gauge-fill${st.inserting ? ' over' : ''}" style="width:${Math.max(0, st.gap) * gaugeScale}px"></div><div class="ca-gauge-month" style="left:${SYNODIC_MONTH * gaugeScale}px"><span>1か月</span></div></div>` +
-    counterHtml([
-      ['経過', String(st.year), '年'],
-      ['13か月の年', String(st.leaps), '回'],
-      ['ずれ', st.gap.toFixed(2), '日'],
-    ])
-  const frames: Frame[] = []
-  const push = (phase: string, delay: number) => frames.push({ html: draw(phase), delay })
-  push('12か月の年は太陽年より10.88日短い', 160)
-  range(19).forEach((i) => {
-    const y = i + 1
-    st.year = y
-    st.gap += yearGap
-    if (leapYears.includes(y)) {
-      st.inserting = true
-      push(`${y}年目、ずれが1か月に近づく`, 90)
-      st.inserting = false
-      st.gap -= SYNODIC_MONTH
-      st.leaps++
-      push(`${y}年目にうるう月を入れて13か月にする`, 110)
-      return
-    }
-    push(`${y}年目は12か月`, 55)
-  })
-  push('19年でずれがほぼ0に戻る', 400)
-  return frames
+const builders: Record<SceneName, () => Frame[]> = {
+  cycles: buildCycles,
+  ramadan: buildRamadan,
 }
 
-const CONVERT: [string, [number, string, number][]][] = [
-  ['iso8601', range(14).map((i): [number, string, number] => [2026, 'M09', 10 + i])],
-  ['hebrew', [[5786, 'M12', 28], [5786, 'M12', 29], ...range(12).map((i): [number, string, number] => [5787, 'M01', i + 1])]],
-  ['chinese', [[2026, 'M07', 29], ...range(13).map((i): [number, string, number] => [2026, 'M08', i + 1])]],
-  [
-    'islamic-umalqura',
-    [[1448, 'M03', 28], [1448, 'M03', 29], ...range(12).map((i): [number, string, number] => [1448, 'M04', i + 1])],
-  ],
-  ['ethiopic', [[2018, 'M13', 5], ...range(13).map((i): [number, string, number] => [2019, 'M01', i + 1])]],
-  ['indian', [...range(13).map((i): [number, string, number] => [1948, 'M06', 19 + i]), [1948, 'M07', 1]]],
-]
-
-const buildConvert = (): Frame[] => {
-  const draw = (cursor: number, phase: string) =>
-    headHtml('ISO 8601の2026年9月10日から14日間', phase) +
-    `<div class="ca-conv">${CONVERT.map(([id, days]) => {
-      const [y, code, d] = days[Math.max(cursor, 0)]
-      return (
-        `<div class="ca-conv-name">${id}</div>` +
-        `<div class="ca-conv-cells">${days
-          .map(
-            ([, , day], i) =>
-              `<div class="ca-cv${i > cursor ? ' later' : day === 1 ? ' first' : ''}${i === cursor ? ' cursor' : ''}">${day}</div>`,
-          )
-          .join('')}</div>` +
-        `<div class="ca-conv-val">${cursor < 0 ? '' : `${y}年 ${code} ${d}日`}</div>`
-      )
-    }).join('')}</div>`
-  const special: Record<number, string> = {
-    1: '中国暦で8月、エチオピア暦で2019年が始まる',
-    2: 'ヘブライ暦で5787年、イスラム暦で4月が始まる',
-    13: 'インド国定暦で7月が始まる',
-  }
-  const frames: Frame[] = [{ html: draw(-1, '同じ日付を暦ごとに読む'), delay: 120 }]
-  range(14).forEach((i) =>
-    frames.push({ html: draw(i, special[i] ?? `9月${10 + i}日`), delay: special[i] ? 170 : 40 }),
-  )
-  frames.push({ html: draw(13, '月が変わる日は暦ごとに違う'), delay: 400 })
-  return frames
-}
-
-const buildAddYear = (overflow: 'constrain' | 'reject'): Frame[] => {
-  const common = range(12).map((i) => `M${String(i + 1).padStart(2, '0')}`)
-  const leap = [...common.slice(0, 5), 'M05L', ...common.slice(5)]
-  const steps = ['暦の年月日に直す', '年に1を足す', 'monthCodeを探す', 'ISO 8601の日付に戻す']
-  const draw = (step: number, year: number, codes: string[], cursor: number, hit: number, phase: string, result: string) =>
-    raceHtml(
-      `<span class="ca-code">overflow: "${overflow}"</span>`,
-      phase,
-      `<div class="ca-steps">${steps
-        .map((t, i) => `<span class="ca-step${i === step ? ' on' : ''}">${t}</span>`)
-        .join('<span class="ca-arrow">→</span>')}</div>` +
-        `<div class="ca-months ca-months-sm"><span class="ca-yr">${year}年</span>${codes
-          .map(
-            (c, i) =>
-              `<div class="ca-mo code${c.endsWith('L') ? ' leap' : ''}${i === hit ? ' hit' : i === cursor ? ' cursor' : ''}">${c}</div>`,
-          )
-          .join('')}</div>`,
-      [['結果', result, '']],
-    )
-  const frames: Frame[] = []
-  const push = (delay: number, ...args: Parameters<typeof draw>) => frames.push({ html: draw(...args), delay })
-  push(130, 0, 5787, leap, 5, -1, '5787年 M05L 1日から始める', '-')
-  push(120, 1, 5788, common, -1, -1, '5788年は12か月', '-')
-  range(12).forEach((i) => push(12, 2, 5788, common, i, -1, 'M05Lを探す', '-'))
-  if (overflow === 'constrain') {
-    push(160, 2, 5788, common, -1, 5, 'M05LがないのでM06にする', '-')
-    push(350, 3, 5788, common, -1, 5, '5788年 M06 1日', '2028-02-28')
-    return frames
-  }
-  push(350, 2, 5788, common, -1, -1, 'M05LがないのでRangeErrorを投げる', 'RangeError')
-  return frames
-}
-
-const builders: Record<SceneName, () => Frame[][]> = {
-  cycles: () => [buildCycles()],
-  ramadan: () => [buildRamadan()],
-  metonic: () => [buildMetonic()],
-  convert: () => [buildConvert()],
-  addyear: () => [buildAddYear('constrain'), buildAddYear('reject')],
-}
-
-const raceTitles: Partial<Record<SceneName, string>> = {
-  addyear: 'ヘブライ暦5787年 M05L 1日に1年足す',
-}
-
-const lanes = builders[props.scene]()
-const raceTitle = raceTitles[props.scene]
-const header = raceTitle ? headHtml(raceTitle, '') : ''
-const tall = ['convert', 'addyear'].includes(props.scene)
-const ends = lanes.map((fs) =>
-  fs.reduce<number[]>((acc, f) => [...acc, (acc[acc.length - 1] ?? 0) + f.delay * 10], []),
-)
-const cycle = Math.max(...ends.map((e) => e[e.length - 1]))
+const frames = builders[props.scene]()
+const ends = frames.reduce<number[]>((acc, f) => [...acc, (acc[acc.length - 1] ?? 0) + f.delay * 10], [])
+const cycle = ends[ends.length - 1]
 const { isPrintMode } = useNav()
 const elapsed = ref(isPrintMode.value ? cycle : 0)
-const html = computed(
-  () =>
-    header +
-    lanes
-      .map((fs, i) => {
-        const at = ends[i].findIndex((end) => elapsed.value < end)
-        return fs[at < 0 ? fs.length - 1 : at].html
-      })
-      .join(''),
-)
+const html = computed(() => {
+  const at = ends.findIndex((end) => elapsed.value < end)
+  return frames[at < 0 ? frames.length - 1 : at].html
+})
 const timer = ref<ReturnType<typeof setInterval>>()
 
 const play = () => {
@@ -309,7 +168,7 @@ onUnmounted(() => clearInterval(timer.value))
 </script>
 
 <template>
-  <div class="cal-anim" :class="{ 'ca-tall': tall }" v-html="html" />
+  <div class="cal-anim" v-html="html" />
   <button v-if="!isPrintMode" class="cal-anim-play" @click="play">再生</button>
 </template>
 
@@ -453,206 +312,6 @@ onUnmounted(() => clearInterval(timer.value))
 }
 .cal-anim .ca-pin.past {
   background: var(--ca-blue);
-}
-.cal-anim .ca-years {
-  display: flex;
-  gap: 4px;
-}
-.cal-anim .ca-y {
-  width: 38px;
-  border-radius: 6px;
-  border: 1px solid #b5d0fb;
-  text-align: center;
-}
-.cal-anim .ca-y.now {
-  border: 2px solid var(--ca-blue);
-}
-.cal-anim .ca-y.leap {
-  background: var(--ca-copy-bg);
-  border-color: var(--ca-copy);
-}
-.cal-anim .ca-y-n {
-  font-size: 11px;
-}
-.cal-anim .ca-y-m {
-  font: 700 16px/22px 'Nunito', sans-serif;
-  min-height: 22px;
-}
-.cal-anim .ca-gauge {
-  position: relative;
-  height: 30px;
-  width: 700px;
-  border-radius: 6px;
-  background: var(--ca-light);
-}
-.cal-anim .ca-gauge-fill {
-  height: 100%;
-  border-radius: 6px;
-  background: var(--ca-blue);
-}
-.cal-anim .ca-gauge-fill.over {
-  background: var(--ca-copy);
-}
-.cal-anim .ca-gauge-month {
-  position: absolute;
-  top: -6px;
-  bottom: -6px;
-  border-left: 2px dashed var(--ca-navy);
-}
-.cal-anim .ca-gauge-month span {
-  position: absolute;
-  left: 6px;
-  top: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.cal-anim .ca-months {
-  display: flex;
-  gap: 4px;
-}
-.cal-anim .ca-mo {
-  width: 50px;
-  height: 40px;
-  border-radius: 6px;
-  border: 1px solid #b5d0fb;
-  background: var(--ca-light);
-  color: var(--ca-blue);
-  font: 700 15px/38px 'Nunito', sans-serif;
-  text-align: center;
-}
-.cal-anim .ca-mo.code {
-  font: 700 13px/38px ui-monospace, Menlo, monospace;
-}
-.cal-anim .ca-mo.leap {
-  background: var(--ca-copy-bg);
-  border-color: var(--ca-copy);
-  color: var(--ca-navy);
-}
-.cal-anim .ca-mo.cursor {
-  background: var(--ca-blue);
-  border-color: var(--ca-blue);
-  color: #fff;
-}
-.cal-anim.ca-tall {
-  height: 390px;
-}
-.cal-anim .ca-race {
-  margin-top: 16px;
-}
-.cal-anim .ca-race-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 4px;
-}
-.cal-anim .ca-race-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--ca-blue);
-}
-.cal-anim .ca-code {
-  font: 700 16px ui-monospace, Menlo, monospace;
-  color: var(--ca-blue);
-}
-.cal-anim .ca-race-phase {
-  font-size: 14px;
-  font-weight: 700;
-}
-.cal-anim .ca-race-counters {
-  display: flex;
-  gap: 22px;
-  margin-top: 6px;
-  font-size: 14px;
-  min-height: 24px;
-}
-.cal-anim .ca-race-counters .ca-v {
-  font-size: 18px;
-  margin: 0 2px 0 6px;
-}
-.cal-anim .ca-conv {
-  display: grid;
-  grid-template-columns: 150px max-content 1fr;
-  gap: 8px 14px;
-  align-items: center;
-  margin-top: 18px;
-}
-.cal-anim .ca-conv-name {
-  font: 700 14px ui-monospace, Menlo, monospace;
-  color: var(--ca-blue);
-}
-.cal-anim .ca-conv-cells {
-  display: flex;
-  gap: 3px;
-}
-.cal-anim .ca-cv {
-  width: 32px;
-  height: 36px;
-  border-radius: 5px;
-  border: 1px solid #b5d0fb;
-  background: var(--ca-light);
-  color: var(--ca-blue);
-  font: 700 13px/34px 'Nunito', sans-serif;
-  text-align: center;
-}
-.cal-anim .ca-cv.later {
-  border: 1px dashed var(--ca-dash);
-  background: #fff;
-  color: var(--ca-dash);
-}
-.cal-anim .ca-cv.first {
-  background: var(--ca-copy-bg);
-  border-color: var(--ca-copy);
-  color: var(--ca-navy);
-}
-.cal-anim .ca-cv.cursor {
-  border: 2px solid var(--ca-blue);
-  line-height: 32px;
-}
-.cal-anim .ca-conv-val {
-  font: 700 14px 'Nunito', 'Noto Sans JP', sans-serif;
-  white-space: nowrap;
-}
-.cal-anim .ca-steps {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-.cal-anim .ca-step {
-  font-size: 12px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border: 1px solid var(--ca-dash);
-  border-radius: 6px;
-  color: var(--ca-dash);
-}
-.cal-anim .ca-step.on {
-  border-color: var(--ca-blue);
-  background: var(--ca-blue);
-  color: #fff;
-}
-.cal-anim .ca-arrow {
-  font-weight: 700;
-  color: var(--ca-blue);
-}
-.cal-anim .ca-months-sm {
-  align-items: center;
-}
-.cal-anim .ca-months-sm .ca-mo {
-  width: 46px;
-  height: 32px;
-  line-height: 30px;
-}
-.cal-anim .ca-yr {
-  width: 64px;
-  font-size: 14px;
-  font-weight: 700;
-}
-.cal-anim .ca-mo.hit {
-  background: var(--ca-copy);
-  border-color: var(--ca-copy);
-  color: #fff;
 }
 .slidev-layout .cal-anim-play {
   display: block;

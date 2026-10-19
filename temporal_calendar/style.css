@@ -193,7 +193,7 @@ pre, code {
 
 .slidev-layout .table-sm table { font-size: 0.75em; margin: 0; }
 .slidev-layout .table-sm table th,
-.slidev-layout .table-sm table td { padding: 4px 16px; }
+.slidev-layout .table-sm table td { padding: 2px 16px; }
 
 .slidev-layout ul.refs {
   max-width: 900px;
@@ -228,3 +228,15 @@ pre, code {
 .slidev-layout .cell.leap { background: #fff4dc; }
 .slidev-layout .cells.tight { gap: 4px; }
 .slidev-layout .cells.tight .cell { min-width: 36px; padding: 6px 0; }
+
+.slidev-layout .era-strip { display: flex; gap: 8px; margin: 12px 0 20px; }
+.slidev-layout .era {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 2px solid #e6e8ef;
+  line-height: 1.5;
+}
+.slidev-layout .era .date { font-size: 0.8em; }
+.slidev-layout .era .name { font-weight: 700; }
+.slidev-layout .era.mark { background: #f0f7ff; border-color: #3984FD; }
+.slidev-layout .era.mark .name { color: #3984FD; }
