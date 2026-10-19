@@ -53,6 +53,121 @@ highlighter: shiki
 
 ---
 
+<p class="lead-q">
+2026年1月31日の1か月後は<br>何月何日？
+</p>
+
+---
+
+# Dateで1か月後を求める
+
+```js
+> const d = new Date(2026, 0, 31)
+> d.setMonth(1)
+1772463600000
+> d.toDateString()
+'Tue Mar 03 2026'
+```
+
+- `0` が1月で、`1` が2月
+- `setMonth` は `d` を書き換えて、ミリ秒の数値を返す
+- 存在しない2月31日は3月3日になる
+
+---
+
+# Dateで来週を求める
+
+```js
+> const addWeek = (d) => { d.setDate(d.getDate() + 7); return d }
+> const today = new Date(2026, 9, 19)
+> const nextWeek = addWeek(today)
+> today.toDateString()
+'Mon Oct 26 2026'
+```
+
+- Dateはあとから値を書き換えられる
+- `addWeek` の中で書き換えたので、渡した `today` も変わる
+
+---
+
+# 文字列からDateを作る
+
+```js
+> new Date("2026-10-05").getHours()
+9
+> new Date("2026-10-05T00:00").getHours()
+0
+```
+
+- 東京で実行した結果
+- 日付だけならUTC、時刻を付けるとローカル時刻として読む
+- ニューヨークで `new Date("2026-10-05").getDate()` を実行すると `4`
+
+---
+
+# 2桁の年
+
+```js
+> new Date(26, 0, 1).getFullYear()
+1926
+> new Date(2026, 0, 1).getYear()
+126
+```
+
+- 0から99までの年には1900を足す
+- `getYear` は西暦から1900を引いた値を返す
+
+---
+
+# Dateが生まれた背景
+
+- 1995年5月、Brendan EichがNetscapeでJavaScriptを10日間で試作した
+- DateはJava 1.0の `java.util.Date` を、バグも含めてそのまま写した
+- 月が0から11なのも、2000年問題を抱えた年の扱いも、Javaから来ている
+- Javaと連携するための選択だった
+- Java側はJDK 1.1で `getYear` や `setMonth` を非推奨にした
+
+---
+
+<p class="lead-q">
+Javaが次のバージョンで手放したAPIを<br>JavaScriptは30年以上使っている
+</p>
+
+---
+
+# Temporalで1か月後を求める
+
+```js
+> const d = Temporal.PlainDate.from("2026-01-31")
+> d.month
+1
+> d.add({ months: 1 }).toString()
+'2026-02-28'
+> d.toString()
+'2026-01-31'
+```
+
+- 月は1から数える
+- `add` は新しい値を返し、`d` はそのまま
+- 存在しない2月31日は2月28日に丸める
+
+---
+
+# 日付に付いてくる暦
+
+```js
+> const d = Temporal.PlainDate.from("2026-10-05")
+> d.calendarId
+'iso8601'
+> d.monthCode
+'M10'
+```
+
+- 暦を表す `calendarId` がある
+- `month` とは別に `monthCode` がある
+
+---
+
 # Temporalが対応している主な暦
 
 <div class="table-sm">
@@ -425,13 +540,14 @@ Uncaught RangeError
 <ul class="refs">
   <li>Temporal: <a href="https://tc39.es/proposal-temporal/">tc39.es/proposal-temporal</a></li>
   <li>Intl era and monthCode: <a href="https://tc39.es/proposal-intl-era-monthcode/">tc39.es/proposal-intl-era-monthcode</a></li>
+  <li>Wirfs-Brock, Eich: <a href="https://dl.acm.org/doi/10.1145/3386327">JavaScript: The First 20 Years</a></li>
+  <li>Oracle: <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Date.html">java.util.Date</a></li>
   <li>British Astronomical Association: <a href="https://britastro.org/computing/data.html">Astronomical &amp; physical constants</a></li>
   <li>NASA: <a href="https://eclipse.gsfc.nasa.gov/SEhelp/moonorbit.html">Eclipses and the Moon's Orbit</a></li>
   <li>Inter gravissimas: <a href="https://en.wikisource.org/wiki/Translation:Inter_gravissimas">Wikisource</a></li>
   <li>Royal Society of Thailand: <a href="https://www.orst.go.th/FILEROOM/CABROYINWEB/DRAWER004/GENERAL/DATA0000/00000647.FLP/html/160/">Thai calendar eras</a></li>
   <li>CSIR: <a href="https://archive.org/details/HistoryOfCalendarPanchangaCommittee">History of Calendar</a></li>
   <li>Coptic Orthodox Church: <a href="https://copticorthodox.church/en/?p=9747">Diocletian and the Coptic calendar</a></li>
-  <li>Dar al-Ifta: <a href="https://dar-alifta.org/en/article/details/4310/the-hijra-and-the-islamic-calendar">The Hijra and the Islamic Calendar</a></li>
 </ul>
 
 ---
@@ -439,6 +555,7 @@ Uncaught RangeError
 # 参考資料
 
 <ul class="refs">
+  <li>Dar al-Ifta: <a href="https://dar-alifta.org/en/article/details/4310/the-hijra-and-the-islamic-calendar">The Hijra and the Islamic Calendar</a></li>
   <li>Quran.com: <a href="https://quran.com/9/37">9:37</a></li>
   <li>CLDR: <a href="https://cldr.unicode.org/development/development-process/design-proposals/islamic-calendar-types">Islamic Calendar Types</a></li>
   <li>香港天文台: <a href="https://www.hko.gov.hk/tc/gts/time/24solarterms.htm">二十四節氣</a></li>
