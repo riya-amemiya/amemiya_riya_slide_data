@@ -105,7 +105,7 @@ highlighter: shiki
 
 ---
 
-# グレゴリオ暦と `iso8601`
+# グレゴリオ暦
 
 | 年 | 4で割り切れる | 100で割り切れる | 400で割り切れる | 判定 |
 | --- | --- | --- | --- | --- |
@@ -115,7 +115,7 @@ highlighter: shiki
 
 - 1582年にローマ教皇グレゴリウス13世が定めた太陽暦
 - 400年に97回うるう年を入れて、平均すると1年は365.2425日
-- `iso8601` はISOの週番号を持ち、`gregory` は紀元の `ce` と `bce` を持つ
+- `iso8601` と `gregory` は、どちらもこのグレゴリオ暦
 
 ---
 
@@ -123,7 +123,6 @@ highlighter: shiki
 
 - 月日はグレゴリオ暦と同じで、年だけ西暦に543を足して数える
 - 2026年10月5日は仏滅紀元2569年10月5日
-- 1941年より前の日付は、タイで1940年までに改暦があったので史実と合わないことがある
 
 ---
 
@@ -138,7 +137,7 @@ highlighter: shiki
 
 - 月日はグレゴリオ暦と同じで、年だけ元号で数える
 - 元号法では、元号は皇位の継承があったときに限り改める
-- Temporalの元号は明治、大正、昭和、平成、令和の5つで、明治は6年から始まる
+- 日本が太陽暦に切り替えたのは明治6年1月1日
 
 ---
 
@@ -211,7 +210,6 @@ highlighter: shiki
 
 - 西暦から78を引いた年で数え、2026年3月22日からは1948年
 - 新年は3月22日で、うるう年だけ3月21日
-- 1番目の月はうるう年だけ31日になる
 
 ---
 
@@ -228,7 +226,6 @@ highlighter: shiki
   </div>
 </div>
 
-- 30日の月を12か月並べ、13番目の月を5日か6日にする
 - 2026年はどちらも9月11日に年が変わる
 - `coptic` は西暦284年、`ethiopic` は西暦8年を元年とする
 - `ethioaa` は同じエチオピア暦を紀元前5493年から数えるので、年が5500大きい
@@ -294,7 +291,6 @@ Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId)
   </div>
 </div>
 
-- ヘブライ暦の5787年（2026年9月から）は13か月
 - 5786年の6番目の月はアダル、5787年の6番目の月はアダル1
 - うるう月は直前の月のコードに `L` を付けた `monthCode` で区別する
 
@@ -312,7 +308,6 @@ Uncaught RangeError
 
 - 5788年は12か月の年なので、アダル1がない
 - 既定の `"constrain"` では、アダル（`M06`）に丸める
-- `"reject"` ではRangeErrorを投げる
 
 ---
 
@@ -332,6 +327,7 @@ Uncaught RangeError
   <li>CLDR: <a href="https://cldr.unicode.org/development/development-process/design-proposals/islamic-calendar-types">Islamic Calendar Types</a></li>
   <li>My Jewish Learning: <a href="https://www.myjewishlearning.com/article/the-jewish-leap-year-explained/">The Jewish Leap Year Explained</a></li>
   <li>e-Gov法令検索: <a href="https://laws.e-gov.go.jp/law/354AC0000000043">元号法</a></li>
+  <li>国立天文台 暦Wiki: <a href="https://eco.mtk.nao.ac.jp/koyomi/wiki/B7EEA4CECBFEA4C1B7E7A4B12FB7EECEF0A4ACC0B8A4DEA4ECA4EBA4DEA4C7.html">月齢が生まれるまで</a></li>
 </ul>
 
 ---
