@@ -122,7 +122,6 @@ highlighter: shiki
 # `buddhist` はタイの仏滅紀元
 
 - 月日はグレゴリオ暦と同じで、年だけ西暦に543を足して数える
-- 2026年10月5日は仏滅紀元2569年10月5日
 
 ---
 
@@ -137,7 +136,6 @@ highlighter: shiki
 
 - 月日はグレゴリオ暦と同じで、年だけ元号で数える
 - 元号法では、元号は皇位の継承があったときに限り改める
-- 日本が太陽暦に切り替えたのは明治6年1月1日
 
 ---
 
@@ -145,8 +143,7 @@ highlighter: shiki
 
 - どちらも月を満ち欠けに合わせ、季節とずれたらうるう月を入れる太陰太陽暦
 - 2025年は6月のあとに閏6月が入って、13か月の年だった
-- `chinese` は紫金山天文台、`dangi` は韓国天文研究院のデータで計算する
-- 2027年の旧正月は、`chinese` では2月6日、`dangi` では2月7日
+- 中国と韓国で計算に使うデータが違い、2027年の旧正月は中国では2月6日、韓国では2月7日
 
 ---
 
@@ -183,11 +180,11 @@ highlighter: shiki
 
 # イスラム暦は計算方法ごとにIDが分かれる
 
-| calendarId | 決め方 | 2026年10月5日 |
-| --- | --- | --- |
-| `islamic-umalqura` | サウジアラビアが行政に使う計算方式 | 1448年4月24日 |
-| `islamic-civil` | 30年に11回うるう年を入れる表で計算し、金曜日を起点にする | 1448年4月22日 |
-| `islamic-tbla` | 同じ表で、木曜日を起点にする | 1448年4月23日 |
+| calendarId | 決め方 |
+| --- | --- |
+| `islamic-umalqura` | サウジアラビアが行政に使う計算方式 |
+| `islamic-civil` | 30年に11回うるう年を入れる表で計算し、金曜日を起点にする |
+| `islamic-tbla` | 同じ表で、木曜日を起点にする |
 
 <p class="lede" style="margin-top:24px;">
 多くのイスラム教国では、日没後に三日月が見えた日から月を始める<br>だから実際の日付は地域で変わる
@@ -208,7 +205,7 @@ highlighter: shiki
   </div>
 </div>
 
-- 西暦から78を引いた年で数え、2026年3月22日からは1948年
+- 西暦から78を引いた年で数える
 - 新年は3月22日で、うるう年だけ3月21日
 
 ---
@@ -226,9 +223,8 @@ highlighter: shiki
   </div>
 </div>
 
-- 2026年はどちらも9月11日に年が変わる
-- `coptic` は西暦284年、`ethiopic` は西暦8年を元年とする
-- `ethioaa` は同じエチオピア暦を紀元前5493年から数えるので、年が5500大きい
+- どちらも9月11日ごろに年が変わる
+- コプト暦は西暦284年、エチオピア暦は西暦8年を元年とする
 
 ---
 
@@ -245,7 +241,6 @@ highlighter: shiki
 
 - `PlainDate` が持つのは、ISO 8601の年月日と暦の2つ
 - `year` や `month` は、ISO 8601の年月日から暦に従って計算する
-- `withCalendar` は暦だけを差し替えるので、比べると同じ日
 
 ---
 
@@ -257,22 +252,18 @@ Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId)
 
 <div class="table-sm">
 
-| calendarId | `era` | `eraYear` | `year` | `monthCode` | `day` |
-| --- | --- | --- | --- | --- | --- |
-| `iso8601` | | | 2026 | `M10` | 5 |
-| `gregory` | `ce` | 2026 | 2026 | `M10` | 5 |
-| `buddhist` | `be` | 2569 | 2569 | `M10` | 5 |
-| `japanese` | `reiwa` | 8 | 2026 | `M10` | 5 |
-| `chinese` | | | 2026 | `M08` | 25 |
-| `dangi` | | | 2026 | `M08` | 25 |
-| `hebrew` | `am` | 5787 | 5787 | `M01` | 24 |
-| `islamic-umalqura` | `ah` | 1448 | 1448 | `M04` | 24 |
-| `islamic-civil` | `ah` | 1448 | 1448 | `M04` | 22 |
-| `islamic-tbla` | `ah` | 1448 | 1448 | `M04` | 23 |
-| `indian` | `shaka` | 1948 | 1948 | `M07` | 13 |
-| `coptic` | `am` | 1743 | 1743 | `M01` | 25 |
-| `ethiopic` | `am` | 2019 | 2019 | `M01` | 25 |
-| `ethioaa` | `aa` | 7519 | 7519 | `M01` | 25 |
+| calendarId | 年月日 |
+| --- | --- |
+| `gregory` | 2026年10月5日 |
+| `buddhist` | 2569年10月5日 |
+| `japanese` | 令和8年10月5日 |
+| `chinese` | 2026年8月25日 |
+| `dangi` | 2026年8月25日 |
+| `hebrew` | 5787年1月24日 |
+| `islamic-umalqura` | 1448年4月24日 |
+| `indian` | 1948年7月13日 |
+| `coptic` | 1743年1月25日 |
+| `ethiopic` | 2019年1月25日 |
 
 </div>
 
@@ -327,7 +318,6 @@ Uncaught RangeError
   <li>CLDR: <a href="https://cldr.unicode.org/development/development-process/design-proposals/islamic-calendar-types">Islamic Calendar Types</a></li>
   <li>My Jewish Learning: <a href="https://www.myjewishlearning.com/article/the-jewish-leap-year-explained/">The Jewish Leap Year Explained</a></li>
   <li>e-Gov法令検索: <a href="https://laws.e-gov.go.jp/law/354AC0000000043">元号法</a></li>
-  <li>国立天文台 暦Wiki: <a href="https://eco.mtk.nao.ac.jp/koyomi/wiki/B7EEA4CECBFEA4C1B7E7A4B12FB7EECEF0A4ACC0B8A4DEA4ECA4EBA4DEA4C7.html">月齢が生まれるまで</a></li>
 </ul>
 
 ---
