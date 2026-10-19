@@ -101,7 +101,7 @@ highlighter: shiki
 | --- | --- |
 | 季節（太陽暦） | `iso8601`、`gregory`、`buddhist`、`japanese`、`indian`、`coptic`、`ethiopic`、`ethioaa` |
 | 月の満ち欠け（太陰暦） | `islamic-umalqura`、`islamic-civil`、`islamic-tbla` |
-| 両方（太陰太陽暦） | `hebrew`、`chinese`、`dangi` |
+| 両方（太陰太陽暦） | `chinese`、`dangi`、`hebrew` |
 
 ---
 
@@ -138,65 +138,6 @@ highlighter: shiki
 - 月日はグレゴリオ暦と同じ
 - 年は元号で数える
 - 元号法では皇位の継承があったときだけ元号を改める
-
----
-
-# 中国暦と韓国の旧暦
-
-- どちらも月を満ち欠けに合わせる太陰太陽暦
-- 季節とずれてきたらうるう月を入れる
-- 2025年は6月のあとにうるう6月が入って13か月
-- 中国と韓国で計算に使うデータが違う
-- 2027年の旧正月は中国で2月6日、韓国で2月7日
-
----
-
-# ヘブライ暦
-
-<div class="cell-row">
-  <div class="cell-row-name">年目</div>
-  <div class="cells tight">
-    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div><div class="cell">18</div><div class="cell">19</div>
-  </div>
-  <div class="cell-row-name">月の数</div>
-  <div class="cells tight">
-    <div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell leap">13</div>
-  </div>
-</div>
-
-- 月を満ち欠けに合わせる太陰太陽暦
-- 1年はティシュレー月から始まる
-- うるう年は5番目の月のあとにうるう月を足して13か月
-- 19年の6939.60日と235か月の6939.69日がほぼ同じ
-- 19年たつと日付と季節がまた合う
-
----
-
-# イスラム暦
-
-- 月の満ち欠けだけに合わせる太陰暦
-- 1年は12か月で354日か355日
-- 西暦622年が元年
-- 季節とのずれは直さない
-- 同じ月が毎年約11日ずつ早く来る
-
----
-
-<CalendarAnimation scene="ramadan" />
-
----
-
-# イスラム暦の計算方法
-
-| calendarId | 決め方 |
-| --- | --- |
-| `islamic-umalqura` | サウジアラビアが行政で使う方式 |
-| `islamic-civil` | 30年に11回うるう年を入れる表で計算し、金曜日を元年の初日にする |
-| `islamic-tbla` | `islamic-civil` と同じ表で、木曜日を元年の初日にする |
-
-<p class="lede" style="margin-top:24px;">
-多くのイスラム教国では日没後に三日月が見えた日から月を始める<br>だから実際の日付は地域で変わる
-</p>
 
 ---
 
@@ -237,19 +178,68 @@ highlighter: shiki
 
 ---
 
-# `PlainDate` の中身
+# イスラム暦
 
-```js
-> const d = Temporal.PlainDate.from("2026-10-05")
-> const h = d.withCalendar("hebrew")
-> [h.year, h.month, h.day]
-[ 5787, 1, 24 ]
-> Temporal.PlainDate.compare(d, h)
-0
-```
+- 月の満ち欠けだけに合わせる太陰暦
+- 1年は12か月で354日か355日
+- 西暦622年が元年
+- 季節とのずれは直さない
+- 同じ月が毎年約11日ずつ早く来る
 
-- `PlainDate` が持つのはISO 8601の年月日と暦の2つ
-- `year` や `month` はISO 8601の年月日から暦に従って計算する
+---
+
+<CalendarAnimation scene="ramadan" />
+
+---
+
+# イスラム暦の計算方法
+
+| calendarId | 決め方 |
+| --- | --- |
+| `islamic-umalqura` | サウジアラビアが行政で使う方式 |
+| `islamic-civil` | 30年に11回うるう年を入れる表で計算し、金曜日を元年の初日にする |
+| `islamic-tbla` | `islamic-civil` と同じ表で、木曜日を元年の初日にする |
+
+<p class="lede" style="margin-top:24px;">
+多くのイスラム教国では日没後に三日月が見えた日から月を始める<br>だから実際の日付は地域で変わる
+</p>
+
+---
+
+# 中国暦と韓国の旧暦
+
+- どちらも月を満ち欠けに合わせる太陰太陽暦
+- 季節とずれてきたらうるう月を入れる
+- 2025年は6月のあとにうるう6月が入って13か月
+- 中国と韓国で計算に使うデータが違う
+- 2027年の旧正月は中国で2月6日、韓国で2月7日
+
+---
+
+# ヘブライ暦
+
+<div class="cell-row">
+  <div class="cell-row-name">年目</div>
+  <div class="cells tight">
+    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div><div class="cell">18</div><div class="cell">19</div>
+  </div>
+  <div class="cell-row-name">月の数</div>
+  <div class="cells tight">
+    <div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell">12</div><div class="cell leap">13</div><div class="cell">12</div><div class="cell leap">13</div>
+  </div>
+</div>
+
+- 月を満ち欠けに合わせる太陰太陽暦
+- 1年はティシュレー月から始まる
+- うるう年は5番目の月のあとにうるう月を足して13か月
+- 19年の6939.60日と235か月の6939.69日がほぼ同じ
+- 19年たつと日付と季節がまた合う
+
+---
+
+<p class="lead-q">
+これだけバラバラな暦を<br>Temporalはどう吸収してるのか？
+</p>
 
 ---
 
@@ -266,15 +256,31 @@ Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId)
 | `gregory` | 2026年10月5日 |
 | `buddhist` | 2569年10月5日 |
 | `japanese` | 令和8年10月5日 |
-| `chinese` | 2026年8月25日 |
-| `dangi` | 2026年8月25日 |
-| `hebrew` | 5787年1月24日 |
-| `islamic-umalqura` | 1448年4月24日 |
 | `indian` | 1948年7月13日 |
 | `coptic` | 1743年1月25日 |
 | `ethiopic` | 2019年1月25日 |
+| `islamic-umalqura` | 1448年4月24日 |
+| `chinese` | 2026年8月25日 |
+| `dangi` | 2026年8月25日 |
+| `hebrew` | 5787年1月24日 |
 
 </div>
+
+---
+
+# `PlainDate` の中身
+
+```js
+> const d = Temporal.PlainDate.from("2026-10-05")
+> const h = d.withCalendar("hebrew")
+> [h.year, h.month, h.day]
+[ 5787, 1, 24 ]
+> Temporal.PlainDate.compare(d, h)
+0
+```
+
+- `PlainDate` が持つのはISO 8601の年月日と暦の2つ
+- `year` や `month` はISO 8601の年月日から暦に従って計算する
 
 ---
 
