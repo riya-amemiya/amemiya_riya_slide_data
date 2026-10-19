@@ -49,6 +49,10 @@ highlighter: shiki
 
 ---
 
+# 座学 8割、JS 2割ぐらい
+
+---
+
 <p class="lead-q">
 2026年1月31日の1か月後は<br>何月何日？
 </p>
