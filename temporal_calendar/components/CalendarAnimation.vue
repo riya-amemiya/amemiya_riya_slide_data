@@ -58,9 +58,9 @@ const buildCycles = (): Frame[] => {
   push(0, '新月の日から数え始める', 120)
   range(Math.floor(twelve / 6)).forEach((i) => push((i + 1) * 6, '月が満ち欠けを繰り返す', 6))
   push(twelve, '12か月で354.37日、1年まであと10.88日', 260)
-  push(SOLAR_YEAR, '1年が終わった時点で13か月目の途中', 260)
+  push(SOLAR_YEAR, '1年が終わってもまだ13か月目の途中', 260)
   range(Math.floor((thirteen - SOLAR_YEAR) / 6)).forEach((i) => push(SOLAR_YEAR + (i + 1) * 6, '13か月目を最後まで数える', 8))
-  push(thirteen, '13か月だと1年を18.66日越える', 400)
+  push(thirteen, '13か月だと1年を18.66日超える', 400)
   return frames
 }
 
@@ -118,13 +118,13 @@ const buildRamadan = (): Frame[] => {
       .map((past, k) => `<div class="ca-pin past" style="left:${dayOfYear(past) * scale}px;opacity:${0.6 - k * 0.12}"></div>`)
       .join('')
     return (
-      headHtml('islamic-umalqura のラマダン初日', phase) +
+      headHtml('islamic-umalquraのラマダン初日', phase) +
       `<div class="ca-label">グレゴリオ暦の1年</div>` +
       `<div class="ca-year">${monthDays
         .map((n, i) => `<div class="ca-month" style="width:${n * scale}px">${i + 1}月</div>`)
         .join('')}${trail}<div class="ca-pin" style="left:${dayOfYear(iso) * scale}px"></div></div>` +
       counterHtml([
-        ['ヒジュラ暦', String(hijri), '年'],
+        ['イスラム暦', String(hijri), '年'],
         ['ラマダン初日', `${y}年${m}月${d}日`, ''],
       ])
     )
@@ -133,7 +133,7 @@ const buildRamadan = (): Frame[] => {
   RAMADAN.forEach((_, i) => {
     const last = i === RAMADAN.length - 1
     frames.push({
-      html: draw(i, last ? 'ヒジュラ暦で34年後、ほぼ同じ時期に戻る' : '毎年約11日ずつ早まる'),
+      html: draw(i, last ? 'イスラム暦で34年たつとほぼ同じ時期に戻る' : '毎年約11日ずつ早まる'),
       delay: i === 0 ? 160 : last ? 400 : 45,
     })
   })
