@@ -96,10 +96,6 @@ v8-devでの提案からGerritレビュー、マージまでの流れも紹介�
 
 ---
 
-# なぜ従来のflatは<br>遅かったのか
-
----
-
 # flatの仕様を理解する
 
 ```js
@@ -111,6 +107,62 @@ v8-devでの提案からGerritレビュー、マージまでの流れも紹介�
 
 - `depth` 段までフラットにした新しい配列を返す
 - `depth` を省略すると1
+
+---
+
+# holeの扱い
+
+<p class="lede">
+JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
+</p>
+
+```js
+> [1, , 3]
+[ 1, <1 empty item>, 3 ]
+```
+
+<p class="lede" style="margin-top:24px;">
+holeは <code>undefined</code> と違い、プロパティ自体がない
+</p>
+
+---
+
+# ElementsKindとは
+
+<p class="lede">
+V8は配列の中身を<br>「整数だけ」「浮動小数点を含む」「Holeがある」といった<br>ElementsKindと呼ばれる内部型で追跡しており、
+</p>
+<p class="lede">
+この型情報を使うと<br>「数値しか入っていない配列にはサブ配列が存在し得ない」ことが自明になり、<br>走査そのものを省略できます
+</p>
+
+---
+
+# 主要なElementsKind
+
+| | Packed（holeなし） | Holey（holeあり） |
+| --- | --- | --- |
+| 小さな整数（Smi）だけ | `PACKED_SMI_ELEMENTS` | `HOLEY_SMI_ELEMENTS` |
+| 浮動小数点数を含む | `PACKED_DOUBLE_ELEMENTS` | `HOLEY_DOUBLE_ELEMENTS` |
+| 文字列やオブジェクトを含む | `PACKED_ELEMENTS` | `HOLEY_ELEMENTS` |
+
+<p class="lede" style="margin-top:24px;">
+<code>PACKED_SMI_ELEMENTS</code> と <code>PACKED_DOUBLE_ELEMENTS</code> には、サブ配列もProxyもholeも入らない<br>
+この保証を使って最適化する
+</p>
+
+---
+
+<div class="mapping" style="margin-top:24px;">
+  <div class="key">Torque</div><div>V8の組み込み関数を書く専用言語</div>
+  <div class="key">fast path</div><div>条件がそろったときだけ通る速い経路</div>
+  <div class="key">slow path</div><div>どんな入力でも正しく動く従来の経路</div>
+  <div class="key">bailout</div><div>前提が崩れたときにslow pathへ逃げること</div>
+</div>
+
+---
+
+# なぜ従来のflatは<br>遅かったのか
 
 ---
 
@@ -138,32 +190,6 @@ v8-devでの提案からGerritレビュー、マージまでの流れも紹介�
 <FlatAnimation scene="old" />
 
 <p class="lede">新しい容量 = 必要な長さ + 必要な長さの半分 + 16</p>
-
----
-
-# ElementsKindとは
-
-<p class="lede">
-V8は配列の中身を<br>「整数だけ」「浮動小数点を含む」「Holeがある」といった<br>ElementsKindと呼ばれる内部型で追跡しており、
-</p>
-<p class="lede">
-この型情報を使うと<br>「数値しか入っていない配列にはサブ配列が存在し得ない」ことが自明になり、<br>走査そのものを省略できます
-</p>
-
----
-
-# 主要なElementsKind
-
-| | Packed（holeなし） | Holey（holeあり） |
-| --- | --- | --- |
-| 小さな整数（Smi）だけ | `PACKED_SMI_ELEMENTS` | `HOLEY_SMI_ELEMENTS` |
-| 浮動小数点数を含む | `PACKED_DOUBLE_ELEMENTS` | `HOLEY_DOUBLE_ELEMENTS` |
-| 文字列やオブジェクトを含む | `PACKED_ELEMENTS` | `HOLEY_ELEMENTS` |
-
-<p class="lede" style="margin-top:24px;">
-<code>PACKED_SMI_ELEMENTS</code> と <code>PACKED_DOUBLE_ELEMENTS</code> には、サブ配列もProxyもholeも入らない<br>
-この保証を使って最適化する
-</p>
 
 ---
 
@@ -468,20 +494,19 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 ---
 
-# holeの扱い
+# 3つの実装の比較
 
-<p class="lede">
-JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
-</p>
-
-```js
-> [1, , 3]
-[ 1, <1 empty item>, 3 ]
-```
-
-<p class="lede" style="margin-top:24px;">
-holeは <code>undefined</code> と違い、プロパティ自体がない
-</p>
+<table class="ba-table">
+<thead>
+  <tr><th></th><th>最適化前</th><th>2パス方式</th><th>バルクコピー</th></tr>
+</thead>
+<tbody>
+  <tr><td>結果配列の確保</td><td class="bad">足りなくなるたびに作り直す</td><td class="good">長さを数えて1回だけ</td><td class="good">1回だけ</td></tr>
+  <tr><td>サブ配列の処理</td><td class="bad">再帰で中へ入り1個ずつ追加</td><td class="bad">1個ずつ直接書く</td><td class="good">数値配列は <code>memcpy</code> でまとめて</td></tr>
+  <tr><td>要素ごとの確認</td><td class="bad">ある</td><td class="bad">ある</td><td class="good">数値配列ではない</td></tr>
+  <tr><td>速度の目安</td><td class="bad">1x</td><td>約5x</td><td class="good">約20x</td></tr>
+</tbody>
+</table>
 
 ---
 
@@ -552,13 +577,6 @@ try {
 ---
 
 # V8独自言語Torqueでの実装
-
-<div class="mapping" style="margin-top:24px;">
-  <div class="key">Torque</div><div>V8の組み込み関数を書く専用言語</div>
-  <div class="key">fast path</div><div>条件がそろったときだけ通る速い経路</div>
-  <div class="key">slow path</div><div>どんな入力でも正しく動く従来の経路</div>
-  <div class="key">bailout</div><div>前提が崩れたときにslow pathへ逃げること</div>
-</div>
 
 ---
 
@@ -632,22 +650,6 @@ stack.Push(currentDepth);
 | `HOLEY_SMI_ELEMENTS` | 5.91 ms | 3.45 ms | 約1.7x |
 | `HOLEY_DOUBLE_ELEMENTS` | 7.49 ms | 4.66 ms | 約1.6x |
 | `HOLEY_ELEMENTS` | 6.12 ms | 3.85 ms | 約1.6x |
-
----
-
-# 3つの実装の比較
-
-<table class="ba-table">
-<thead>
-  <tr><th></th><th>最適化前</th><th>2パス方式</th><th>バルクコピー</th></tr>
-</thead>
-<tbody>
-  <tr><td>結果配列の確保</td><td class="bad">足りなくなるたびに作り直す</td><td class="good">長さを数えて1回だけ</td><td class="good">1回だけ</td></tr>
-  <tr><td>サブ配列の処理</td><td class="bad">再帰で中へ入り1個ずつ追加</td><td class="bad">1個ずつ直接書く</td><td class="good">数値配列は <code>memcpy</code> でまとめて</td></tr>
-  <tr><td>要素ごとの確認</td><td class="bad">ある</td><td class="bad">ある</td><td class="good">数値配列ではない</td></tr>
-  <tr><td>速度の目安</td><td class="bad">1x</td><td>約5x</td><td class="good">約20x</td></tr>
-</tbody>
-</table>
 
 ---
 
