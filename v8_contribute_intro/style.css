@@ -21,7 +21,7 @@
 /* Default body text styles */
 p, li, span, div {
   color: #243762;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 /* Specific heading styles with higher specificity */
@@ -32,7 +32,7 @@ p, li, span, div {
 .slidev-layout h5,
 .slidev-layout h6 {
   color: #3984FD;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 .slidev-layout h1 + p {
@@ -157,7 +157,7 @@ pre, code {
 
 .slidev-layout .big-word {
   margin-top: 36px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 3.4em;
   font-weight: 700;
   color: #3984FD;
@@ -186,7 +186,7 @@ pre, code {
   left: 0;
   top: -0.06em;
   color: #3984FD;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
   font-weight: 700;
   font-size: 1.35em;
 }

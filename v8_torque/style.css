@@ -69,7 +69,7 @@ body,
 /* Default body text styles */
 p, li, span, div {
   color: #243762;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 /* Specific heading styles with higher specificity */
@@ -80,7 +80,7 @@ p, li, span, div {
 .slidev-layout h5,
 .slidev-layout h6 {
   color: #3984FD;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 .slidev-layout h1 + p {
@@ -182,7 +182,7 @@ pre, code {
 .slidev-layout .byline .venue { margin-left: 12px; }
 
 .slidev-layout .section-num {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
   font-size: 8em;
   font-weight: 700;
   color: #3984FD;
@@ -206,7 +206,7 @@ pre, code {
 
 .slidev-layout .big-stat { display: flex; flex-direction: column; align-items: flex-start; }
 .slidev-layout .big-stat .n {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
   font-weight: 700;
   font-size: 9em;
   color: #3984FD;
@@ -241,7 +241,7 @@ pre, code {
 }
 
 .slidev-layout .fixme {
-  font-family: ui-monospace, monospace;
+  font-family: 'PT Mono', ui-monospace, monospace;
   font-size: 1.2em;
   padding: 16px 24px;
   background: #fff7ea;
@@ -258,7 +258,7 @@ pre, code {
   font-size: 0.8em;
 }
 .slidev-layout .result-bar .b .eng { color: #3984FD; font-weight: 700; margin-right: 10px; }
-.slidev-layout .result-bar .b .out { font-family: ui-monospace, monospace; color: #243762; }
+.slidev-layout .result-bar .b .out { font-family: 'PT Mono', ui-monospace, monospace; color: #243762; }
 
 .slidev-layout .prompt { font-size: 1.1em; color: #243762; margin-top: 28px; text-align: center; }
 .slidev-layout .prompt .ask { color: #3984FD; font-weight: 700; }
@@ -283,7 +283,7 @@ pre, code {
 }
 .slidev-layout dl.kv dt {
   color: #3984FD; font-weight: 700;
-  font-family: ui-monospace, monospace;
+  font-family: 'PT Mono', ui-monospace, monospace;
 }
 .slidev-layout dl.kv dd { margin: 0; color: #243762; }
 .slidev-layout dl.kv dd .note { display: block; color: #8a95ac; font-size: 0.8em; margin-top: 4px; }
@@ -380,7 +380,7 @@ pre, code {
   border: 2px solid #e6e8ef;
   border-radius: 12px;
   padding: 14px 18px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: .05em;
   color: #243762;
   background: #f8fbff;
@@ -442,13 +442,13 @@ pre, code {
 .slidev-layout .kind-card.mid { border-left-color: #ffb020; }
 .slidev-layout .kind-card.slow { border-left-color: #d66; }
 .slidev-layout .kind-name {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   color: #3984FD;
   font-weight: 700;
 }
 .slidev-layout .kind-code {
   margin-top: 6px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   color: #243762;
   font-size: 1.3em;
 }
@@ -464,7 +464,7 @@ pre, code {
 }
 .slidev-layout .array-label {
   color: #3984FD;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   margin-bottom: 14px;
   text-align: center;
@@ -480,7 +480,7 @@ pre, code {
   padding: 16px 12px;
   border-radius: 14px;
   text-align: center;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   border: 2px solid #e6e8ef;
 }
@@ -498,7 +498,7 @@ pre, code {
   border: 2px solid #3984FD;
   border-radius: 999px;
   padding: 16px 28px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   background: #fff;
   box-shadow: 0 12px 30px rgba(36, 55, 98, .08);
@@ -529,7 +529,7 @@ pre, code {
 .slidev-layout .layer span {
   display: block;
   margin-top: 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   color: #3984FD;
   font-size: .86em;
 }
@@ -594,7 +594,7 @@ pre, code {
   width: 900px;
   max-width: 100%;
   margin: 0 auto;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 .slidev-layout .type-tree .node {
   border: 2px solid #e6e8ef;
@@ -628,7 +628,7 @@ pre, code {
   font-size: 0.92em;
 }
 .slidev-layout .spec-map ol.spec code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 /* グローバルの固定幅 (900px) をカラム内では解除し、列に収める */
 .slidev-layout .spec-map pre.shiki,
@@ -663,7 +663,7 @@ pre, code {
 .slidev-layout .versus .card.old { border-top: 8px solid #d66; }
 .slidev-layout .versus .card.new { border-top: 8px solid #3984FD; }
 .slidev-layout .versus .card .title {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   font-size: 1.15em;
   margin-bottom: 6px;
@@ -761,7 +761,7 @@ pre, code {
   padding: 16px 22px;
 }
 .slidev-layout .callables .item .kw {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   color: #3984FD;
 }
@@ -783,7 +783,7 @@ pre, code {
 
 .slidev-layout .torque-name {
   margin-top: 36px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
   font-size: 4.2em;
   font-weight: 700;
   color: #3984FD;

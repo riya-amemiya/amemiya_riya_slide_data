@@ -1045,7 +1045,7 @@ onUnmounted(() => clearInterval(timer.value))
   align-items: center;
 }
 .flat-anim .fa-kind {
-  font: 700 13px ui-monospace, Menlo, monospace;
+  font: 700 13px 'PT Mono', ui-monospace, Menlo, monospace;
   padding: 5px 9px;
   border: 2px solid var(--fa-blue);
   border-radius: 8px;
@@ -1100,7 +1100,7 @@ onUnmounted(() => clearInterval(timer.value))
   min-width: 150px;
 }
 .flat-anim .fa-flag {
-  font: 700 12px ui-monospace, Menlo, monospace;
+  font: 700 12px 'PT Mono', ui-monospace, Menlo, monospace;
   padding: 1px 8px;
   border-radius: 6px;
   border: 1px solid var(--fa-dash);
@@ -1142,7 +1142,7 @@ onUnmounted(() => clearInterval(timer.value))
   color: var(--fa-dash);
 }
 .flat-anim .fa-mono {
-  font-family: ui-monospace, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, Menlo, monospace;
 }
 .flat-anim .fa-race-lane {
   margin-top: 14px;
@@ -1264,7 +1264,7 @@ onUnmounted(() => clearInterval(timer.value))
   gap: 2px;
 }
 .flat-anim .fa-flow-kind {
-  font: 700 11px ui-monospace, Menlo, monospace;
+  font: 700 11px 'PT Mono', ui-monospace, Menlo, monospace;
   margin-top: 3px;
   text-align: center;
 }

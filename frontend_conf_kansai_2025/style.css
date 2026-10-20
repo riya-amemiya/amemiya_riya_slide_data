@@ -21,7 +21,7 @@
 /* Default body text styles */
 p, li, span, div {
   color: #243762;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 /* Specific heading styles with higher specificity */
@@ -32,7 +32,7 @@ p, li, span, div {
 .slidev-layout h5,
 .slidev-layout h6 {
   color: #3984FD;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 /* Special styling for the first slide (cover page) */

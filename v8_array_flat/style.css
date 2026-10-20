@@ -59,7 +59,7 @@ body,
 /* Default body text styles */
 p, li, span, div {
   color: #243762;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 /* Specific heading styles with higher specificity */
@@ -70,7 +70,7 @@ p, li, span, div {
 .slidev-layout h5,
 .slidev-layout h6 {
   color: #3984FD;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 .slidev-layout h1 + p {
@@ -215,7 +215,7 @@ pre, code {
   padding: 12px 10px;
   border-radius: 12px;
   text-align: center;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   border: 2px solid #e6e8ef;
 }
@@ -247,7 +247,7 @@ pre, code {
 .slidev-layout .sum-item .cell { min-width: 48px; padding: 8px 6px; }
 .slidev-layout .sum-len {
   margin-top: 8px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace, 'Noto Sans JP';
   font-weight: 700;
   font-size: 0.85em;
   color: #3984FD;
@@ -257,7 +257,7 @@ pre, code {
 .slidev-layout .kinds { margin: 8px 0 20px; }
 .slidev-layout .kind-flow { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
 .slidev-layout .kind {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   font-size: 0.85em;
   padding: 8px 12px;

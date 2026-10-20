@@ -21,7 +21,7 @@
 /* Default body text styles */
 p, li, span, div {
   color: #243762;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 /* Specific heading styles with higher specificity */
@@ -32,7 +32,7 @@ p, li, span, div {
 .slidev-layout h5,
 .slidev-layout h6 {
   color: #3984FD;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
 }
 
 .slidev-layout h1 + p {
@@ -134,7 +134,7 @@ pre, code {
 .slidev-layout .byline .venue { margin-left: 12px; }
 
 .slidev-layout .section-num {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
   font-size: 8em;
   font-weight: 700;
   color: #3984FD;
@@ -158,7 +158,7 @@ pre, code {
 
 .slidev-layout .big-stat { display: flex; flex-direction: column; align-items: flex-start; }
 .slidev-layout .big-stat .n {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
   font-weight: 700;
   font-size: 9em;
   color: #3984FD;
@@ -193,7 +193,7 @@ pre, code {
 }
 
 .slidev-layout .fixme {
-  font-family: ui-monospace, monospace;
+  font-family: 'PT Mono', ui-monospace, monospace;
   font-size: 1.2em;
   padding: 16px 24px;
   background: #fff7ea;
@@ -210,7 +210,7 @@ pre, code {
   font-size: 0.8em;
 }
 .slidev-layout .result-bar .b .eng { color: #3984FD; font-weight: 700; margin-right: 10px; }
-.slidev-layout .result-bar .b .out { font-family: ui-monospace, monospace; color: #243762; }
+.slidev-layout .result-bar .b .out { font-family: 'PT Mono', ui-monospace, monospace; color: #243762; }
 
 .slidev-layout .prompt { font-size: 1.1em; color: #243762; margin-top: 28px; text-align: center; }
 .slidev-layout .prompt .ask { color: #3984FD; font-weight: 700; }
@@ -235,7 +235,7 @@ pre, code {
 }
 .slidev-layout dl.kv dt {
   color: #3984FD; font-weight: 700;
-  font-family: ui-monospace, monospace;
+  font-family: 'PT Mono', ui-monospace, monospace;
 }
 .slidev-layout dl.kv dd { margin: 0; color: #243762; }
 .slidev-layout dl.kv dd .note { display: block; color: #8a95ac; font-size: 0.8em; margin-top: 4px; }
