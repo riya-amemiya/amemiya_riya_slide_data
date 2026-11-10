@@ -271,8 +271,9 @@ pre, code {
 .slidev-layout .cell-row-name { color: #3984FD; font-weight: 700; }
 .slidev-layout .cells { display: flex; gap: 8px; }
 .slidev-layout .cell {
-  min-width: 112px;
+  min-width: 96px;
   padding: 6px 10px;
+  white-space: nowrap;
   border-radius: 8px;
   text-align: center;
   font-weight: 700;
@@ -285,9 +286,12 @@ pre, code {
 
 .slidev-layout .code-pair {
   --code-block-width: max-content;
+  --code-font-size: 12px;
   display: grid;
   grid-template-columns: max-content max-content;
   gap: 8px 24px;
   margin-bottom: 12px;
 }
 .slidev-layout .code-pair .head { color: #3984FD; font-weight: 700; font-size: 0.85em; }
+.slidev-layout .code-pair pre.shiki,
+.slidev-layout .code-pair pre.shiki code { line-height: 1.35; }
