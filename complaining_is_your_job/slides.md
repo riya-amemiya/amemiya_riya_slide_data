@@ -1,9 +1,9 @@
 ---
 theme: seriph
 background: white
-title: 部下は文句を言うのが仕事である
+title: マネジメントされる側の仕事は「文句」を言うこと
 info: |
-  ## 部下は文句を言うのが仕事である
+  ## マネジメントされる側の仕事は「文句」を言うこと
   会社をハックしてキャリアを作る方法
 layout: center
 defaults:
@@ -24,8 +24,8 @@ highlighter: shiki
 
 <div class="w-full">
   <h1 class="mega">
-    部下は<span class="accent">文句</span>を言うのが<br>
-    仕事である
+    マネジメントされる側の<br>
+    仕事は<span class="accent">「文句」</span>を言うこと
   </h1>
   <p class="subtitle">会社をハックしてキャリアを作る方法</p>
   <div class="byline">西 悠太 <span class="venue">/ 株式会社ダイニー</span></div>
@@ -94,6 +94,13 @@ highlighter: shiki
 - 一番の損失は、黙って我慢した人が突然辞めること
 - 不満をぶつけること自体が貢献になる
 
+<div class="flow">
+  <div class="flow-name">黙る</div>
+  <div class="flow-steps"><div class="flow-step">違和感</div><span>→</span><div class="flow-step">我慢</div><span>→</span><div class="flow-step bad">突然辞める</div></div>
+  <div class="flow-name">言う</div>
+  <div class="flow-steps"><div class="flow-step">違和感</div><span>→</span><div class="flow-step">1on1でぶつける</div><span>→</span><div class="flow-step good">会社への貢献</div></div>
+</div>
+
 ---
 
 <p class="lead-q">
@@ -145,8 +152,18 @@ highlighter: shiki
 
 - 1on1のドキュメントに、話したいことを先に書く
 - 上司に考えさせるテーマを選ぶ
-  - キャリアの方向性について相談
-  - 今のタスクに対する違和感
+
+<div class="docs">
+  <div class="doc">
+    <div class="doc-title">上司が作るアジェンダ</div>
+    <div class="doc-line">進捗確認</div>
+  </div>
+  <div class="doc mine">
+    <div class="doc-title">自分で作るアジェンダ</div>
+    <div class="doc-line">キャリアの方向性について相談</div>
+    <div class="doc-line">今のタスクに対する違和感</div>
+  </div>
+</div>
 
 ---
 
@@ -233,6 +250,13 @@ highlighter: shiki
 
 - 上司も会社の看板も社内のリソースも、自分の市場価値を上げる道具
 - 本音を言い合える関係のほうが、評価も働きやすさも手に入る
+
+<div class="flow">
+  <div class="flow-name">される側</div>
+  <div class="flow-steps"><div class="flow-step">上司</div><span>マネジメントする →</span><div class="flow-step">自分</div></div>
+  <div class="flow-name">利用する側</div>
+  <div class="flow-steps"><div class="flow-step good">自分</div><span>利用する →</span><div class="flow-step">上司</div><div class="flow-step">会社の看板</div><div class="flow-step">社内のリソース</div></div>
+</div>
 
 ---
 

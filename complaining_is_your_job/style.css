@@ -239,3 +239,33 @@ p, li, span, div {
 .slidev-layout .venn-label.company { left: 24px; }
 .slidev-layout .venn-label.me { left: 280px; }
 .slidev-layout .venn-label.both { left: 162px; color: #3984FD; }
+
+.slidev-layout .flow {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  gap: 14px 20px;
+  align-items: center;
+  margin-top: 24px;
+}
+.slidev-layout .flow-name { color: #3984FD; font-weight: 700; }
+.slidev-layout .flow-steps { display: flex; gap: 10px; align-items: center; }
+.slidev-layout .flow-steps > span { font-size: 0.8em; font-weight: 700; }
+.slidev-layout .flow-step {
+  padding: 6px 14px;
+  border: 2px solid #e6e8ef;
+  border-radius: 10px;
+  font-weight: 700;
+}
+.slidev-layout .flow-step.bad { border-color: #243762; background: #243762; color: #FFFFFF; }
+.slidev-layout .flow-step.good { border-color: #3984FD; background: #f0f7ff; color: #3984FD; }
+
+.slidev-layout .docs { display: flex; gap: 24px; margin-top: 24px; }
+.slidev-layout .doc {
+  width: 300px;
+  padding: 14px 18px;
+  border: 2px solid #e6e8ef;
+  border-radius: 10px;
+}
+.slidev-layout .doc.mine { border-color: #3984FD; background: #f0f7ff; }
+.slidev-layout .doc-title { margin-bottom: 8px; font-size: 0.8em; font-weight: 700; color: #3984FD; }
+.slidev-layout .doc-line { padding: 4px 0; border-bottom: 1px solid #e6e8ef; font-weight: 700; }
