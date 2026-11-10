@@ -35,6 +35,9 @@
     "residual_heat_night_from_fec_hokkaido_and_tokyo": {
       "name": "residual_heat_night_from_fec_hokkaido_and_tokyo",
     },
+    "rfc9457_problem_details": {
+      "name": "rfc9457_problem_details",
+    },
     "temporal_calendar": {
       "name": "temporal_calendar",
     },
@@ -1260,6 +1263,8 @@
     "resolve-global": ["resolve-global@2.0.0", "", { "dependencies": { "global-directory": "^4.0.1" } }, "sha512-gnAQ0Q/KkupGkuiMyX4L0GaBV8iFwlmoXsMtOz+DFTaKmHhOO/dSlP1RMKhpvHv/dh6K/IQkowGJBqUG0NfBUw=="],
 
     "reusify": ["reusify@1.1.0", "", {}, "sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw=="],
+
+    "rfc9457_problem_details": ["rfc9457_problem_details@workspace:rfc9457_problem_details"],
 
     "robust-predicates": ["robust-predicates@3.0.3", "", {}, "sha512-NS3levdsRIUOmiJ8FZWCP7LG3QpJyrs/TE0Zpf1yvZu8cAJJ6QMW92H1c7kWpdIHo8RvmLxN/o2JXTKHp74lUA=="],
 
