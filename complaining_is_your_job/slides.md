@@ -15,6 +15,10 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: '会社をハックしてキャリアを作る方法'
+events:
+  - name: 'マネジメントする人される人ナイト 2026'
+    url: https://kichijojipm.connpass.com/event/409593/
+    date: 2026-11-13
 tags:
   - キャリア
 css: unocss

@@ -15,6 +15,10 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: 'ChromeやNode.jsの心臓部であるV8エンジンの気持ちを少しだけ覗き見て、どうすればV8に好かれる、つまりパフォーマンスの高いコードが書けるようになるのか、そのヒントを共有したいと思います。'
+events:
+  - name: 'フロントエンドカンファレンス東京2025'
+    url: https://tokyo.fec.or.jp/2025/
+    date: 2025-09-21
 tags:
   - JavaScript
   - V8

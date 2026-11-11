@@ -17,6 +17,10 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: 'ECMAScript公式テストスイート「Test262」は、V8、SpiderMonkey、JavaScriptCoreといった主要エンジンが参照する「共通の物差し」です。本トークでは、Test262の役割と必要性をわかりやすく解説します。'
+events:
+  - name: 'フロントエンドカンファレンス 2026'
+    url: https://nagoya.fec.or.jp/2026/
+    date: 2026-05-09
 tags:
   - JavaScript
   - V8

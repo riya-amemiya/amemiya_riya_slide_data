@@ -17,6 +17,10 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: 'type-challengesの小さな問題を入り口に、anyの面白い性質について語ります。'
+events:
+  - name: 'TSKaigi Mashup #5 any'
+    url: https://tskaigi.connpass.com/event/397059/
+    date: 2026-07-23
 tags:
   - TypeScript
 css: unocss

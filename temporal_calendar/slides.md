@@ -16,6 +16,10 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: '暦がずれる理由と、Temporalがその違いをどう扱っているかを紹介します。'
+events:
+  - name: 'Ginza.js#12'
+    url: https://ginzajs.connpass.com/event/404171/
+    date: 2026-10-19
 tags:
   - JavaScript
 css: unocss

@@ -25,6 +25,13 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: '本トークでは、実際のTorqueコードなどを交えながら、なぜこの言語が必要だったのか、TorqueがV8の安全性と速度をどう支えているのかを、V8初心者の方にも追える形で紹介します。'
+events:
+  - name: 'Browser and UI #4 Any'
+    url: https://browser-and-ui.connpass.com/event/395487/
+    date: 2026-07-21
+  - name: '替え玉.web'
+    url: https://cybozu.connpass.com/event/402843/
+    date: 2026-09-11
 tags:
   - V8
 css: unocss

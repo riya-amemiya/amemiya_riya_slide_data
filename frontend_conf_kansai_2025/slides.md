@@ -14,6 +14,10 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+events:
+  - name: 'フロントエンドカンファレンス関西 2025'
+    url: https://2025.frontend-conf.osaka.jp/
+    date: 2025-11-30
 tags:
   - HTML
 css: unocss

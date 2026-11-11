@@ -13,6 +13,10 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+events:
+  - name: 'Hello LT world『みんなで語る！好きと学びのアウトプット LT Night』'
+    url: https://findy.connpass.com/event/406556/
+    date: 2026-10-15
 tags:
   - キャリア
 css: unocss

@@ -20,6 +20,10 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: 'HTTP APIを実装するとき、エラーレスポンスの構造をどのように決めていますか。独自のJSONフォーマットを定義していないでしょうか。'
+events:
+  - name: 'フロントエンドカンファレンス 2026'
+    url: https://tokyo.fec.or.jp/2026/
+    date: 2026-12-05
 tags:
   - API
 css: unocss

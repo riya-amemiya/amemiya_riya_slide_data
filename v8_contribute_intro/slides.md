@@ -22,6 +22,10 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: 'このLTでは、ソースを取るところから最初のCLが取り込まれるまでを、実際のコマンドで一通りたどります。'
+events:
+  - name: '新卒N年目の勉強会&交流会！〜〇〇への誘い〜'
+    url: https://fresh-engineers.connpass.com/event/402753/
+    date: 2026-09-04
 tags:
   - V8
   - OSS

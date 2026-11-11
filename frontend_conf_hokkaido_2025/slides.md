@@ -15,6 +15,10 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: 'モダンCSSの進化について'
+events:
+  - name: 'フロントエンドカンファレンス北海道 2025'
+    url: https://www.frontend-conf.jp/
+    date: 2025-09-06
 tags:
   - CSS
 css: unocss

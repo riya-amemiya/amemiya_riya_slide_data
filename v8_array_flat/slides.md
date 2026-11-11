@@ -19,6 +19,13 @@ mdc: true
 seoMeta:
   ogImage: auto
   ogDescription: 'なぜ従来のflatは遅かったのか、メモリ割り当てを1回に減らす2パス方式、holeを詰めるflat特有の仕様との格闘、V8独自言語Torqueでの実装までを順を追って解説します。'
+events:
+  - name: 'フロントエンドカンファレンス関西 2026'
+    url: https://2026.frontend-conf.osaka.jp/
+    date: 2026-10-12
+  - name: 'JSConf 2026'
+    url: https://jsconf.jp/2026/
+    date: 2026-11-22
 tags:
   - V8
   - JavaScript
