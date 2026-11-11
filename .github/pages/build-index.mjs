@@ -29,10 +29,12 @@ const decks = readdirSync(root, { withFileTypes: true })
   .map(({ name, meta }) => ({
     name,
     title: meta.title ?? name,
-    date: toIsoDate(meta.date),
-    event: meta.event ?? "",
+    events: (meta.events ?? [])
+      .map((event) => ({ ...event, date: toIsoDate(event.date) }))
+      .sort((a, b) => a.date.localeCompare(b.date)),
     tags: meta.tags ?? [],
   }))
+  .map((deck) => ({ ...deck, date: deck.events.find(({ date }) => date)?.date ?? "" }))
   .sort((a, b) => b.date.localeCompare(a.date) || a.name.localeCompare(b.name));
 
 decks.forEach(({ name }) =>
@@ -64,17 +66,26 @@ const tagButtons = [
 ].join("\n");
 
 const cards = decks
-  .map(({ name, title, date, event, tags }) =>
+  .map(({ name, title, date, events, tags }) =>
     [
       `<li data-date="${date}" data-tags="${escapeHtml(JSON.stringify(tags))}">`,
       `<a class="card" href="./${name}/">`,
       `<img src="./${name}/og-image.png" alt="" width="980" height="551" loading="lazy">`,
-      date || event
-        ? `<span class="meta">${date ? `<time datetime="${date}">${date.replaceAll("-", ".")}</time>` : ""}${event ? `<b>${escapeHtml(event)}</b>` : ""}</span>`
-        : "",
       `<span class="title">${escapeHtml(title)}</span>`,
-      tags.length ? `<span class="tags">${tags.map(escapeHtml).join(" · ")}</span>` : "",
       "</a>",
+      events.length
+        ? `<ul class="events">${events
+            .map(
+              (event) =>
+                `<li><time datetime="${event.date}">${event.date.replaceAll("-", ".")}</time>${
+                  event.url
+                    ? `<a href="${escapeHtml(event.url)}">${escapeHtml(event.name)}</a>`
+                    : `<span>${escapeHtml(event.name)}</span>`
+                }</li>`,
+            )
+            .join("")}</ul>`
+        : "",
+      tags.length ? `<p class="tags">${tags.map(escapeHtml).join(" · ")}</p>` : "",
       "</li>",
     ].join(""),
   )
