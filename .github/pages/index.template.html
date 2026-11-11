@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slides</title>
+{{meta}}
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #fafaf9;
+  --text: #1c1917;
+  --muted: #78716c;
+  --border: #e7e5e4;
+  --accent: #2f6fec;
+  --shadow: 0 1px 2px rgb(28 25 23 / 5%), 0 6px 16px rgb(28 25 23 / 6%);
+  --shadow-hover: 0 2px 4px rgb(28 25 23 / 6%), 0 18px 40px rgb(28 25 23 / 14%);
+  --thumb-filter: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --text: #e7e5e4;
+    --muted: #a8a29e;
+    --border: #2a2d34;
+    --accent: #7aa7ff;
+    --shadow: 0 1px 2px rgb(0 0 0 / 40%);
+    --shadow-hover: 0 18px 40px rgb(0 0 0 / 60%);
+    --thumb-filter: brightness(0.88);
+  }
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px 96px;
+}
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+header a {
+  color: var(--muted);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+header a:hover {
+  color: var(--accent);
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-bottom: 36px;
+}
+.toolbar[hidden] {
+  display: none;
+}
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+button {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+button:hover {
+  border-color: var(--muted);
+  color: var(--text);
+}
+button[aria-pressed="true"] {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.decks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 44px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.card {
+  display: block;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+.card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 6px;
+}
+.card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  filter: var(--thumb-filter);
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.25s ease, filter 0.25s ease;
+}
+.card:hover img,
+.card:focus-visible img {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  filter: none;
+}
+.card span {
+  display: block;
+  padding: 0 2px;
+}
+.meta,
+.tags {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.meta {
+  margin-top: 14px;
+}
+.meta time + b::before {
+  content: " · ";
+}
+.meta b {
+  font-weight: inherit;
+}
+.title {
+  margin-top: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  word-break: auto-phrase;
+  text-wrap: pretty;
+  transition: color 0.2s ease;
+}
+.meta + .title {
+  margin-top: 4px;
+}
+.card:hover .title {
+  color: var(--accent);
+}
+.tags {
+  margin-top: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  button,
+  .card img,
+  .title {
+    transition: none;
+  }
+  .card:hover img,
+  .card:focus-visible img {
+    transform: none;
+  }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Slides</h1>
+<a href="https://github.com/riya-amemiya">Riya Amemiya</a>
+</header>
+<main>
+<div class="toolbar" hidden>
+<div class="group" role="group" aria-label="タグ">
+{{tags}}
+</div>
+<div class="group" role="group" aria-label="並び順">
+<button type="button" data-sort="desc" aria-pressed="true">新しい順</button>
+<button type="button" data-sort="asc" aria-pressed="false">古い順</button>
+</div>
+</div>
+<ul class="decks">
+{{cards}}
+</ul>
+</main>
+</div>
+<script>
+const list = document.querySelector(".decks");
+const items = [...list.children];
+const tagButtons = [...document.querySelectorAll("[data-tag]")];
+const sortButtons = [...document.querySelectorAll("[data-sort]")];
+const press = (group, pressed) =>
+  group.forEach((button) => button.setAttribute("aria-pressed", String(button === pressed)));
+tagButtons.forEach((button) =>
+  button.addEventListener("click", () => {
+    press(tagButtons, button);
+    items.forEach((item) => {
+      item.hidden = button.dataset.tag !== "" && !JSON.parse(item.dataset.tags).includes(button.dataset.tag);
+    });
+  }),
+);
+sortButtons.forEach((button) =>
+  button.addEventListener("click", () => {
+    press(sortButtons, button);
+    list.append(
+      ...[...items].sort(
+        (a, b) =>
+          !a.dataset.date - !b.dataset.date ||
+          (button.dataset.sort === "asc" ? 1 : -1) * a.dataset.date.localeCompare(b.dataset.date),
+      ),
+    );
+  }),
+);
+document.querySelector(".toolbar").hidden = false;
+</script>
+</body>
+</html>
