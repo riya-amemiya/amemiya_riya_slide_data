@@ -1,7 +1,7 @@
 {
   "name": "complaining_is_your_job",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open",

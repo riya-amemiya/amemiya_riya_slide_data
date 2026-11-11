@@ -1,12 +1,12 @@
 /* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap");
 
 /* Global styles for the presentation */
 :root {
-  --slidev-theme-primary: #3984FD;
+  --slidev-theme-primary: #3984fd;
   --slidev-theme-text: #243762;
-  --slidev-theme-bg: #FFFFFF;
+  --slidev-theme-bg: #ffffff;
   /* Fixed width for code blocks (px so it doesn't vary by font-size) */
   --code-block-width: 900px;
   /* Unify code font-size so width/height look consistent across slides */
@@ -15,13 +15,16 @@
 
 /* Background color for all slides */
 .slidev-layout {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 /* Default body text styles */
-p, li, span, div {
+p,
+li,
+span,
+div {
   color: #243762;
-  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
+  font-family: "Nunito", "Noto Sans JP", sans-serif;
 }
 
 /* Specific heading styles with higher specificity */
@@ -31,8 +34,8 @@ p, li, span, div {
 .slidev-layout h4,
 .slidev-layout h5,
 .slidev-layout h6 {
-  color: #3984FD;
-  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
+  color: #3984fd;
+  font-family: "Nunito", "Noto Sans JP", sans-serif;
 }
 
 .slidev-layout h1 + p {
@@ -41,7 +44,7 @@ p, li, span, div {
 
 /* Special styling for the first slide (cover page) */
 .slidev-layout[data-slide="1"] h1 {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
 }
 
 /* Ensure proper text color inheritance for non-heading elements */
@@ -50,7 +53,8 @@ p, li, span, div {
 }
 
 /* Code blocks should maintain their own colors */
-pre, code {
+pre,
+code {
   color: initial;
 }
 
@@ -96,42 +100,74 @@ pre, code {
    Deck classes
    ======================================================================== */
 
-.slidev-layout .navy { color: #243762; }
-.slidev-layout .blue { color: #3984FD; }
-.slidev-layout .lede { font-size: 1.1em; line-height: 1.5; max-width: 1500px; }
-.slidev-layout .lede + .lede { margin-top: 1em; }
+.slidev-layout .navy {
+  color: #243762;
+}
+.slidev-layout .blue {
+  color: #3984fd;
+}
+.slidev-layout .lede {
+  font-size: 1.1em;
+  line-height: 1.5;
+  max-width: 1500px;
+}
+.slidev-layout .lede + .lede {
+  margin-top: 1em;
+}
 
 .slidev-layout .mega {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
   font-size: 2em;
   line-height: 1.4;
-  color: #3984FD;
+  color: #3984fd;
   margin: 0;
-  letter-spacing: -.01em;
+  letter-spacing: -0.01em;
 }
-.slidev-layout .mega .accent { color: #243762; }
-.slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762; }
-.slidev-layout .byline .venue { margin-left: 12px; }
+.slidev-layout .mega .accent {
+  color: #243762;
+}
+.slidev-layout .byline {
+  margin-top: 1.5em;
+  font-size: 0.9em;
+  color: #243762;
+}
+.slidev-layout .byline .venue {
+  margin-left: 12px;
+}
 
-.slidev-layout ul.clean { list-style: none; padding: 0; margin: 0; }
+.slidev-layout ul.clean {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 .slidev-layout ul.clean li {
   padding-left: 28px;
   position: relative;
   margin-bottom: 12px;
 }
 .slidev-layout ul.clean li::before {
-  content: '→';
-  color: #3984FD;
+  content: "→";
+  color: #3984fd;
   position: absolute;
-  left: 0; top: 0;
+  left: 0;
+  top: 0;
   font-weight: 700;
 }
 
-.slidev-layout .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-.slidev-layout .two-col.wide { gap: 72px; }
+.slidev-layout .two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+.slidev-layout .two-col.wide {
+  gap: 72px;
+}
 .slidev-layout .col-label {
-  font-size: 0.85em; color: #3984FD; font-weight: 700;
-  margin-bottom: 12px; letter-spacing: .02em;
+  font-size: 0.85em;
+  color: #3984fd;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
 }
 
 .slidev-layout .intro-grid {
@@ -141,14 +177,23 @@ pre, code {
   align-items: center;
 }
 .slidev-layout .intro-grid img.avatar {
-  width: 280px; height: 280px; border-radius: 50%;
-  object-fit: cover; justify-self: center;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  object-fit: cover;
+  justify-self: center;
 }
-.slidev-layout .intro-grid .bio p { font-size: 1.05em; margin: 0 0 8px; }
-.slidev-layout .intro-grid .bio .role { font-size: 0.85em; margin-top: 16px; }
+.slidev-layout .intro-grid .bio p {
+  font-size: 1.05em;
+  margin: 0 0 8px;
+}
+.slidev-layout .intro-grid .bio .role {
+  font-size: 0.85em;
+  margin-top: 16px;
+}
 
 .slidev-layout .lead-q {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
   font-size: 1.9em;
   line-height: 1.5;
   color: #243762;
@@ -157,10 +202,10 @@ pre, code {
 
 .slidev-layout .big-word {
   margin-top: 36px;
-  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: "PT Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 3.4em;
   font-weight: 700;
-  color: #3984FD;
+  color: #3984fd;
   line-height: 1.2;
 }
 
@@ -185,13 +230,17 @@ pre, code {
   position: absolute;
   left: 0;
   top: -0.06em;
-  color: #3984FD;
-  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
+  color: #3984fd;
+  font-family: "Nunito", "Noto Sans JP", sans-serif;
   font-weight: 700;
   font-size: 1.35em;
 }
-.slidev-layout ol.flow li.here { font-weight: 700; }
-.slidev-layout ol.flow li.here::before { color: #243762; }
+.slidev-layout ol.flow li.here {
+  font-weight: 700;
+}
+.slidev-layout ol.flow li.here::before {
+  color: #243762;
+}
 
 /* GitHub の言葉と Gerrit の言葉の対応 */
 .slidev-layout .mapping {
@@ -203,7 +252,10 @@ pre, code {
   font-size: 1.1em;
   line-height: 1.5;
 }
-.slidev-layout .mapping .to { color: #3984FD; font-weight: 700; }
+.slidev-layout .mapping .to {
+  color: #3984fd;
+  font-weight: 700;
+}
 
 .slidev-layout ul.takeaways {
   list-style: none;
@@ -220,11 +272,11 @@ pre, code {
   line-height: 1.5;
 }
 .slidev-layout ul.takeaways li::before {
-  content: '✓';
+  content: "✓";
   position: absolute;
   left: 20px;
   top: 16px;
-  color: #3984FD;
+  color: #3984fd;
   font-weight: 700;
 }
 
@@ -233,7 +285,10 @@ pre, code {
   margin: 0 auto;
   line-height: 1.9;
 }
-.slidev-layout ul.refs a { color: #3984FD; font-weight: 700; }
+.slidev-layout ul.refs a {
+  color: #3984fd;
+  font-weight: 700;
+}
 
 .slidev-layout .thanks {
   margin-top: 24px;
@@ -243,6 +298,6 @@ pre, code {
 }
 .slidev-layout .thanks strong {
   display: block;
-  color: #3984FD;
+  color: #3984fd;
   font-size: 1.25em;
 }

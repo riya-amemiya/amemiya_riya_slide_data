@@ -24,12 +24,12 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
-  ogDescription: '本トークでは、実際のTorqueコードなどを交えながら、なぜこの言語が必要だったのか、TorqueがV8の安全性と速度をどう支えているのかを、V8初心者の方にも追える形で紹介します。'
+  ogDescription: "本トークでは、実際のTorqueコードなどを交えながら、なぜこの言語が必要だったのか、TorqueがV8の安全性と速度をどう支えているのかを、V8初心者の方にも追える形で紹介します。"
 events:
-  - name: 'Browser and UI #4 Any'
+  - name: "Browser and UI #4 Any"
     url: https://browser-and-ui.connpass.com/event/395487/
     date: 2026-07-21
-  - name: '替え玉.web'
+  - name: "替え玉.web"
     url: https://cybozu.connpass.com/event/402843/
     date: 2026-09-11
 tags:
@@ -95,7 +95,7 @@ V8は、Googleが開発するオープンソースのJIT仮想マシン型のJav
 概要<br>
 ECMAScript (ECMA-262) 準拠で、C++で記述されている。スタンドアローンでの実行が可能なほか、C++で書かれたアプリケーションの一部として動作させることもできる。
 
-引用: [V8 (JavaScriptエンジン) - Wikipedia](https://ja.wikipedia.org/wiki/V8_(JavaScript%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3))
+引用: [V8 (JavaScriptエンジン) - Wikipedia](<https://ja.wikipedia.org/wiki/V8_(JavaScript%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3)>)
 
 ---
 
@@ -555,7 +555,6 @@ extern macroでCSAの操作を呼べること。
   <li>V8 Docs: <a href="https://v8.dev/docs/torque-builtins">Torque builtins</a></li>
   <li>V8 Blog: <a href="https://v8.dev/blog/csa">Taming architecture complexity in V8 — the CodeStubAssembler</a></li>
 </ul>
-
 
 <!--
 参考資料です。Torqueのuser manualと、CSAについてのブログ記事がおすすめです。

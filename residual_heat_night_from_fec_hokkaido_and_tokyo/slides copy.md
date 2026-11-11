@@ -114,10 +114,10 @@ highlighter: shiki
 クラスを付け替える...**
 
 ```javascript
-const resizeObserver = new ResizeObserver(entries => {
-  entries.forEach(entry => {
+const resizeObserver = new ResizeObserver((entries) => {
+  entries.forEach((entry) => {
     const width = entry.contentRect.width;
-    entry.target.classList.toggle('small', width < 400);
+    entry.target.classList.toggle("small", width < 400);
   });
 });
 ```
@@ -179,9 +179,9 @@ const resizeObserver = new ResizeObserver(entries => {
 **入力が変わるたびに親要素を探してクラスを付ける**
 
 ```javascript
-input.addEventListener('blur', () => {
+input.addEventListener("blur", () => {
   if (input.invalid) {
-    input.closest('.form-group').classList.add('error');
+    input.closest(".form-group").classList.add("error");
   }
 });
 ```
@@ -225,10 +225,18 @@ JavaScriptのイベント管理が不要に
 **z-indexの値がどんどん大きくなっていく...**
 
 ```css
-.dropdown { z-index: 100; }
-.modal { z-index: 1000; }
-.tooltip { z-index: 9999; }
-.super-modal { z-index: 999999; }
+.dropdown {
+  z-index: 100;
+}
+.modal {
+  z-index: 1000;
+}
+.tooltip {
+  z-index: 9999;
+}
+.super-modal {
+  z-index: 999999;
+}
 ```
 
 どれが一番上に来るか分からない！
@@ -298,12 +306,18 @@ JavaScriptのイベント管理が不要に
 
 ```css
 /* ライブラリ */
-.btn-primary { background: blue; }
+.btn-primary {
+  background: blue;
+}
 
 /* 上書きしたい... */
-.my-component .btn-primary { } /* 詳細度を上げる */
-body .my-component .btn-primary { } /* もっと上げる */
-.btn-primary { background: red !important; } /* 最終手段 */
+.my-component .btn-primary {
+} /* 詳細度を上げる */
+body .my-component .btn-primary {
+} /* もっと上げる */
+.btn-primary {
+  background: red !important;
+} /* 最終手段 */
 ```
 
 **!important地獄の始まり...**
@@ -319,11 +333,15 @@ body .my-component .btn-primary { } /* もっと上げる */
 @layer library, components, utilities;
 
 @layer library {
-  .btn { background: blue; }
+  .btn {
+    background: blue;
+  }
 }
 
 @layer components {
-  .btn { background: red; } /* 詳細度が低くても勝つ！ */
+  .btn {
+    background: red;
+  } /* 詳細度が低くても勝つ！ */
 }
 ```
 
@@ -360,13 +378,19 @@ BEMやCSS Modulesで名前空間を作ってきたけど...
 ```css
 /* .article内だけに適用 */
 @scope (.article) {
-  h2 { font-size: 2rem; }
-  p { line-height: 1.8; }
+  h2 {
+    font-size: 2rem;
+  }
+  p {
+    line-height: 1.8;
+  }
 }
 
 /* .sidebar内は完全に独立 */
 @scope (.sidebar) {
-  h2 { font-size: 1.2rem; } /* .articleのh2と競合しない！ */
+  h2 {
+    font-size: 1.2rem;
+  } /* .articleのh2と競合しない！ */
 }
 ```
 
@@ -467,8 +491,12 @@ HTML内にインラインで@scopeを書くことで、そのHTML要素のみに
 }
 
 @keyframes grow {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 ```
 
@@ -536,7 +564,9 @@ dialog {
 **text-wrap: balance**
 
 ```css
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   text-wrap: balance; /* 自動で読みやすい幅に改行 */
 }
 ```
@@ -619,7 +649,7 @@ OSの設定に自動追従！
 ```css
 textarea {
   field-sizing: content;
-  min-height: 3lh;  /* 最小3行分 */
+  min-height: 3lh; /* 最小3行分 */
   max-height: 10lh; /* 最大10行分 */
 }
 ```
@@ -667,6 +697,7 @@ textarea {
 今回紹介した機能は、ブラウザの対応状況によってはまだ使用できない場合があります。
 
 詳細は以下のページを参照してください。
+
 - <https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Container_Queries>
 - <https://developer.mozilla.org/ja/docs/Web/CSS/:has>
 - <https://developer.mozilla.org/ja/docs/Web/API/Popover_API>

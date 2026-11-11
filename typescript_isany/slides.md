@@ -16,9 +16,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
-  ogDescription: 'type-challengesの小さな問題を入り口に、anyの面白い性質について語ります。'
+  ogDescription: "type-challengesの小さな問題を入り口に、anyの面白い性質について語ります。"
 events:
-  - name: 'TSKaigi Mashup #5 any'
+  - name: "TSKaigi Mashup #5 any"
     url: https://tskaigi.connpass.com/event/397059/
     date: 2026-07-23
 tags:
@@ -107,8 +107,8 @@ extendsはよく説明の時にif文のように説明されますが、正確�
 厳密には部分集合も説明としては違いますが、ここではイメージの話なのでextendsは部分集合と説明します。
 
 ```ts
-type A = 1 extends 1 ? true : false  // true
-type B = 1 extends 2 ? true : false  // false
+type A = 1 extends 1 ? true : false; // true
+type B = 1 extends 2 ? true : false; // false
 ```
 
 じゃあanyにextendsしてあげると良さそうですね。
@@ -118,10 +118,10 @@ type B = 1 extends 2 ? true : false  // false
 # 試み① T extends any
 
 ```ts
-type IsAny<T> = T extends any ? true : false
+type IsAny<T> = T extends any ? true : false;
 
-type A = IsAny<any>     // true
-type D = IsAny<string>  // true  ← string でも true
+type A = IsAny<any>; // true
+type D = IsAny<string>; // true  ← string でも true
 ```
 
 <p class="lede" style="margin-top:24px;">
@@ -139,11 +139,11 @@ type D = IsAny<string>  // true  ← string でも true
 # 試み② unknown extends T
 
 ```ts
-type IsAny<T> = unknown extends T ? true : false
+type IsAny<T> = unknown extends T ? true : false;
 
-type A = IsAny<any>      // true
-type B = IsAny<unknown>  // true  ← unknown まで true
-type D = IsAny<string>   // false
+type A = IsAny<any>; // true
+type B = IsAny<unknown>; // true  ← unknown まで true
+type D = IsAny<string>; // false
 ```
 
 <p class="lede" style="margin-top:24px;">
@@ -175,7 +175,7 @@ unknownを受け取れる型はanyとunknownの2つだけなので、かなり�
 # 答えは、この1行
 
 ```ts
-type IsAny<T> = 0 extends 1 & T ? true : false
+type IsAny<T> = 0 extends 1 & T ? true : false;
 // 0と1の部分は絶対に重ならない2つのリテラル型ならなんでもいいです
 ```
 
@@ -194,7 +194,7 @@ type IsAny<T> = 0 extends 1 & T ? true : false
 先ほどの例を簡単に表現すると
 
 ```ts
-type IsAny<T> = 0 extends 1 & T ? true : false
+type IsAny<T> = 0 extends 1 & T ? true : false;
 ```
 
 は「Tは1と交差可能で、かつ0の部分集合になる型である」と言い換えられるのではないでしょうか。<br>
@@ -205,11 +205,11 @@ type IsAny<T> = 0 extends 1 & T ? true : false
 # 分解① 1 & T
 
 ```ts
-type T1 = 1 & number   // 1
-type T2 = 1 & string   // never
-type T3 = 1 & unknown  // 1
-type T4 = 1 & never    // never
-type T5 = 1 & any      // any
+type T1 = 1 & number; // 1
+type T2 = 1 & string; // never
+type T3 = 1 & unknown; // 1
+type T4 = 1 & never; // never
+type T5 = 1 & any; // any
 ```
 
 <p class="lede" style="margin-top:24px;">
@@ -228,9 +228,9 @@ anyだけは全ての型と交差可能で、その交差の結果はanyにな�
 # 分解② 0 extends 1
 
 ```ts
-type R1 = 0 extends 1     ? true : false  // false
-type R2 = 0 extends never ? true : false  // false
-type R3 = 0 extends any   ? true : false  // true
+type R1 = 0 extends 1 ? true : false; // false
+type R2 = 0 extends never ? true : false; // false
+type R3 = 0 extends any ? true : false; // true
 ```
 
 <p class="lede" style="margin-top:24px;">
@@ -304,7 +304,7 @@ IsAnyが検出しているのは、まさにこの「階層の外にいる」と
 # おまけ① 条件型は両方の分岐を返す
 
 ```ts
-type X = any extends string ? 1 : 2   // 1 | 2
+type X = any extends string ? 1 : 2; // 1 | 2
 ```
 
 <p class="lede" style="margin-top:24px;">
@@ -323,10 +323,10 @@ type X = any extends string ? 1 : 2   // 1 | 2
 # おまけ② any でも代入できない時がある
 
 ```ts
-declare const a: any
+declare const a: any;
 
-const s: string = a  // OK
-const n: never = a   // Error: Type 'any' is not assignable to type 'never'
+const s: string = a; // OK
+const n: never = a; // Error: Type 'any' is not assignable to type 'never'
 ```
 
 <p class="lede" style="margin-top:24px;">

@@ -18,12 +18,12 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
-  ogDescription: 'なぜ従来のflatは遅かったのか、メモリ割り当てを1回に減らす2パス方式、holeを詰めるflat特有の仕様との格闘、V8独自言語Torqueでの実装までを順を追って解説します。'
+  ogDescription: "なぜ従来のflatは遅かったのか、メモリ割り当てを1回に減らす2パス方式、holeを詰めるflat特有の仕様との格闘、V8独自言語Torqueでの実装までを順を追って解説します。"
 events:
-  - name: 'フロントエンドカンファレンス関西 2026'
+  - name: "フロントエンドカンファレンス関西 2026"
     url: https://2026.frontend-conf.osaka.jp/
     date: 2026-10-12
-  - name: 'JSConf 2026'
+  - name: "JSConf 2026"
     url: https://jsconf.jp/2026/
     date: 2026-11-22
 tags:
@@ -152,11 +152,11 @@ V8は配列の中身を<br>「整数だけ」「浮動小数点を含む」「Ho
 
 # 主要なElementsKind
 
-| | Packed（holeなし） | Holey（holeあり） |
-| --- | --- | --- |
-| 小さな整数（Smi）だけ | `PACKED_SMI_ELEMENTS` | `HOLEY_SMI_ELEMENTS` |
-| 浮動小数点数を含む | `PACKED_DOUBLE_ELEMENTS` | `HOLEY_DOUBLE_ELEMENTS` |
-| 文字列やオブジェクトを含む | `PACKED_ELEMENTS` | `HOLEY_ELEMENTS` |
+|                            | Packed（holeなし）       | Holey（holeあり）       |
+| -------------------------- | ------------------------ | ----------------------- |
+| 小さな整数（Smi）だけ      | `PACKED_SMI_ELEMENTS`    | `HOLEY_SMI_ELEMENTS`    |
+| 浮動小数点数を含む         | `PACKED_DOUBLE_ELEMENTS` | `HOLEY_DOUBLE_ELEMENTS` |
+| 文字列やオブジェクトを含む | `PACKED_ELEMENTS`        | `HOLEY_ELEMENTS`        |
 
 <p class="lede" style="margin-top:24px;">
 <code>PACKED_SMI_ELEMENTS</code> と <code>PACKED_DOUBLE_ELEMENTS</code> には、サブ配列もProxyもholeも入らない<br>
@@ -453,11 +453,11 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 # memcpyできるのは数値配列だけ
 
-| ElementsKind | 中身 | ポインタ | memcpy |
-| --- | --- | --- | --- |
-| `PACKED_SMI_ELEMENTS` | 小さな整数そのもの | なし | できる |
-| `PACKED_DOUBLE_ELEMENTS` | 生のdouble | なし | できる |
-| `PACKED_ELEMENTS` | 文字列やオブジェクトへの参照 | あり | できない |
+| ElementsKind             | 中身                         | ポインタ | memcpy   |
+| ------------------------ | ---------------------------- | -------- | -------- |
+| `PACKED_SMI_ELEMENTS`    | 小さな整数そのもの           | なし     | できる   |
+| `PACKED_DOUBLE_ELEMENTS` | 生のdouble                   | なし     | できる   |
+| `PACKED_ELEMENTS`        | 文字列やオブジェクトへの参照 | あり     | できない |
 
 <p class="lede" style="margin-top:20px;">分かれ目はwrite barrier</p>
 
@@ -636,11 +636,11 @@ stack.Push(currentDepth);
 
 <p class="lede">前提がそろっている間だけ速いコードで進み、崩れたらその場でslow pathへ</p>
 
-| 場所 | 確認すること |
-| --- | --- |
+| 場所            | 確認すること                                                      |
+| --------------- | ----------------------------------------------------------------- |
 | fast pathの入口 | 長さがSmiの範囲内か、配列がfast modeか、`Symbol.species` が標準か |
-| 走査中 | `Recheck()` で配列の構造が変わっていないか、Proxyがないか |
-| 第2パスの最後 | 書き込んだ要素数と、第1パスで数えた長さが一致するか |
+| 走査中          | `Recheck()` で配列の構造が変わっていないか、Proxyがないか         |
+| 第2パスの最後   | 書き込んだ要素数と、第1パスで数えた長さが一致するか               |
 
 ---
 
@@ -654,14 +654,14 @@ stack.Push(currentDepth);
 - 要素1,000個のサブ配列1,000個を `flat(2)` して計測
 - 8回の最小値
 
-| サブ配列の型 | 最適化前 | 最適化後 | 速度比 |
-| --- | --- | --- | --- |
-| `PACKED_SMI_ELEMENTS` | 6.09 ms | 0.26 ms | 約24x |
-| `PACKED_DOUBLE_ELEMENTS` | 7.56 ms | 0.53 ms | 約14x |
-| `PACKED_ELEMENTS` | 5.92 ms | 3.87 ms | 約1.5x |
-| `HOLEY_SMI_ELEMENTS` | 5.91 ms | 3.45 ms | 約1.7x |
-| `HOLEY_DOUBLE_ELEMENTS` | 7.49 ms | 4.66 ms | 約1.6x |
-| `HOLEY_ELEMENTS` | 6.12 ms | 3.85 ms | 約1.6x |
+| サブ配列の型             | 最適化前 | 最適化後 | 速度比 |
+| ------------------------ | -------- | -------- | ------ |
+| `PACKED_SMI_ELEMENTS`    | 6.09 ms  | 0.26 ms  | 約24x  |
+| `PACKED_DOUBLE_ELEMENTS` | 7.56 ms  | 0.53 ms  | 約14x  |
+| `PACKED_ELEMENTS`        | 5.92 ms  | 3.87 ms  | 約1.5x |
+| `HOLEY_SMI_ELEMENTS`     | 5.91 ms  | 3.45 ms  | 約1.7x |
+| `HOLEY_DOUBLE_ELEMENTS`  | 7.49 ms  | 4.66 ms  | 約1.6x |
+| `HOLEY_ELEMENTS`         | 6.12 ms  | 3.85 ms  | 約1.6x |
 
 ---
 
@@ -705,10 +705,10 @@ Leszek Swirskiさんの返信<br>
 - マージには2人の `Code-Review+1` が要る
 - 私にはtry jobもCQも動かす権限がないので、レビュアーに頼む
 
-| ラベル | 動き |
-| --- | --- |
+| ラベル           | 動き                               |
+| ---------------- | ---------------------------------- |
 | `Commit-Queue+1` | try botでテストだけ回す（dry run） |
-| `Commit-Queue+2` | テストが通ったらそのままマージ |
+| `Commit-Queue+2` | テストが通ったらそのままマージ     |
 
 ---
 
@@ -779,8 +779,9 @@ const sourceKind: ElementsKind =
 
 ```ts
 // src/builtins/array-flat.tq
-doubleElements.values[targetIndex] =
-    Convert<float64_or_undefined_or_hole>(UnsafeCast<Number>(element));
+doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
+  UnsafeCast<Number>(element),
+);
 ```
 
 ---

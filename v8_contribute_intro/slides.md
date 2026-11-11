@@ -21,9 +21,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
-  ogDescription: 'このLTでは、ソースを取るところから最初のCLが取り込まれるまでを、実際のコマンドで一通りたどります。'
+  ogDescription: "このLTでは、ソースを取るところから最初のCLが取り込まれるまでを、実際のコマンドで一通りたどります。"
 events:
-  - name: '新卒N年目の勉強会&交流会！〜〇〇への誘い〜'
+  - name: "新卒N年目の勉強会&交流会！〜〇〇への誘い〜"
     url: https://fresh-engineers.connpass.com/event/402753/
     date: 2026-09-04
 tags:
@@ -85,7 +85,7 @@ V8は、Googleが開発するオープンソースのJIT仮想マシン型のJav
 概要<br>
 ECMAScript (ECMA-262) 準拠で、C++で記述されている。スタンドアローンでの実行が可能なほか、C++で書かれたアプリケーションの一部として動作させることもできる。
 
-引用: [V8 (JavaScriptエンジン) - Wikipedia](https://ja.wikipedia.org/wiki/V8_(JavaScript%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3))
+引用: [V8 (JavaScriptエンジン) - Wikipedia](<https://ja.wikipedia.org/wiki/V8_(JavaScript%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3)>)
 
 ---
 

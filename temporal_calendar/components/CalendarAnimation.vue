@@ -1,170 +1,187 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref } from 'vue'
-import { useNav } from '@slidev/client'
+import { computed, onUnmounted, ref } from "vue";
+import { useNav } from "@slidev/client";
 
-type SceneName = 'cycles' | 'ramadan'
-type Frame = { html: string; delay: number }
-type Counter = [string, string, string]
+type SceneName = "cycles" | "ramadan";
+type Frame = { html: string; delay: number };
+type Counter = [string, string, string];
 
-const props = defineProps<{ scene: SceneName }>()
+const props = defineProps<{ scene: SceneName }>();
 
-const SOLAR_YEAR = 365.24219
-const SYNODIC_MONTH = 29.53059
+const SOLAR_YEAR = 365.24219;
+const SYNODIC_MONTH = 29.53059;
 
-const range = (n: number) => Array.from({ length: n }, (_, i) => i)
+const range = (n: number) => Array.from({ length: n }, (_, i) => i);
 const headHtml = (title: string, phase: string) =>
-  `<div class="ca-head"><div class="ca-title">${title}</div><div class="ca-phase">${phase}</div></div>`
+  `<div class="ca-head"><div class="ca-title">${title}</div><div class="ca-phase">${phase}</div></div>`;
 const counterHtml = (cs: Counter[]) =>
   `<div class="ca-counters">${cs
-    .map(([k, v, u]) => `<div><span>${k}</span><span class="ca-v">${v}</span><span class="ca-u">${u}</span></div>`)
-    .join('')}</div>`
+    .map(
+      ([k, v, u]) =>
+        `<div><span>${k}</span><span class="ca-v">${v}</span><span class="ca-u">${u}</span></div>`,
+    )
+    .join("")}</div>`;
 const laneHtml = (name: string, body: string) =>
-  `<div class="ca-lane"><div class="ca-lane-name">${name}</div>${body}</div>`
+  `<div class="ca-lane"><div class="ca-lane-name">${name}</div>${body}</div>`;
 
 const buildCycles = (): Frame[] => {
-  const scale = 1.75
-  const yearEnd = SOLAR_YEAR * scale
+  const scale = 1.75;
+  const yearEnd = SOLAR_YEAR * scale;
   const draw = (t: number, phase: string) => {
-    const months = Math.floor(t / SYNODIC_MONTH + 1e-9)
-    const partial = t - months * SYNODIC_MONTH
+    const months = Math.floor(t / SYNODIC_MONTH + 1e-9);
+    const partial = t - months * SYNODIC_MONTH;
     const blocks = range(months)
       .map(
         (i) =>
-          `<div class="ca-moon${i % 2 ? ' alt' : ''}" style="left:${i * SYNODIC_MONTH * scale}px;width:${SYNODIC_MONTH * scale}px">${i + 1}</div>`,
+          `<div class="ca-moon${i % 2 ? " alt" : ""}" style="left:${i * SYNODIC_MONTH * scale}px;width:${SYNODIC_MONTH * scale}px">${i + 1}</div>`,
       )
-      .join('')
+      .join("");
     const current =
       partial > 0.01
         ? `<div class="ca-moon now" style="left:${months * SYNODIC_MONTH * scale}px;width:${partial * scale}px"></div>`
-        : ''
+        : "";
     return (
-      headHtml('1年と月の満ち欠け', phase) +
+      headHtml("1年と月の満ち欠け", phase) +
       laneHtml(
-        '太陽年',
+        "太陽年",
         `<div class="ca-track" style="--end:${yearEnd}px"><div class="ca-fill" style="width:${Math.min(t, SOLAR_YEAR) * scale}px"></div></div>`,
       ) +
-      laneHtml('朔望月', `<div class="ca-track" style="--end:${yearEnd}px">${blocks}${current}</div>`) +
+      laneHtml(
+        "朔望月",
+        `<div class="ca-track" style="--end:${yearEnd}px">${blocks}${current}</div>`,
+      ) +
       counterHtml([
-        ['経過', String(Math.floor(t)), '日'],
-        ['新月から新月まで', String(months), '回'],
-        ['1年の終わりまで', Math.max(0, SOLAR_YEAR - t).toFixed(2), '日'],
+        ["経過", String(Math.floor(t)), "日"],
+        ["新月から新月まで", String(months), "回"],
+        ["1年の終わりまで", Math.max(0, SOLAR_YEAR - t).toFixed(2), "日"],
       ])
-    )
-  }
-  const frames: Frame[] = []
-  const push = (t: number, phase: string, delay: number) => frames.push({ html: draw(t, phase), delay })
-  const twelve = 12 * SYNODIC_MONTH
-  const thirteen = 13 * SYNODIC_MONTH
-  push(0, '新月の日から数え始める', 120)
-  range(Math.floor(twelve / 6)).forEach((i) => push((i + 1) * 6, '月が満ち欠けを繰り返す', 6))
-  push(twelve, '12か月で354.37日、1年まであと10.88日', 260)
-  push(SOLAR_YEAR, '1年が終わってもまだ13か月目の途中', 260)
-  range(Math.floor((thirteen - SOLAR_YEAR) / 6)).forEach((i) => push(SOLAR_YEAR + (i + 1) * 6, '13か月目を最後まで数える', 8))
-  push(thirteen, '13か月だと1年を18.66日超える', 400)
-  return frames
-}
+    );
+  };
+  const frames: Frame[] = [];
+  const push = (t: number, phase: string, delay: number) =>
+    frames.push({ html: draw(t, phase), delay });
+  const twelve = 12 * SYNODIC_MONTH;
+  const thirteen = 13 * SYNODIC_MONTH;
+  push(0, "新月の日から数え始める", 120);
+  range(Math.floor(twelve / 6)).forEach((i) => push((i + 1) * 6, "月が満ち欠けを繰り返す", 6));
+  push(twelve, "12か月で354.37日、1年まであと10.88日", 260);
+  push(SOLAR_YEAR, "1年が終わってもまだ13か月目の途中", 260);
+  range(Math.floor((thirteen - SOLAR_YEAR) / 6)).forEach((i) =>
+    push(SOLAR_YEAR + (i + 1) * 6, "13か月目を最後まで数える", 8),
+  );
+  push(thirteen, "13か月だと1年を18.66日超える", 400);
+  return frames;
+};
 
 const RAMADAN: [number, string][] = [
-  [1440, '2019-05-06'],
-  [1441, '2020-04-24'],
-  [1442, '2021-04-13'],
-  [1443, '2022-04-02'],
-  [1444, '2023-03-23'],
-  [1445, '2024-03-11'],
-  [1446, '2025-03-01'],
-  [1447, '2026-02-18'],
-  [1448, '2027-02-08'],
-  [1449, '2028-01-28'],
-  [1450, '2029-01-16'],
-  [1451, '2030-01-05'],
-  [1452, '2030-12-26'],
-  [1453, '2031-12-16'],
-  [1454, '2032-12-04'],
-  [1455, '2033-11-23'],
-  [1456, '2034-11-12'],
-  [1457, '2035-11-01'],
-  [1458, '2036-10-21'],
-  [1459, '2037-10-10'],
-  [1460, '2038-09-30'],
-  [1461, '2039-09-19'],
-  [1462, '2040-09-08'],
-  [1463, '2041-08-28'],
-  [1464, '2042-08-17'],
-  [1465, '2043-08-06'],
-  [1466, '2044-07-26'],
-  [1467, '2045-07-16'],
-  [1468, '2046-07-05'],
-  [1469, '2047-06-25'],
-  [1470, '2048-06-13'],
-  [1471, '2049-06-02'],
-  [1472, '2050-05-22'],
-  [1473, '2051-05-12'],
-  [1474, '2052-04-30'],
-]
+  [1440, "2019-05-06"],
+  [1441, "2020-04-24"],
+  [1442, "2021-04-13"],
+  [1443, "2022-04-02"],
+  [1444, "2023-03-23"],
+  [1445, "2024-03-11"],
+  [1446, "2025-03-01"],
+  [1447, "2026-02-18"],
+  [1448, "2027-02-08"],
+  [1449, "2028-01-28"],
+  [1450, "2029-01-16"],
+  [1451, "2030-01-05"],
+  [1452, "2030-12-26"],
+  [1453, "2031-12-16"],
+  [1454, "2032-12-04"],
+  [1455, "2033-11-23"],
+  [1456, "2034-11-12"],
+  [1457, "2035-11-01"],
+  [1458, "2036-10-21"],
+  [1459, "2037-10-10"],
+  [1460, "2038-09-30"],
+  [1461, "2039-09-19"],
+  [1462, "2040-09-08"],
+  [1463, "2041-08-28"],
+  [1464, "2042-08-17"],
+  [1465, "2043-08-06"],
+  [1466, "2044-07-26"],
+  [1467, "2045-07-16"],
+  [1468, "2046-07-05"],
+  [1469, "2047-06-25"],
+  [1470, "2048-06-13"],
+  [1471, "2049-06-02"],
+  [1472, "2050-05-22"],
+  [1473, "2051-05-12"],
+  [1474, "2052-04-30"],
+];
 
 const buildRamadan = (): Frame[] => {
-  const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-  const scale = 2.1
-  const parse = (iso: string) => iso.split('-').map(Number)
+  const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const scale = 2.1;
+  const parse = (iso: string) => iso.split("-").map(Number);
   const dayOfYear = (iso: string) => {
-    const [y, m, d] = parse(iso)
-    return (Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 1)) / 86400000
-  }
+    const [y, m, d] = parse(iso);
+    return (Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 1)) / 86400000;
+  };
   const draw = (index: number, phase: string) => {
-    const [hijri, iso] = RAMADAN[index]
-    const [y, m, d] = parse(iso)
+    const [hijri, iso] = RAMADAN[index];
+    const [y, m, d] = parse(iso);
     const trail = range(Math.min(index, 4))
       .map((k) => RAMADAN[index - 1 - k][1])
-      .map((past, k) => `<div class="ca-pin past" style="left:${dayOfYear(past) * scale}px;opacity:${0.6 - k * 0.12}"></div>`)
-      .join('')
+      .map(
+        (past, k) =>
+          `<div class="ca-pin past" style="left:${dayOfYear(past) * scale}px;opacity:${0.6 - k * 0.12}"></div>`,
+      )
+      .join("");
     return (
-      headHtml('islamic-umalquraのラマダン初日', phase) +
+      headHtml("islamic-umalquraのラマダン初日", phase) +
       `<div class="ca-label">グレゴリオ暦の1年</div>` +
       `<div class="ca-year">${monthDays
         .map((n, i) => `<div class="ca-month" style="width:${n * scale}px">${i + 1}月</div>`)
-        .join('')}${trail}<div class="ca-pin" style="left:${dayOfYear(iso) * scale}px"></div></div>` +
+        .join(
+          "",
+        )}${trail}<div class="ca-pin" style="left:${dayOfYear(iso) * scale}px"></div></div>` +
       counterHtml([
-        ['イスラム暦', String(hijri), '年'],
-        ['ラマダン初日', `${y}年${m}月${d}日`, ''],
+        ["イスラム暦", String(hijri), "年"],
+        ["ラマダン初日", `${y}年${m}月${d}日`, ""],
       ])
-    )
-  }
-  const frames: Frame[] = []
+    );
+  };
+  const frames: Frame[] = [];
   RAMADAN.forEach((_, i) => {
-    const last = i === RAMADAN.length - 1
+    const last = i === RAMADAN.length - 1;
     frames.push({
-      html: draw(i, last ? 'イスラム暦で34年たつとほぼ同じ時期に戻る' : '毎年約11日ずつ早まる'),
+      html: draw(i, last ? "イスラム暦で34年たつとほぼ同じ時期に戻る" : "毎年約11日ずつ早まる"),
       delay: i === 0 ? 160 : last ? 400 : 45,
-    })
-  })
-  return frames
-}
+    });
+  });
+  return frames;
+};
 
 const builders: Record<SceneName, () => Frame[]> = {
   cycles: buildCycles,
   ramadan: buildRamadan,
-}
+};
 
-const frames = builders[props.scene]()
-const ends = frames.reduce<number[]>((acc, f) => [...acc, (acc[acc.length - 1] ?? 0) + f.delay * 10], [])
-const cycle = ends[ends.length - 1]
-const { isPrintMode } = useNav()
-const elapsed = ref(isPrintMode.value ? cycle : 0)
+const frames = builders[props.scene]();
+const ends = frames.reduce<number[]>(
+  (acc, f) => [...acc, (acc[acc.length - 1] ?? 0) + f.delay * 10],
+  [],
+);
+const cycle = ends[ends.length - 1];
+const { isPrintMode } = useNav();
+const elapsed = ref(isPrintMode.value ? cycle : 0);
 const html = computed(() => {
-  const at = ends.findIndex((end) => elapsed.value < end)
-  return frames[at < 0 ? frames.length - 1 : at].html
-})
-const timer = ref<ReturnType<typeof setInterval>>()
+  const at = ends.findIndex((end) => elapsed.value < end);
+  return frames[at < 0 ? frames.length - 1 : at].html;
+});
+const timer = ref<ReturnType<typeof setInterval>>();
 
 const play = () => {
-  clearInterval(timer.value)
-  const start = performance.now()
+  clearInterval(timer.value);
+  const start = performance.now();
   timer.value = setInterval(() => {
-    elapsed.value = performance.now() - start
-    if (elapsed.value >= cycle) clearInterval(timer.value)
-  }, 30)
-}
-onUnmounted(() => clearInterval(timer.value))
+    elapsed.value = performance.now() - start;
+    if (elapsed.value >= cycle) clearInterval(timer.value);
+  }, 30);
+};
+onUnmounted(() => clearInterval(timer.value));
 </script>
 
 <template>
@@ -195,7 +212,7 @@ onUnmounted(() => clearInterval(timer.value))
 }
 .cal-anim div,
 .cal-anim span {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
 }
 .cal-anim .ca-head {
   display: flex;
@@ -227,7 +244,10 @@ onUnmounted(() => clearInterval(timer.value))
   font-size: 15px;
 }
 .cal-anim .ca-v {
-  font: 700 20px 'Nunito', 'Noto Sans JP', sans-serif;
+  font:
+    700 20px "Nunito",
+    "Noto Sans JP",
+    sans-serif;
   margin-left: 6px;
   color: var(--ca-blue);
 }
@@ -254,7 +274,7 @@ onUnmounted(() => clearInterval(timer.value))
   background: var(--ca-light);
 }
 .cal-anim .ca-track::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -8px;
   bottom: -8px;
@@ -277,7 +297,9 @@ onUnmounted(() => clearInterval(timer.value))
   background: var(--ca-blue);
   border: 1px solid #fff;
   color: #fff;
-  font: 700 13px/38px 'Nunito', sans-serif;
+  font:
+    700 13px/38px "Nunito",
+    sans-serif;
   text-align: center;
 }
 .cal-anim .ca-moon.alt {
@@ -321,7 +343,9 @@ onUnmounted(() => clearInterval(timer.value))
   border-radius: 8px;
   background: #fff;
   color: #3984fd;
-  font: 700 15px 'Noto Sans JP', sans-serif;
+  font:
+    700 15px "Noto Sans JP",
+    sans-serif;
   cursor: pointer;
 }
 </style>

@@ -1,7 +1,7 @@
 {
   "name": "v8_number_internals",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open",

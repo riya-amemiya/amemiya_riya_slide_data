@@ -19,9 +19,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
-  ogDescription: 'HTTP APIを実装するとき、エラーレスポンスの構造をどのように決めていますか。独自のJSONフォーマットを定義していないでしょうか。'
+  ogDescription: "HTTP APIを実装するとき、エラーレスポンスの構造をどのように決めていますか。独自のJSONフォーマットを定義していないでしょうか。"
 events:
-  - name: 'フロントエンドカンファレンス 2026'
+  - name: "フロントエンドカンファレンス 2026"
     url: https://tokyo.fec.or.jp/2026/
     date: 2026-12-05
 tags:
@@ -82,16 +82,12 @@ highlighter: shiki
 # クライアントのエラー処理
 
 ```ts
-const res = await fetch(url, init)
-const body = await res.json()
+const res = await fetch(url, init);
+const body = await res.json();
 
 if (!res.ok || body.success === false) {
-  const message =
-    body.error ??
-    body.message ??
-    body.errors?.[0]?.msg ??
-    "Something went wrong"
-  showToast(message)
+  const message = body.error ?? body.message ?? body.errors?.[0]?.msg ?? "Something went wrong";
+  showToast(message);
 }
 ```
 
@@ -356,19 +352,19 @@ Content-Type: application/problem+json
 
 ```ts
 type ProblemDetails = {
-  type?: string
-  title?: string
-  status?: number
-  detail?: string
-  instance?: string
-  [extension: string]: unknown
-}
+  type?: string;
+  title?: string;
+  status?: number;
+  detail?: string;
+  instance?: string;
+  [extension: string]: unknown;
+};
 
 const problem = (body: ProblemDetails & { status: number }) =>
   new Response(JSON.stringify(body), {
     status: body.status,
     headers: { "Content-Type": "application/problem+json" },
-  })
+  });
 ```
 
 - ステータスコードと `status` を同じ値から作る
@@ -405,16 +401,16 @@ const res = await fetch("/purchase", {
     Accept: "application/json, application/problem+json",
   },
   body: JSON.stringify({ item: 123456, quantity: 2 }),
-})
+});
 
 if (res.headers.get("Content-Type")?.startsWith("application/problem+json")) {
-  const problem: ProblemDetails = await res.json()
+  const problem: ProblemDetails = await res.json();
   switch (problem.type ?? "about:blank") {
     case "https://example.com/probs/out-of-credit":
-      showTopUp(problem)
-      break
+      showTopUp(problem);
+      break;
     default:
-      showErrorFor(res.status)
+      showErrorFor(res.status);
   }
 }
 ```
