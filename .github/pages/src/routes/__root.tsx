@@ -1,4 +1,5 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { NewTabHint } from "../components/ExternalLink";
 import { decks } from "../decks";
 import appCss from "../styles/app.css?url";
 
@@ -11,7 +12,14 @@ const RootComponent = () => (
       <HeadContent />
     </head>
     <body className="bg-paper font-sans leading-[1.6] text-ink antialiased">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-10 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
+      >
+        本文へ移動
+      </a>
       <Outlet />
+      <NewTabHint />
       <Scripts />
     </body>
   </html>

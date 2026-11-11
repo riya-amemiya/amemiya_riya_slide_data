@@ -22,3 +22,9 @@ export const tags = [
 ]
   .sort(([a, countA], [b, countB]) => countB - countA || a.localeCompare(b))
   .map(([tag]) => tag);
+
+export const selectDecks = (tag: string | undefined, ascending: boolean) =>
+  (ascending
+    ? [...decks].sort((a, b) => Number(!a.date) - Number(!b.date) || a.date.localeCompare(b.date))
+    : decks
+  ).filter((deck) => tag === undefined || deck.tags.includes(tag));
