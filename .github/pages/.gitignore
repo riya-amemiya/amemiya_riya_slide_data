@@ -1,0 +1,4 @@
+dist
+.tanstack
+src/decks.gen.json
+src/routeTree.gen.ts
