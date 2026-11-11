@@ -8,10 +8,18 @@ const site = resolve(process.argv[2]);
 const baseUrl = (process.argv[3] ?? "").replace(/\/$/, "");
 
 const escapeHtml = (value) =>
-  String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 
 const toIsoDate = (value) =>
-  value instanceof Date ? value.toISOString().slice(0, 10) : typeof value === "string" ? value.slice(0, 10) : "";
+  value instanceof Date
+    ? value.toISOString().slice(0, 10)
+    : typeof value === "string"
+      ? value.slice(0, 10)
+      : "";
 
 const decks = readdirSync(root, { withFileTypes: true })
   .filter(
@@ -23,7 +31,9 @@ const decks = readdirSync(root, { withFileTypes: true })
   .map((entry) => ({
     name: entry.name,
     meta: Bun.YAML.parse(
-      readFileSync(join(root, entry.name, "slides.md"), "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/)[1],
+      readFileSync(join(root, entry.name, "slides.md"), "utf8").match(
+        /^---\r?\n([\s\S]*?)\r?\n---/,
+      )[1],
     ),
   }))
   .map(({ name, meta }) => ({
@@ -46,9 +56,8 @@ decks.forEach(({ name }) =>
         path,
         readFileSync(path, "utf8")
           .replace(/(<meta property="og:title" content="[^"]*?) - Slidev"/, '$1"')
-          .replace(
-            /(<meta property="og:image" content=")\.\/([^"]*")/,
-            (match, head, tail) => (baseUrl ? `${head}${baseUrl}/${name}/${tail}` : match),
+          .replace(/(<meta property="og:image" content=")\.\/([^"]*")/, (match, head, tail) =>
+            baseUrl ? `${head}${baseUrl}/${name}/${tail}` : match,
           ),
       ),
     ),
@@ -62,7 +71,10 @@ const tagButtons = [
   '<button type="button" data-tag="" aria-pressed="true">すべて</button>',
   ...[...tagCounts]
     .sort(([a, countA], [b, countB]) => countB - countA || a.localeCompare(b))
-    .map(([tag]) => `<button type="button" data-tag="${escapeHtml(tag)}" aria-pressed="false">${escapeHtml(tag)}</button>`),
+    .map(
+      ([tag]) =>
+        `<button type="button" data-tag="${escapeHtml(tag)}" aria-pressed="false">${escapeHtml(tag)}</button>`,
+    ),
 ].join("\n");
 
 const cards = decks
