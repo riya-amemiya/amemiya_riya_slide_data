@@ -14,6 +14,10 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'ChromeやNode.jsの心臓部であるV8エンジンの気持ちを少しだけ覗き見て、どうすればV8に好かれる、つまりパフォーマンスの高いコードが書けるようになるのか、そのヒントを共有したいと思います。'
+tags:
+  - JavaScript
+  - V8
 css: unocss
 highlighter: shiki
 ---

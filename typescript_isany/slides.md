@@ -16,6 +16,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'type-challengesの小さな問題を入り口に、anyの面白い性質について語ります。'
+tags:
+  - TypeScript
 css: unocss
 highlighter: shiki
 ---

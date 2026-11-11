@@ -13,6 +13,8 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+tags:
+  - キャリア
 css: unocss
 highlighter: shiki
 ---

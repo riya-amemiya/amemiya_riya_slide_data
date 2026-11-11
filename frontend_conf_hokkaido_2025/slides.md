@@ -14,6 +14,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'モダンCSSの進化について'
+tags:
+  - CSS
 css: unocss
 highlighter: shiki
 ---

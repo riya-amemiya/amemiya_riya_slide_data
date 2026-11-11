@@ -19,6 +19,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'HTTP APIを実装するとき、エラーレスポンスの構造をどのように決めていますか。独自のJSONフォーマットを定義していないでしょうか。'
+tags:
+  - API
 css: unocss
 highlighter: shiki
 ---

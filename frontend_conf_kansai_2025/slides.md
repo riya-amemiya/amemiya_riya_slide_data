@@ -14,6 +14,8 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+tags:
+  - HTML
 css: unocss
 highlighter: shiki
 ---

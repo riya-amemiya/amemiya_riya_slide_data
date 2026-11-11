@@ -15,6 +15,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: '暦がずれる理由と、Temporalがその違いをどう扱っているかを紹介します。'
+tags:
+  - JavaScript
 css: unocss
 highlighter: shiki
 ---

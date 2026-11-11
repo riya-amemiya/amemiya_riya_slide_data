@@ -14,6 +14,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: '会社をハックしてキャリアを作る方法'
+tags:
+  - キャリア
 css: unocss
 highlighter: shiki
 ---

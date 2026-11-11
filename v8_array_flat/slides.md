@@ -18,6 +18,11 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'なぜ従来のflatは遅かったのか、メモリ割り当てを1回に減らす2パス方式、holeを詰めるflat特有の仕様との格闘、V8独自言語Torqueでの実装までを順を追って解説します。'
+tags:
+  - V8
+  - JavaScript
+  - OSS
 css: unocss
 highlighter: shiki
 ---

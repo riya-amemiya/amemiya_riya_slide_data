@@ -16,6 +16,10 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'ECMAScript公式テストスイート「Test262」は、V8、SpiderMonkey、JavaScriptCoreといった主要エンジンが参照する「共通の物差し」です。本トークでは、Test262の役割と必要性をわかりやすく解説します。'
+tags:
+  - JavaScript
+  - V8
 css: unocss
 highlighter: shiki
 ---

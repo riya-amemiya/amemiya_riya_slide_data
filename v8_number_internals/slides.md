@@ -25,6 +25,10 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: '本セッションでは、なぜV8がここまで数値の表現を細分化するのかを、具体例とともに解説します。'
+tags:
+  - V8
+  - JavaScript
 css: unocss
 highlighter: shiki
 ---

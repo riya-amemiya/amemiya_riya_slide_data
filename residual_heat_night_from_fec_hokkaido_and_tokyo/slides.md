@@ -13,6 +13,9 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'フロントエンドカンファレンス北海道で初めて登壇させていただいた経験を元に、何を感じ、何を学んだのか、そしてこれから登壇するかもしれない方へのメッセージをお伝えできればと思います。'
+tags:
+  - キャリア
 css: unocss
 highlighter: shiki
 ---

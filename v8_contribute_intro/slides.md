@@ -21,6 +21,10 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'このLTでは、ソースを取るところから最初のCLが取り込まれるまでを、実際のコマンドで一通りたどります。'
+tags:
+  - V8
+  - OSS
 css: unocss
 highlighter: shiki
 ---
