@@ -14,6 +14,13 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: "Popover APIやDialog要素、inert属性など、2018年から2024年にかけてBaselineに追加されたHTMLの機能を11個取り上げます。"
+events:
+  - name: "フロントエンドカンファレンス関西 2025"
+    url: https://2025.frontend-conf.osaka.jp/
+    date: 2025-11-30
+tags:
+  - HTML
 css: unocss
 highlighter: shiki
 ---
@@ -222,16 +229,12 @@ Popover APIを使うとこれだけで動きます。トップレイヤーに表
 従来の実装<br/>管理が複雑
 
 ```html
-<button onclick="togglePopup()">
-  メニュー
-</button>
-<div id="popup" class="popup hidden">
-  ...
-</div>
+<button onclick="togglePopup()">メニュー</button>
+<div id="popup" class="popup hidden">...</div>
 <script>
-function togglePopup() {
-  // 色々な処理が必要
-}
+  function togglePopup() {
+    // 色々な処理が必要
+  }
 </script>
 ```
 
@@ -242,12 +245,8 @@ Popover API<br/>
 トップレイヤーで独立 + 自動イベント管理
 
 ```html
-<button popovertarget="menu">
-  メニュー
-</button>
-<div popover id="menu">
-  ...
-</div>
+<button popovertarget="menu">メニュー</button>
+<div popover id="menu">...</div>
 ```
 
 </div>
@@ -263,11 +262,11 @@ Popover API<br/>
 
 同じポップオーバーに対して、ボタンごとに異なる操作を指定できます
 
-| 値 | 動作 | 使用場面 |
-|--------|----------|---------------------|
-| show | ポップオーバーを開く | 「開く」ボタン |
-| hide | ポップオーバーを閉じる | 「閉じる」ボタン |
-| toggle | 開閉を切り替える（デフォルト） | トグルボタン |
+| 値     | 動作                           | 使用場面         |
+| ------ | ------------------------------ | ---------------- |
+| show   | ポップオーバーを開く           | 「開く」ボタン   |
+| hide   | ポップオーバーを閉じる         | 「閉じる」ボタン |
+| toggle | 開閉を切り替える（デフォルト） | トグルボタン     |
 
 <!--
 popovertargetaction属性を使うと、同じポップオーバーに対してボタンごとに異なる操作を指定できます。show、hide、toggleの3つの値があり、toggleがデフォルトです。
@@ -385,11 +384,11 @@ Dialog要素を使えば、フォーカストラップなど全部ブラウザ�
 <button id="open-dialog">ダイアログを開く</button>
 
 <script>
-  const dialog = document.getElementById('my-dialog');
-  document.getElementById('open-dialog').addEventListener('click', () => {
+  const dialog = document.getElementById("my-dialog");
+  document.getElementById("open-dialog").addEventListener("click", () => {
     dialog.showModal(); // モーダルダイアログとして表示
   });
-  document.getElementById('close-dialog').addEventListener('click', () => {
+  document.getElementById("close-dialog").addEventListener("click", () => {
     dialog.close();
   });
 </script>
@@ -451,13 +450,13 @@ method="dialog"を使うと、フォーム送信時に自動的にダイアロ�
 
 ## DialogとPopoverの使い分け
 
-| 特性 | Dialog | Popover |
-|------|--------|---------|
-| フォーカストラップ | ✅ 自動（モーダル時） | ❌ なし |
-| 背景の無効化 | ✅ ::backdrop擬似要素 | ❌ 手動実装必要 |
-| ESCキーで閉じる | ✅ 自動 | ✅ 自動 |
-| form統合 | ✅ method="dialog" | ❌ なし |
-| 用途 | 確認、入力が必要 | 情報表示、メニュー |
+| 特性               | Dialog                | Popover            |
+| ------------------ | --------------------- | ------------------ |
+| フォーカストラップ | ✅ 自動（モーダル時） | ❌ なし            |
+| 背景の無効化       | ✅ ::backdrop擬似要素 | ❌ 手動実装必要    |
+| ESCキーで閉じる    | ✅ 自動               | ✅ 自動            |
+| form統合           | ✅ method="dialog"    | ❌ なし            |
+| 用途               | 確認、入力が必要      | 情報表示、メニュー |
 
 <!--
 DialogとPopoverの使い分けは、ユーザーの操作を求める場合はDialog、単なる情報表示やメニューはPopoverと覚えてください。
@@ -631,12 +630,12 @@ inert属性はフォーカス、イベント応答、アクセシビリティツ
 
 ## 各無効化手法の比較
 
-| 特性 | `aria-hidden` | `inert` | `disabled` |
-|------|-------------|-------|-----------
-| 対象範囲 | アクセシビリティツリーのみ | 視覚・操作・アクセシビリティ | フォーム要素のみ |
-| マウス操作 | 操作可能 | 操作不可 | 操作不可（フォーム要素） |
-| フォーカス | 可能 | 不可 | 不可（フォーム要素） |
-| 適用可能要素 | すべて | すべて | フォーム要素のみ |
+| 特性         | `aria-hidden`              | `inert`                      | `disabled`               |
+| ------------ | -------------------------- | ---------------------------- | ------------------------ |
+| 対象範囲     | アクセシビリティツリーのみ | 視覚・操作・アクセシビリティ | フォーム要素のみ         |
+| マウス操作   | 操作可能                   | 操作不可                     | 操作不可（フォーム要素） |
+| フォーカス   | 可能                       | 不可                         | 不可（フォーム要素）     |
+| 適用可能要素 | すべて                     | すべて                       | フォーム要素のみ         |
 
 従来の`disabled`属性はフォーム要素にしか使えませんでしたが、
 `inert`属性はあらゆるHTML要素に適用できるので、より柔軟に無効化できます
@@ -651,7 +650,7 @@ aria-hidden、inert、disabledの違いをまとめました。inertはすべて
 
 ```javascript
 // モーダルを開く際にメインコンテンツを無効化
-document.getElementById('main-content').inert = true;
+document.getElementById("main-content").inert = true;
 ```
 
 inert属性をtrueに設定するだけで、
@@ -692,7 +691,7 @@ inert属性をtrueに設定するだけで、
 <search>
   <form action="/search" method="get">
     <label for="site-search">サイト内を検索:</label>
-    <input type="search" id="site-search" name="q" required>
+    <input type="search" id="site-search" name="q" required />
     <button type="submit">検索</button>
   </form>
 </search>
@@ -724,11 +723,11 @@ search要素はブラウザのアクセシビリティツリーでsearchラン�
 
 ```html
 <!-- ファーストビューの重要な画像 -->
-<img src="hero-image.jpg" loading="eager" alt="メインビジュアル">
+<img src="hero-image.jpg" loading="eager" alt="メインビジュアル" />
 
 <!-- スクロール後に表示される画像 -->
-<img src="product-1.jpg" loading="lazy" alt="商品画像1">
-<img src="product-2.jpg" loading="lazy" alt="商品画像2">
+<img src="product-1.jpg" loading="lazy" alt="商品画像1" />
+<img src="product-2.jpg" loading="lazy" alt="商品画像2" />
 
 <!-- 外部コンテンツの遅延読み込み -->
 <iframe src="video-player.html" loading="lazy" title="動画プレイヤー"></iframe>
@@ -742,10 +741,10 @@ search要素はブラウザのアクセシビリティツリーでsearchラン�
 
 ## 使い分け
 
-| 値 | 動作 | 使用場面 |
-|----|------|----------|
-| lazy | ビューポート接近時に読み込み | フォールド下の画像 |
-| eager | 即座に読み込み | ファーストビューの画像 |
+| 値    | 動作                         | 使用場面               |
+| ----- | ---------------------------- | ---------------------- |
+| lazy  | ビューポート接近時に読み込み | フォールド下の画像     |
+| eager | 即座に読み込み               | ファーストビューの画像 |
 
 <!--
 lazyはスクロール後に表示される画像に、eagerはファーストビューの重要な画像に使います。
@@ -784,13 +783,13 @@ fetchpriority属性を使うと、リソースの優先度を明示的に指定�
 
 ```html
 <!-- LCP要素となるヒーロー画像を最優先 -->
-<img src="hero-banner.jpg" fetchpriority="high" alt="メインビジュアル">
+<img src="hero-banner.jpg" fetchpriority="high" alt="メインビジュアル" />
 
 <!-- 重要なスタイルシート -->
-<link rel="stylesheet" href="critical.css" fetchpriority="high">
+<link rel="stylesheet" href="critical.css" fetchpriority="high" />
 
 <!-- 優先度の低い装飾画像 -->
-<img src="decoration.png" fetchpriority="low" loading="lazy" alt="装飾">
+<img src="decoration.png" fetchpriority="low" loading="lazy" alt="装飾" />
 
 <!-- 分析スクリプトは低優先度 -->
 <script src="analytics.js" fetchpriority="low" async></script>
@@ -804,11 +803,11 @@ LCP画像やクリティカルCSSはhigh、分析スクリプトなどはlowを�
 
 ## 優先度の使い分け
 
-| 優先度 | 対象リソース | 効果 |
-|--------|------------|------|
-| high | LCP画像、クリティカルCSS、重要なフォント | より早く読み込まれる |
-| low | 装飾画像、分析スクリプト、非表示コンテンツ | 他のリソースを優先 |
-| auto | その他の一般的なリソース | ブラウザのデフォルト動作 |
+| 優先度 | 対象リソース                               | 効果                     |
+| ------ | ------------------------------------------ | ------------------------ |
+| high   | LCP画像、クリティカルCSS、重要なフォント   | より早く読み込まれる     |
+| low    | 装飾画像、分析スクリプト、非表示コンテンツ | 他のリソースを優先       |
+| auto   | その他の一般的なリソース                   | ブラウザのデフォルト動作 |
 
 <!--
 優先度の使い分けをまとめました。high、low、autoの3つがあります。特に指定しなければブラウザのデフォルト動作になります。
@@ -852,11 +851,7 @@ blocking属性を使うと、スクリプトやスタイルシートがレンダ
 <script src="framework.js" defer></script>
 
 <!-- preload + blocking="render"でレンダリングを停止 -->
-<link rel="preload"
-      href="critical-font.woff2"
-      as="font"
-      blocking="render"
-      crossorigin>
+<link rel="preload" href="critical-font.woff2" as="font" blocking="render" crossorigin />
 ```
 
 初期表示に必要不可欠なリソース vs 後から適用可能なリソースを明確に区別
@@ -915,17 +910,16 @@ blocking属性を使うと、スクリプトやスタイルシートがレンダ
 
 ```html
 <!-- 数値専用キーボード -->
-<input type="text" inputmode="numeric" pattern="[0-9]*"
-       placeholder="郵便番号（ハイフンなし）">
+<input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="郵便番号（ハイフンなし）" />
 
 <!-- 電話番号用キーボード -->
-<input type="tel" inputmode="tel" placeholder="090-1234-5678">
+<input type="tel" inputmode="tel" placeholder="090-1234-5678" />
 
 <!-- URL入力用キーボード -->
-<input type="url" inputmode="url" placeholder="https://example.com">
+<input type="url" inputmode="url" placeholder="https://example.com" />
 
 <!-- メールアドレス用キーボード -->
-<input type="email" inputmode="email" placeholder="user@example.com">
+<input type="email" inputmode="email" placeholder="user@example.com" />
 ```
 
 <!--
@@ -936,14 +930,14 @@ inputmodeを指定すると、入力内容に適したキーボードが表示�
 
 ## inputmodeの種類
 
-| inputmode | 表示されるキーボード | 適した用途 |
-|-----------|-------------------|------------|
-| numeric | 0-9の数字のみ | 認証コード、郵便番号 |
-| tel | 電話番号用（+や-を含む） | 電話番号 |
-| decimal | 数字と小数点 | 価格、数量 |
-| email | @や.comキーを含む | メールアドレス |
-| url | /や.comキーを含む | URL入力 |
-| search | 検索ボタン付き | 検索フィールド |
+| inputmode | 表示されるキーボード     | 適した用途           |
+| --------- | ------------------------ | -------------------- |
+| numeric   | 0-9の数字のみ            | 認証コード、郵便番号 |
+| tel       | 電話番号用（+や-を含む） | 電話番号             |
+| decimal   | 数字と小数点             | 価格、数量           |
+| email     | @や.comキーを含む        | メールアドレス       |
+| url       | /や.comキーを含む        | URL入力              |
+| search    | 検索ボタン付き           | 検索フィールド       |
 
 <!--
 inputmodeには6種類あります。numeric、tel、decimal、email、url、searchです。用途に応じて使い分けることでユーザー体験が向上します。
@@ -992,16 +986,16 @@ inputmodeには6種類あります。numeric、tel、decimal、email、url、sea
 
 ```html
 <!-- 検索フィールド -->
-<input type="search" enterkeyhint="search" placeholder="サイト内を検索">
+<input type="search" enterkeyhint="search" placeholder="サイト内を検索" />
 
 <!-- 複数ステップフォーム -->
-<input type="text" enterkeyhint="next" placeholder="お名前">
+<input type="text" enterkeyhint="next" placeholder="お名前" />
 
 <!-- フォームの最終項目 -->
 <textarea enterkeyhint="done" placeholder="コメント"></textarea>
 
 <!-- チャットアプリ -->
-<input type="text" enterkeyhint="send" placeholder="メッセージを入力">
+<input type="text" enterkeyhint="send" placeholder="メッセージを入力" />
 ```
 
 <!--
@@ -1012,13 +1006,13 @@ inputmodeには6種類あります。numeric、tel、decimal、email、url、sea
 
 ## enterkeyhintの種類
 
-| 値 | Enterキー表示 | 使用場面 |
-|----|---------------|----------|
-| search | 検索 | 検索フィールド |
-| next | 次へ | フォームの途中フィールド |
-| done | 完了 | フォームの最終フィールド |
-| go | 移動 | URL入力フィールド |
-| send | 送信 | メッセージ入力フィールド |
+| 値     | Enterキー表示 | 使用場面                 |
+| ------ | ------------- | ------------------------ |
+| search | 検索          | 検索フィールド           |
+| next   | 次へ          | フォームの途中フィールド |
+| done   | 完了          | フォームの最終フィールド |
+| go     | 移動          | URL入力フィールド        |
+| send   | 送信          | メッセージ入力フィールド |
 
 <!--
 enterkeyhintには5種類あります。search、next、done、go、sendです。フォームやチャットなど、用途に合わせて設定してください。
@@ -1059,9 +1053,7 @@ enterkeyhintには5種類あります。search、next、done、go、sendです�
 <a href="https://user-content.com" rel="ugc">ユーザー投稿のリンク</a>
 
 <!-- 複数の値を組み合わせる -->
-<a href="https://untrusted-site.com" rel="nofollow sponsored">
-  有料の外部リンク
-</a>
+<a href="https://untrusted-site.com" rel="nofollow sponsored"> 有料の外部リンク </a>
 ```
 
 <!--
@@ -1072,10 +1064,10 @@ sponsoredは広告やアフィリエイトリンク、ugcはユーザー生成�
 
 ## rel属性の値
 
-| 値 | 説明 | 使用場面 |
-|----|------|----------|
-| sponsored | 広告、スポンサーシップ、金銭的対価のあるリンク | アフィリエイトリンク、記事広告など |
-| ugc | ユーザー生成コンテンツ内のリンク | ブログコメント欄、フォーラム投稿内のリンク |
+| 値        | 説明                                           | 使用場面                                   |
+| --------- | ---------------------------------------------- | ------------------------------------------ |
+| sponsored | 広告、スポンサーシップ、金銭的対価のあるリンク | アフィリエイトリンク、記事広告など         |
+| ugc       | ユーザー生成コンテンツ内のリンク               | ブログコメント欄、フォーラム投稿内のリンク |
 
 検索エンジンがリンクの文脈を正確に理解 → PageRank評価を適切に調整
 

@@ -1,13 +1,13 @@
 /* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap");
 
 /* Global styles for the presentation */
 :root {
-  --slidev-theme-primary: #3984FD;
+  --slidev-theme-primary: #3984fd;
   --slidev-theme-text: #243762;
-  --slidev-theme-bg: #FFFFFF;
-  --slidev-slide-container-background: #FFFFFF;
+  --slidev-theme-bg: #ffffff;
+  --slidev-slide-container-background: #ffffff;
   /* Fixed width for code blocks (px so it doesn't vary by font-size) */
   --code-block-width: 900px;
   /* Unify code font-size so width/height look consistent across slides */
@@ -18,8 +18,8 @@ html,
 body,
 .slidev-page,
 .slidev-layout {
-  background: #FFFFFF !important;
-  background-color: #FFFFFF !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
 }
 
 /*
@@ -57,9 +57,12 @@ body,
 }
 
 /* Default body text styles */
-p, li, span, div {
+p,
+li,
+span,
+div {
   color: #243762;
-  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
+  font-family: "Nunito", "Noto Sans JP", sans-serif;
 }
 
 /* Specific heading styles with higher specificity */
@@ -69,8 +72,8 @@ p, li, span, div {
 .slidev-layout h4,
 .slidev-layout h5,
 .slidev-layout h6 {
-  color: #3984FD;
-  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
+  color: #3984fd;
+  font-family: "Nunito", "Noto Sans JP", sans-serif;
 }
 
 .slidev-layout h1 + p {
@@ -79,7 +82,7 @@ p, li, span, div {
 
 /* Special styling for the first slide (cover page) */
 .slidev-layout[data-slide="1"] h1 {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
 }
 
 /* Ensure proper text color inheritance for non-heading elements */
@@ -88,7 +91,8 @@ p, li, span, div {
 }
 
 /* Code blocks should maintain their own colors */
-pre, code {
+pre,
+code {
   color: initial;
 }
 
@@ -134,24 +138,41 @@ pre, code {
    Deck classes
    ======================================================================== */
 
-.slidev-layout .lede { font-size: 1.1em; line-height: 1.5; max-width: 1500px; }
-.slidev-layout .lede + .lede { margin-top: 1em; }
+.slidev-layout .lede {
+  font-size: 1.1em;
+  line-height: 1.5;
+  max-width: 1500px;
+}
+.slidev-layout .lede + .lede {
+  margin-top: 1em;
+}
 
 .slidev-layout .mega {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
   font-size: 2em;
   line-height: 1.4;
-  color: #3984FD !important;
+  color: #3984fd !important;
   margin: 0;
-  letter-spacing: -.01em;
+  letter-spacing: -0.01em;
 }
-.slidev-layout .mega .accent { color: #243762 !important; }
-.slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762 !important; }
-.slidev-layout .byline .venue { margin-left: 12px; }
+.slidev-layout .mega .accent {
+  color: #243762 !important;
+}
+.slidev-layout .byline {
+  margin-top: 1.5em;
+  font-size: 0.9em;
+  color: #243762 !important;
+}
+.slidev-layout .byline .venue {
+  margin-left: 12px;
+}
 
 .slidev-layout .col-label {
-  font-size: 0.85em; color: #3984FD; font-weight: 700;
-  margin-bottom: 12px; letter-spacing: .02em;
+  font-size: 0.85em;
+  color: #3984fd;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
 }
 
 .slidev-layout .intro-grid {
@@ -161,14 +182,23 @@ pre, code {
   align-items: center;
 }
 .slidev-layout .intro-grid img.avatar {
-  width: 280px; height: 280px; border-radius: 50%;
-  object-fit: cover; justify-self: center;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  object-fit: cover;
+  justify-self: center;
 }
-.slidev-layout .intro-grid .bio p { font-size: 1.05em; margin: 0 0 8px; }
-.slidev-layout .intro-grid .bio .role { font-size: 0.85em; margin-top: 16px; }
+.slidev-layout .intro-grid .bio p {
+  font-size: 1.05em;
+  margin: 0 0 8px;
+}
+.slidev-layout .intro-grid .bio .role {
+  font-size: 0.85em;
+  margin-top: 16px;
+}
 
 .slidev-layout .lead-q {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
   font-size: 1.9em;
   line-height: 1.5;
   color: #243762;
@@ -184,7 +214,10 @@ pre, code {
   font-size: 1.1em;
   line-height: 1.5;
 }
-.slidev-layout .mapping .key { color: #3984FD; font-weight: 700; }
+.slidev-layout .mapping .key {
+  color: #3984fd;
+  font-weight: 700;
+}
 
 .slidev-layout table {
   border-collapse: collapse;
@@ -198,32 +231,44 @@ pre, code {
   text-align: left;
 }
 .slidev-layout table th {
-  color: #3984FD;
+  color: #3984fd;
   font-weight: 700;
-  border-bottom: 2px solid #3984FD;
+  border-bottom: 2px solid #3984fd;
 }
 
-.slidev-layout .array-memory { margin: 20px 0 16px; }
+.slidev-layout .array-memory {
+  margin: 20px 0 16px;
+}
 .slidev-layout .array-label {
-  color: #3984FD;
+  color: #3984fd;
   font-weight: 700;
   margin-bottom: 10px;
 }
-.slidev-layout .cells { display: flex; gap: 10px; }
+.slidev-layout .cells {
+  display: flex;
+  gap: 10px;
+}
 .slidev-layout .cell {
   min-width: 96px;
   padding: 12px 10px;
   border-radius: 12px;
   text-align: center;
-  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: "PT Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   border: 2px solid #e6e8ef;
 }
-.slidev-layout .cell.copied { background: #f0f7ff; color: #3984FD; border-color: #3984FD; }
-.slidev-layout .cell.hole { border-style: dashed; border-color: #b9c6dd; }
+.slidev-layout .cell.copied {
+  background: #f0f7ff;
+  color: #3984fd;
+  border-color: #3984fd;
+}
+.slidev-layout .cell.hole {
+  border-style: dashed;
+  border-color: #b9c6dd;
+}
 .slidev-layout .copy-arrow {
   margin: 14px 0;
-  color: #3984FD;
+  color: #3984fd;
   font-weight: 700;
 }
 
@@ -234,47 +279,93 @@ pre, code {
   align-items: start;
   margin-top: 12px;
 }
-.slidev-layout .alloc-name { color: #3984FD; font-weight: 700; line-height: 24px; }
-.slidev-layout .alloc-bars { display: grid; gap: 10px; }
-.slidev-layout .alloc-row { display: flex; align-items: center; gap: 14px; font-size: 0.85em; }
-.slidev-layout .bar { height: 24px; border-radius: 6px; flex: none; }
-.slidev-layout .bar.old { background: #ffb020; }
-.slidev-layout .bar.new { background: #3984FD; }
+.slidev-layout .alloc-name {
+  color: #3984fd;
+  font-weight: 700;
+  line-height: 24px;
+}
+.slidev-layout .alloc-bars {
+  display: grid;
+  gap: 10px;
+}
+.slidev-layout .alloc-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.85em;
+}
+.slidev-layout .bar {
+  height: 24px;
+  border-radius: 6px;
+  flex: none;
+}
+.slidev-layout .bar.old {
+  background: #ffb020;
+}
+.slidev-layout .bar.new {
+  background: #3984fd;
+}
 
-.slidev-layout .sum { margin: 8px 0 20px; }
-.slidev-layout .sum-row { display: flex; gap: 28px; }
-.slidev-layout .sum-item .cells { gap: 6px; }
-.slidev-layout .sum-item .cell { min-width: 48px; padding: 8px 6px; }
+.slidev-layout .sum {
+  margin: 8px 0 20px;
+}
+.slidev-layout .sum-row {
+  display: flex;
+  gap: 28px;
+}
+.slidev-layout .sum-item .cells {
+  gap: 6px;
+}
+.slidev-layout .sum-item .cell {
+  min-width: 48px;
+  padding: 8px 6px;
+}
 .slidev-layout .sum-len {
   margin-top: 8px;
-  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace, 'Noto Sans JP';
+  font-family: "PT Mono", ui-monospace, SFMono-Regular, Menlo, monospace, "Noto Sans JP";
   font-weight: 700;
   font-size: 0.85em;
-  color: #3984FD;
+  color: #3984fd;
 }
-.slidev-layout .sum-total { margin-top: 14px; font-weight: 700; }
+.slidev-layout .sum-total {
+  margin-top: 14px;
+  font-weight: 700;
+}
 
-.slidev-layout .kinds { margin: 8px 0 20px; }
-.slidev-layout .kind-flow { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.slidev-layout .kinds {
+  margin: 8px 0 20px;
+}
+.slidev-layout .kind-flow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
 .slidev-layout .kind {
-  font-family: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: "PT Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 700;
   font-size: 0.85em;
   padding: 8px 12px;
-  border: 2px solid #3984FD;
+  border: 2px solid #3984fd;
   border-radius: 10px;
   background: #f0f7ff;
   color: #243762;
 }
-.slidev-layout .kind-flow .step { font-size: 0.8em; line-height: 1.4; text-align: center; }
+.slidev-layout .kind-flow .step {
+  font-size: 0.8em;
+  line-height: 1.4;
+  text-align: center;
+}
 .slidev-layout .kind-flow .step::after {
-  content: '→';
+  content: "→";
   display: block;
   font-size: 1.6em;
   font-weight: 700;
-  color: #3984FD;
+  color: #3984fd;
 }
-.slidev-layout .kind-flow .tail { font-size: 0.85em; }
+.slidev-layout .kind-flow .tail {
+  font-size: 0.85em;
+}
 
 .slidev-layout .ba {
   display: grid;
@@ -283,7 +374,7 @@ pre, code {
   margin-top: 12px;
 }
 .slidev-layout .ba-col-title {
-  color: #3984FD;
+  color: #3984fd;
   font-weight: 700;
   margin-bottom: 10px;
 }
@@ -299,11 +390,19 @@ pre, code {
   font-size: 0.8em;
   line-height: 1.4;
 }
-.slidev-layout .ba-step.cost { border-color: #ffb020; background: #fff4dc; }
-.slidev-layout .ba-step.win { border-color: #3984FD; background: #3984FD; color: #fff; font-weight: 700; }
+.slidev-layout .ba-step.cost {
+  border-color: #ffb020;
+  background: #fff4dc;
+}
+.slidev-layout .ba-step.win {
+  border-color: #3984fd;
+  background: #3984fd;
+  color: #fff;
+  font-weight: 700;
+}
 .slidev-layout .ba-arrow {
   text-align: center;
-  color: #3984FD;
+  color: #3984fd;
   font-weight: 700;
   line-height: 1.3;
 }
@@ -314,8 +413,14 @@ pre, code {
   color: #e69500;
 }
 
-.slidev-layout table.ba-table td.bad { background: #fff4dc; }
-.slidev-layout table.ba-table td.good { background: #f0f7ff; color: #3984FD; font-weight: 700; }
+.slidev-layout table.ba-table td.bad {
+  background: #fff4dc;
+}
+.slidev-layout table.ba-table td.good {
+  background: #f0f7ff;
+  color: #3984fd;
+  font-weight: 700;
+}
 
 .slidev-layout .code-sm {
   --code-font-size: 13px;
@@ -326,4 +431,7 @@ pre, code {
   margin: 0;
   line-height: 1.9;
 }
-.slidev-layout ul.refs a { color: #3984FD; font-weight: 700; }
+.slidev-layout ul.refs a {
+  color: #3984fd;
+  font-weight: 700;
+}

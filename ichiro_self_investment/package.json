@@ -1,7 +1,7 @@
 {
   "name": "ichiro_self_investment",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open",

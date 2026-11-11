@@ -1,19 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap");
 
 :root {
-  --slidev-theme-primary: #3984FD;
+  --slidev-theme-primary: #3984fd;
   --slidev-theme-text: #243762;
-  --slidev-theme-bg: #FFFFFF;
-  --slidev-slide-container-background: #FFFFFF;
+  --slidev-theme-bg: #ffffff;
+  --slidev-slide-container-background: #ffffff;
 }
 
 html,
 body,
 .slidev-page,
 .slidev-layout {
-  background: #FFFFFF !important;
-  background-color: #FFFFFF !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
 }
 
 .slidev-layout {
@@ -44,9 +44,12 @@ body,
   text-align: left !important;
 }
 
-p, li, span, div {
+p,
+li,
+span,
+div {
   color: #243762;
-  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
+  font-family: "Nunito", "Noto Sans JP", sans-serif;
 }
 
 .slidev-layout h1,
@@ -55,8 +58,8 @@ p, li, span, div {
 .slidev-layout h4,
 .slidev-layout h5,
 .slidev-layout h6 {
-  color: #3984FD;
-  font-family: 'Nunito', 'Noto Sans JP', sans-serif;
+  color: #3984fd;
+  font-family: "Nunito", "Noto Sans JP", sans-serif;
 }
 
 .slidev-layout h1 + p {
@@ -64,27 +67,41 @@ p, li, span, div {
 }
 
 .slidev-layout[data-slide="1"] h1 {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
 }
 
 .slidev-layout *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
   color: inherit;
 }
 
-.slidev-layout .lede { font-size: 1.1em; line-height: 1.5; max-width: 1500px; }
-.slidev-layout .lede + .lede { margin-top: 1em; }
+.slidev-layout .lede {
+  font-size: 1.1em;
+  line-height: 1.5;
+  max-width: 1500px;
+}
+.slidev-layout .lede + .lede {
+  margin-top: 1em;
+}
 
 .slidev-layout .mega {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
   font-size: 2em;
   line-height: 1.4;
-  color: #3984FD !important;
+  color: #3984fd !important;
   margin: 0;
-  letter-spacing: -.01em;
+  letter-spacing: -0.01em;
 }
-.slidev-layout .mega .accent { color: #243762 !important; }
-.slidev-layout .byline { margin-top: 1.5em; font-size: 0.9em; color: #243762 !important; }
-.slidev-layout .byline .venue { margin-left: 12px; }
+.slidev-layout .mega .accent {
+  color: #243762 !important;
+}
+.slidev-layout .byline {
+  margin-top: 1.5em;
+  font-size: 0.9em;
+  color: #243762 !important;
+}
+.slidev-layout .byline .venue {
+  margin-left: 12px;
+}
 
 .slidev-layout .intro-grid {
   display: grid;
@@ -93,14 +110,23 @@ p, li, span, div {
   align-items: center;
 }
 .slidev-layout .intro-grid img.avatar {
-  width: 280px; height: 280px; border-radius: 50%;
-  object-fit: cover; justify-self: center;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  object-fit: cover;
+  justify-self: center;
 }
-.slidev-layout .intro-grid .bio p { font-size: 1.05em; margin: 0 0 8px; }
-.slidev-layout .intro-grid .bio .role { font-size: 0.85em; margin-top: 16px; }
+.slidev-layout .intro-grid .bio p {
+  font-size: 1.05em;
+  margin: 0 0 8px;
+}
+.slidev-layout .intro-grid .bio .role {
+  font-size: 0.85em;
+  margin-top: 16px;
+}
 
 .slidev-layout .lead-q {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
   font-size: 1.9em;
   line-height: 1.5;
   color: #243762;
@@ -112,4 +138,7 @@ p, li, span, div {
   margin: 0;
   line-height: 1.9;
 }
-.slidev-layout ul.refs a { color: #3984FD; font-weight: 700; }
+.slidev-layout ul.refs a {
+  color: #3984fd;
+  font-weight: 700;
+}

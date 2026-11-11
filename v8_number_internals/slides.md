@@ -25,6 +25,10 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: "本セッションでは、なぜV8がここまで数値の表現を細分化するのかを、具体例とともに解説します。"
+tags:
+  - V8
+  - JavaScript
 css: unocss
 highlighter: shiki
 ---
@@ -99,10 +103,10 @@ JavaScriptの数値は、基本的には <strong class="blue">Number</strong> �
 </p>
 
 ```ts
-let a: number = 42
-let b: number = 4.2
-let c: number = NaN
-let d: number = Infinity
+let a: number = 42;
+let b: number = 4.2;
+let c: number = NaN;
+let d: number = Infinity;
 ```
 
 <p class="lede" style="margin-top:28px;">
@@ -121,9 +125,9 @@ TypeScriptで数値を書くとき、型はnumberです。
 # 早速、質問です
 
 ```js
-console.log(typeof 42)
-console.log(typeof 4.2)
-console.log(typeof NaN)
+console.log(typeof 42);
+console.log(typeof 4.2);
+console.log(typeof NaN);
 ```
 
 <p class="lede" style="margin-top:24px;">
@@ -137,9 +141,9 @@ console.log(typeof NaN)
 ---
 
 ```js
-console.log(typeof 42)   // "number"
-console.log(typeof 4.2)  // "number"
-console.log(typeof NaN)  // "number"
+console.log(typeof 42); // "number"
+console.log(typeof 4.2); // "number"
+console.log(typeof NaN); // "number"
 ```
 
 <p class="lede" style="margin-top:24px;">
@@ -311,9 +315,9 @@ NaNやInfinity、Smiの範囲に収まらない整数もこちら側になりま
 # V8は配列の中身も見ている
 
 ```js
-const a = [1, 2, 3]
-const b = [1, 2, 3.14]
-const c = [1, 2, "3"]
+const a = [1, 2, 3];
+const b = [1, 2, 3.14];
+const c = [1, 2, "3"];
 ```
 
 <p class="lede" style="margin-top:28px;">
@@ -359,7 +363,7 @@ JavaScript から見るとどれも Array ですが、中身が小さな整数�
 # 整数だけの配列
 
 ```js
-const xs = [1, 2, 3]
+const xs = [1, 2, 3];
 ```
 
 <div class="array-memory">
@@ -387,8 +391,8 @@ const xs = [1, 2, 3]
 # 小数が入った配列
 
 ```js
-const xs = [1, 2, 3]
-xs.push(4.2)
+const xs = [1, 2, 3];
+xs.push(4.2);
 ```
 
 <div class="array-memory">
@@ -417,9 +421,9 @@ xs.push(4.2)
 # 文字列が入った配列
 
 ```js
-const xs = [1, 2, 3]
-xs.push(4.2)
-xs.push("5")
+const xs = [1, 2, 3];
+xs.push(4.2);
+xs.push("5");
 ```
 
 <div class="array-memory">
@@ -485,7 +489,6 @@ xs[9] = 10</pre>
   </div>
 </div>
 
-
 <!--
 Elements KindにはSmi、double、elementsという分類に加えて、PACKEDとHOLEYという分類があります。
 PACKEDは隙間のない密な配列です。
@@ -497,11 +500,11 @@ HOLEY は穴がある疎な配列です。穴があると、単に undefined を
 # -0 や NaN も double 配列へ移す
 
 ```js
-const xs = [1, 2, 3] // PACKED_SMI_ELEMENTS
+const xs = [1, 2, 3]; // PACKED_SMI_ELEMENTS
 
-xs.push(-0)       // ここで PACKED_DOUBLE_ELEMENTS へ
-xs.push(NaN)      // すでに double 配列
-xs.push(Infinity) // すでに double 配列
+xs.push(-0); // ここで PACKED_DOUBLE_ELEMENTS へ
+xs.push(NaN); // すでに double 配列
+xs.push(Infinity); // すでに double 配列
 ```
 
 <p class="lede" style="margin-top:28px;">
@@ -538,8 +541,7 @@ d8 --allow-natives-syntax
 ```
 
 ```js
-const xs = [1, 2, 3]
-%DebugPrint(xs)
+const xs = [1, 2, 3] % DebugPrint(xs);
 ```
 
 <p class="lede" style="margin-top:28px;">
@@ -557,9 +559,9 @@ V8のd8というシェルでは、allow-natives-syntaxを付けると%DebugPrint
 # trace-elements-transitions
 
 ```js
-const xs = [1, 2, 3]
-xs.push(4.2)
-xs.push("5")
+const xs = [1, 2, 3];
+xs.push(4.2);
+xs.push("5");
 ```
 
 ```bash

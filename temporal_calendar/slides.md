@@ -15,6 +15,13 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: "暦がずれる理由と、Temporalがその違いをどう扱っているかを紹介します。"
+events:
+  - name: "Ginza.js#12"
+    url: https://ginzajs.connpass.com/event/404171/
+    date: 2026-10-19
+tags:
+  - JavaScript
 css: unocss
 highlighter: shiki
 ---
@@ -73,19 +80,19 @@ Javaが次のバージョンで手放したAPIを<br>JavaScriptは30年以上使
 
 <div class="table-sm">
 
-| calendarId | 暦 |
-| --- | --- |
-| `iso8601` | 拡張ISO 8601暦（デフォルト） |
-| `gregory` | グレゴリオ暦 |
-| `buddhist` | 仏滅紀元（タイなど） |
-| `japanese` | 日本の和暦（令和、平成など） |
-| `chinese` | 中国暦（旧暦） |
-| `dangi` | 韓国の旧暦 |
-| `hebrew` | ヘブライ暦（ユダヤ暦） |
-| `islamic-umalqura` / `islamic-civil` / `islamic-tbla` | イスラム暦（ヒジュラ暦） |
-| `indian` | インド国定暦 |
-| `coptic` | コプト暦 |
-| `ethiopic` / `ethioaa` | エチオピア暦 |
+| calendarId                                            | 暦                           |
+| ----------------------------------------------------- | ---------------------------- |
+| `iso8601`                                             | 拡張ISO 8601暦（デフォルト） |
+| `gregory`                                             | グレゴリオ暦                 |
+| `buddhist`                                            | 仏滅紀元（タイなど）         |
+| `japanese`                                            | 日本の和暦（令和、平成など） |
+| `chinese`                                             | 中国暦（旧暦）               |
+| `dangi`                                               | 韓国の旧暦                   |
+| `hebrew`                                              | ヘブライ暦（ユダヤ暦）       |
+| `islamic-umalqura` / `islamic-civil` / `islamic-tbla` | イスラム暦（ヒジュラ暦）     |
+| `indian`                                              | インド国定暦                 |
+| `coptic`                                              | コプト暦                     |
+| `ethiopic` / `ethioaa`                                | エチオピア暦                 |
 
 </div>
 
@@ -99,11 +106,11 @@ Javaが次のバージョンで手放したAPIを<br>JavaScriptは30年以上使
 
 # 暦の元になる3つの周期
 
-| | 何で決まるか | 長さ |
-| --- | --- | --- |
-| 1日 | 地球の自転 | 約24時間 |
-| 1か月 | 新月から次の新月まで（朔望月） | 約29.53059日 |
-| 1年 | 春分から次の春分まで（太陽年） | 約365.24219日 |
+|       | 何で決まるか                   | 長さ          |
+| ----- | ------------------------------ | ------------- |
+| 1日   | 地球の自転                     | 約24時間      |
+| 1か月 | 新月から次の新月まで（朔望月） | 約29.53059日  |
+| 1年   | 春分から次の春分まで（太陽年） | 約365.24219日 |
 
 <p class="lede" style="margin-top:24px;">
 どれもほかの周期の整数倍にならない
@@ -117,11 +124,11 @@ Javaが次のバージョンで手放したAPIを<br>JavaScriptは30年以上使
 
 # 暦の3つの種類
 
-| 合わせるもの | calendarId |
-| --- | --- |
-| 季節（太陽暦） | `iso8601`、`gregory`、`buddhist`、`japanese`、`indian`、`coptic`、`ethiopic`、`ethioaa` |
-| 月の満ち欠け（太陰暦） | `islamic-umalqura`、`islamic-civil`、`islamic-tbla` |
-| 両方（太陰太陽暦） | `chinese`、`dangi`、`hebrew` |
+| 合わせるもの           | calendarId                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| 季節（太陽暦）         | `iso8601`、`gregory`、`buddhist`、`japanese`、`indian`、`coptic`、`ethiopic`、`ethioaa` |
+| 月の満ち欠け（太陰暦） | `islamic-umalqura`、`islamic-civil`、`islamic-tbla`                                     |
+| 両方（太陰太陽暦）     | `chinese`、`dangi`、`hebrew`                                                            |
 
 ---
 
@@ -145,11 +152,11 @@ Javaが次のバージョンで手放したAPIを<br>JavaScriptは30年以上使
 
 # グレゴリオ暦
 
-| 年 | 4で割り切れる | 100で割り切れる | 400で割り切れる | 判定 |
-| --- | --- | --- | --- | --- |
-| 2024 | ○ | × | × | うるう年 |
-| 1900 | ○ | ○ | × | 平年 |
-| 2000 | ○ | ○ | ○ | うるう年 |
+| 年   | 4で割り切れる | 100で割り切れる | 400で割り切れる | 判定     |
+| ---- | ------------- | --------------- | --------------- | -------- |
+| 2024 | ○             | ×               | ×               | うるう年 |
+| 1900 | ○             | ○               | ×               | 平年     |
+| 2000 | ○             | ○               | ○               | うるう年 |
 
 - 1582年にローマ教皇グレゴリウス13世が定めた太陽暦
 - 400年に97回うるう年を入れて、平均すると1年は365.2425日
@@ -255,11 +262,11 @@ Javaが次のバージョンで手放したAPIを<br>JavaScriptは30年以上使
 
 # イスラム暦の計算方法
 
-| calendarId | 決め方 |
-| --- | --- |
-| `islamic-umalqura` | サウジアラビアが行政で使う方式 |
-| `islamic-civil` | 30年に11回うるう年を入れる表で計算し、金曜日を元年の初日にする |
-| `islamic-tbla` | `islamic-civil` と同じ表で、木曜日を元年の初日にする |
+| calendarId         | 決め方                                                         |
+| ------------------ | -------------------------------------------------------------- |
+| `islamic-umalqura` | サウジアラビアが行政で使う方式                                 |
+| `islamic-civil`    | 30年に11回うるう年を入れる表で計算し、金曜日を元年の初日にする |
+| `islamic-tbla`     | `islamic-civil` と同じ表で、木曜日を元年の初日にする           |
 
 <p class="lede" style="margin-top:24px;">
 多くのイスラム教国では日没後に三日月が見えた日から月を始める<br>だから実際の日付は地域で変わる
@@ -357,23 +364,23 @@ Javaが次のバージョンで手放したAPIを<br>JavaScriptは30年以上使
 # 2026年10月5日をそれぞれの暦で表す
 
 ```js
-Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId)
+Temporal.PlainDate.from("2026-10-05").withCalendar(calendarId);
 ```
 
 <div class="table-sm">
 
-| calendarId | 年月日 |
-| --- | --- |
-| `gregory` | 2026年10月5日 |
-| `buddhist` | 2569年10月5日 |
-| `indian` | 1948年7月13日 |
-| `coptic` | 1743年1月25日 |
-| `ethiopic` | 2019年1月25日 |
-| `islamic-umalqura` | 1448年4月24日 |
-| `chinese` | 2026年8月25日 |
-| `dangi` | 2026年8月25日 |
-| `hebrew` | 5787年1月24日 |
-| `japanese` | 令和8年10月5日 |
+| calendarId         | 年月日         |
+| ------------------ | -------------- |
+| `gregory`          | 2026年10月5日  |
+| `buddhist`         | 2569年10月5日  |
+| `indian`           | 1948年7月13日  |
+| `coptic`           | 1743年1月25日  |
+| `ethiopic`         | 2019年1月25日  |
+| `islamic-umalqura` | 1448年4月24日  |
+| `chinese`          | 2026年8月25日  |
+| `dangi`            | 2026年8月25日  |
+| `hebrew`           | 5787年1月24日  |
+| `japanese`         | 令和8年10月5日 |
 
 </div>
 

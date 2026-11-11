@@ -16,6 +16,14 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: "ECMAScript公式テストスイート「Test262」は、V8、SpiderMonkey、JavaScriptCoreといった主要エンジンが参照する「共通の物差し」です。本トークでは、Test262の役割と必要性をわかりやすく解説します。"
+events:
+  - name: "フロントエンドカンファレンス 2026"
+    url: https://nagoya.fec.or.jp/2026/
+    date: 2026-05-09
+tags:
+  - JavaScript
+  - V8
 css: unocss
 highlighter: shiki
 ---
@@ -384,7 +392,7 @@ assert.sameValue(actual, expected);
 
 // 特定の例外型のスローを検証（種類まで厳密にチェック）
 assert.throws(TypeError, () => {
-  null.property;   // TypeError でなければ失敗
+  null.property; // TypeError でなければ失敗
 });
 ```
 
@@ -405,10 +413,12 @@ Test262は独自のアサーションライブラリを提供しています。a
 
 ```js
 // SameValueZero — Array.prototype.includes
-[NaN].includes(NaN)   // → true
-
-// Strict Equality (===) — Array.prototype.indexOf
-[NaN].indexOf(NaN)    // → -1
+[NaN]
+  .includes(NaN) // → true
+  [
+    // Strict Equality (===) — Array.prototype.indexOf
+    NaN
+  ].indexOf(NaN); // → -1
 ```
 
 <p class="lede" style="margin-top:16px">
@@ -431,14 +441,14 @@ Test262は独自のアサーションライブラリを提供しています。a
 
 ```js
 // 2 月 30 日 → 仕様は "3 月 2 日に繰り上げる" と決めている
-new Date(2025, 1, 30).toDateString()
+new Date(2025, 1, 30).toDateString();
 // → "Sun Mar 02 2025"
 
 // 不正な月 → Invalid Date
-new Date("2025-13-01").getTime()  // → NaN
+new Date("2025-13-01").getTime(); // → NaN
 
 // NaN を渡せば NaN が返る、ということまで仕様が指定
-new Date(NaN).getTime()           // → NaN
+new Date(NaN).getTime(); // → NaN
 ```
 
 <!--
@@ -476,12 +486,38 @@ Temporal がいよいよ仕様に入りました。Temporal は日付を扱う�
 ```js
 // test/intl402/Temporal/PlainDate/prototype/monthCode/
 //   leap-months-hebrew.js
-const commonMonths = ["M01","M02","M03","M04","M05",       "M06","M07","M08","M09","M10","M11","M12"];
-const leapMonths   = ["M01","M02","M03","M04","M05","M05L","M06","M07","M08","M09","M10","M11","M12"];
+const commonMonths = [
+  "M01",
+  "M02",
+  "M03",
+  "M04",
+  "M05",
+  "M06",
+  "M07",
+  "M08",
+  "M09",
+  "M10",
+  "M11",
+  "M12",
+];
+const leapMonths = [
+  "M01",
+  "M02",
+  "M03",
+  "M04",
+  "M05",
+  "M05L",
+  "M06",
+  "M07",
+  "M08",
+  "M09",
+  "M10",
+  "M11",
+  "M12",
+];
 
 for (var year = 5730; year < 5735; year++) {
-  const at = (m) => Temporal.PlainDate.from(
-    { year, month: m, calendar: "hebrew", day: 1 });
+  const at = (m) => Temporal.PlainDate.from({ year, month: m, calendar: "hebrew", day: 1 });
   const monthsInYear = at(1).monthsInYear;
   for (var month = 1; month < monthsInYear; month++) {
     const expected = at(month).inLeapYear ? leapMonths : commonMonths;
@@ -784,6 +820,7 @@ V8のbytecode-generator.ccというファイルをコードリーディングし
 -->
 
 ---
+
 layout: image
 image: /post.png
 backgroundSize: contain

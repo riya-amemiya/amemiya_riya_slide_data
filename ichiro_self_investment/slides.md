@@ -13,6 +13,13 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: "年俸800万円の頃から3,000円のユンケルを毎日飲んでいたイチローにならい、通勤のグリーン車や高級ホテルへの宿泊に自己投資してみた話です。"
+events:
+  - name: "Hello LT world『みんなで語る！好きと学びのアウトプット LT Night』"
+    url: https://findy.connpass.com/event/406556/
+    date: 2026-10-15
+tags:
+  - キャリア
 css: unocss
 highlighter: shiki
 ---

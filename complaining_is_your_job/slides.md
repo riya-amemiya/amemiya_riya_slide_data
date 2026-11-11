@@ -14,6 +14,13 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: "会社をハックしてキャリアを作る方法"
+events:
+  - name: "マネジメントする人される人ナイト 2026"
+    url: https://kichijojipm.connpass.com/event/409593/
+    date: 2026-11-13
+tags:
+  - キャリア
 css: unocss
 highlighter: shiki
 ---
@@ -121,10 +128,10 @@ highlighter: shiki
 
 # 会社と自分のズレ
 
-| | 会社の期待 | 自分のやりたいこと |
-| --- | --- | --- |
-| キャリア | マネジメントに進む | ずっと技術特化 |
-| 領域 | 今のプロダクト | 新規基盤や別の言語 |
+|          | 会社の期待         | 自分のやりたいこと |
+| -------- | ------------------ | ------------------ |
+| キャリア | マネジメントに進む | ずっと技術特化     |
+| 領域     | 今のプロダクト     | 新規基盤や別の言語 |
 
 ---
 

@@ -14,6 +14,14 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: "ChromeやNode.jsの心臓部であるV8エンジンの気持ちを少しだけ覗き見て、どうすればV8に好かれる、つまりパフォーマンスの高いコードが書けるようになるのか、そのヒントを共有したいと思います。"
+events:
+  - name: "フロントエンドカンファレンス東京2025"
+    url: https://tokyo.fec.or.jp/2025/
+    date: 2025-09-21
+tags:
+  - JavaScript
+  - V8
 css: unocss
 highlighter: shiki
 ---
@@ -83,12 +91,12 @@ V8は「**起動速度**」と「**実行速度**」という相反する要求�
 
 全てのコードを一度に最高レベルで最適化するのではなく、コードの実行頻度、いわゆる「温度」に応じて、より高度なコンパイラへと処理を引き継いでいきます。
 
-| 層       | コンパイラ                           | 役割                       |
-| :------- | :----------------------------------- | :------------------------- |
-| **Tier 0** | **Ignition** (インタープリタ)          | 即時実行 & プロファイル収集  |
-| **Tier 1** | **Sparkplug** (ベースライン)         | 高速な非最適化コンパイル     |
-| **Tier 2** | **Maglev** (中間最適化)              | バランスの取れた高速最適化   |
-| **Tier 3** | **TurboFan** (最適化)                | 最高レベルのパフォーマンス   |
+| 層         | コンパイラ                    | 役割                        |
+| :--------- | :---------------------------- | :-------------------------- |
+| **Tier 0** | **Ignition** (インタープリタ) | 即時実行 & プロファイル収集 |
+| **Tier 1** | **Sparkplug** (ベースライン)  | 高速な非最適化コンパイル    |
+| **Tier 2** | **Maglev** (中間最適化)       | バランスの取れた高速最適化  |
+| **Tier 3** | **TurboFan** (最適化)         | 最高レベルのパフォーマンス  |
 
 <!--
 V8は非常に賢く、「全部を全力で最適化する」ような非効率なことはしません。
@@ -172,7 +180,7 @@ Hidden Classがオブジェクトの形状を扱うのに対し、Elements Kind�
 
 - `[1, 2, 3]` のような隙間のない配列は **PACKED** となり高速です
 - `[1, , 3]` のように要素が抜けている配列は **HOLEY** となり低速になります
-補足: `arr[1] = undefined` は“穴”ではありません。`delete arr[1]`、離れたインデックスへの代入（例: `arr[9] = 1`）、`length` の先行拡張などが“穴”を作ります。
+  補足: `arr[1] = undefined` は“穴”ではありません。`delete arr[1]`、離れたインデックスへの代入（例: `arr[9] = 1`）、`length` の先行拡張などが“穴”を作ります。
 
 V8は可能な限り特化度の高い Elements Kind を維持しようとしますが、型の異なる要素が追加されると、より一般的な種類へと基本的に一方向の遷移（降格）が発生します<br/>（同じ配列は原則戻りません。新しい配列を生成すれば `PACKED` にできます）。
 
@@ -560,7 +568,7 @@ function getNames(users) {
       // user.profile が無い場合に TypeError が発生
       names.push(user.profile.name);
     } catch (e) {
-      names.push('Unnamed');
+      names.push("Unnamed");
     }
   }
   return names;
@@ -582,7 +590,7 @@ function getNames(users) {
 function getNames(users) {
   const names = [];
   for (const user of users) {
-    const name = user.profile?.name ?? 'Unnamed';
+    const name = user.profile?.name ?? "Unnamed";
     names.push(name);
   }
   return names;
@@ -616,7 +624,7 @@ V8は小さな関数を呼び出し元に埋め込むことで、関数呼び出
 function processUser(user) {
   const fullName = `${user.lastName} ${user.firstName}`;
   if (fullName.length > 20) {
-    console.error('Name is too long');
+    console.error("Name is too long");
     return null;
   }
   return { id: user.id, fullName };
@@ -646,7 +654,7 @@ function validateName(name) {
 function processUser(user) {
   const fullName = getFullName(user);
   if (!validateName(fullName)) {
-    console.error('Name is too long');
+    console.error("Name is too long");
     return null;
   }
   return { id: user.id, fullName };
@@ -723,13 +731,13 @@ const objects = [{}, {}];
 
 これまでのTIPSを、V8の内部動作と結びつけて整理してみましょう。
 
-| V8の気持ち（内部動作） | 私たちが書くべきコード |
-| :--- | :--- |
-| **Inline Cache** を効かせたい | オブジェクトの**形状を一定に**保つ |
-| **投機的最適化**を成功させたい | 変数や引数の**型を安定**させる |
-| **脱最適化**を避けたい | **例外の発生を防ぐ**事前チェックを行う |
-| **インライン化**しやすくしたい | **小さく単一責任の関数**に分割する |
-| **Elements Kind**の遷移を防ぎたい| 配列に入れる**要素の型を固定**する |
+| V8の気持ち（内部動作）            | 私たちが書くべきコード                 |
+| :-------------------------------- | :------------------------------------- |
+| **Inline Cache** を効かせたい     | オブジェクトの**形状を一定に**保つ     |
+| **投機的最適化**を成功させたい    | 変数や引数の**型を安定**させる         |
+| **脱最適化**を避けたい            | **例外の発生を防ぐ**事前チェックを行う |
+| **インライン化**しやすくしたい    | **小さく単一責任の関数**に分割する     |
+| **Elements Kind**の遷移を防ぎたい | 配列に入れる**要素の型を固定**する     |
 
 <!--
 これまでのTIPSを、「V8の気持ち」と結びつけて整理してみましょう。
