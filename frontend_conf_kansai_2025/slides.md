@@ -14,6 +14,7 @@ transition: slide-left
 mdc: true
 seoMeta:
   ogImage: auto
+  ogDescription: 'Popover APIやDialog要素、inert属性など、2018年から2024年にかけてBaselineに追加されたHTMLの機能を11個取り上げます。'
 events:
   - name: 'フロントエンドカンファレンス関西 2025'
     url: https://2025.frontend-conf.osaka.jp/
