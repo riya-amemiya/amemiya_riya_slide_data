@@ -1,0 +1,9 @@
+{
+  "name": "slides_index",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "collect": "bun scripts/collect-decks.ts",
+    "build": "vite build"
+  }
+}

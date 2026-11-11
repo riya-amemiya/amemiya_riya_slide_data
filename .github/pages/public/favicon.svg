@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .back { fill: #c7d8fb; }
+    .front { fill: #2f6fec; }
+    .line { fill: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      .back { fill: #34456b; }
+      .front { fill: #7aa7ff; }
+      .line { fill: #0f1115; }
+    }
+  </style>
+  <rect class="back" x="8" y="5" width="22" height="15" rx="3.5" />
+  <rect class="front" x="2" y="11" width="24" height="16" rx="3.5" />
+  <rect class="line" x="6.5" y="15.5" width="11" height="2.6" rx="1.3" />
+  <rect class="line" x="6.5" y="20.3" width="7" height="2.6" rx="1.3" />
+</svg>
