@@ -647,6 +647,10 @@ stack.Push(currentDepth);
 | 走査中          | `Recheck()` で配列の構造が変わっていないか、Proxyがないか         |
 | 第2パスの最後   | 書き込んだ要素数と、第1パスで数えた長さが一致するか               |
 
+<p class="lede" style="margin-top:20px;">
+fast modeと呼ぶのは、ElementsKindがPACKEDかHOLEYの6種で<br>prototypeチェーンが標準のままの配列
+</p>
+
 ---
 
 <FlatAnimation scene="flow-new" />
@@ -698,6 +702,7 @@ Leszek Swirskiさんの返信<br>
 # 最初の指摘
 
 - Leszekさん「このfast pathはruntime関数ではなく、Torque/CSAで実装するのがよい」
+- CSAはCodeStubAssemblerの略で、組み込み関数を書くV8独自のアセンブラ
 - Torque/CSAならruntimeの呼び出しコストを払わずに済む
 - V8のfast pathは普通TorqueかCSAで書く
 - runtimeを呼ぶのはslow pathだけ
