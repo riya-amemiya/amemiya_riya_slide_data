@@ -77,10 +77,10 @@ highlighter: shiki
 
 ```sh
 ❯ node -v
-v26.11.1
+v26.13.1
 
 ❯ node -p process.versions.v8
-14.6.202.34-node.37
+14.6.202.34-node.40
 ```
 
 ---
