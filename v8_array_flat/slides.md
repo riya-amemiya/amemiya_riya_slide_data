@@ -101,14 +101,37 @@ Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが�
 
 ---
 
+# 2段階で約20倍
+
+<p class="lede">
+2パス方式で最大約5倍、バルクコピーでさらに約5倍速くしました
+</p>
+
+<div class="alloc">
+  <div class="alloc-name">最適化前</div>
+  <div class="alloc-bars">
+    <div class="alloc-row"><div class="bar old" style="width:20px"></div><span>1x</span></div>
+  </div>
+  <div class="alloc-name">2パス方式</div>
+  <div class="alloc-bars">
+    <div class="alloc-row"><div class="bar new" style="width:100px"></div><span>約5x</span></div>
+  </div>
+  <div class="alloc-name">バルクコピー</div>
+  <div class="alloc-bars">
+    <div class="alloc-row"><div class="bar new" style="width:400px"></div><span>約20x</span></div>
+  </div>
+</div>
+
+---
+
 <p class="lead-q">
 最適化メインで話します
 </p>
 
 - なぜ従来のflatは遅かったのか
 - メモリ割り当てを1回に減らす2パス方式
-- ElementsKindで走査そのものを省略する
 - holeを詰めるflat特有の仕様との格闘
+- ElementsKindで走査そのものを省略する
 - バルクコピーでさらに約5倍高速化
 - V8独自言語Torqueでの実装
 
@@ -134,55 +157,37 @@ v8-devでの提案からGerritレビュー、マージまでの流れも紹介�
 
 ---
 
-# holeとは
-
-<p class="lede">
-JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
-</p>
-
-```js
-> [1, , 3]
-[ 1, <1 empty item>, 3 ]
-```
-
-<p class="lede" style="margin-top:24px;">
-holeは <code>undefined</code> と違い、プロパティ自体がない
-</p>
-
----
-
-# holeの扱い
-
-```js
-> [1, , 3].flat()
-[ 1, 3 ]
-> [1, , 3].map(n => n * 2)
-[ 2, <1 empty item>, 6 ]
-```
-
-- `map` はholeを残す
-- `flat` はholeを飛ばして詰める
-
----
-
 # なぜ従来のflatは<br>遅かったのか
 
 ---
 
 # 従来のflatの実装
 
-1. 長さ0の配列を作る
-2. ソース配列を先頭から1個ずつ見る
-3. 要素が配列なら、再帰呼び出しでその中を見る
-4. 配列でなければ、結果配列の末尾に1個追加する
-
----
-
-# どこが遅かったのか
-
-- 容量が足りなくなるたびに確保し直してコピー
-- 汎用のプロパティ書き込みで1個ずつ追加
-- サブ配列ごとに再帰呼び出し
+<div class="ba">
+  <div>
+    <div class="ba-col-title">処理の流れ</div>
+    <div class="ba-steps">
+      <div class="ba-step">長さ0の配列を作る</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">ソース配列の要素を1個読む</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">配列なら再帰呼び出しでその中を見る</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">配列でなければ結果配列の末尾に1個追加<br>汎用のプロパティ書き込みを毎回呼ぶ</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">容量が足りなければ確保し直してコピー</div>
+    </div>
+    <div class="ba-loop">↑ 要素の数だけくり返す</div>
+  </div>
+  <div>
+    <div class="ba-col-title">確保し直しで起きること</div>
+    <div class="ba-steps">
+      <div class="ba-step">新しい容量で配列を確保</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">古い配列の中身を全部コピー</div>
+    </div>
+  </div>
+</div>
 
 ---
 
@@ -254,15 +259,150 @@ JSCでSosuke Suzukiさんが実装した2パス方式を参考にした<br>
 
 ---
 
+# holeを詰める<br>flat特有の仕様との格闘
+
+---
+
+# holeとは
+
+<p class="lede">
+JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
+</p>
+
+<div class="array-memory">
+  <div class="array-label">[1, , 3]</div>
+  <div class="cells">
+    <div class="cell copied">1</div>
+    <div class="cell hole">hole</div>
+    <div class="cell copied">3</div>
+  </div>
+  <div class="array-label" style="margin-top:20px;">[1, undefined, 3]</div>
+  <div class="cells">
+    <div class="cell copied">1</div>
+    <div class="cell copied">undefined</div>
+    <div class="cell copied">3</div>
+  </div>
+</div>
+
+<p class="lede">
+holeは <code>undefined</code> と違い、プロパティ自体がない
+</p>
+
+---
+
+# holeの扱い
+
+<div class="ba">
+  <div>
+    <div class="ba-col-title">map はholeを残す</div>
+    <div class="cells">
+      <div class="cell copied">1</div>
+      <div class="cell hole">hole</div>
+      <div class="cell copied">3</div>
+    </div>
+    <div class="copy-arrow">↓ map(n =&gt; n * 2)</div>
+    <div class="cells">
+      <div class="cell copied">2</div>
+      <div class="cell hole">hole</div>
+      <div class="cell copied">6</div>
+    </div>
+  </div>
+  <div>
+    <div class="ba-col-title">flat はholeを飛ばして詰める</div>
+    <div class="cells">
+      <div class="cell copied">1</div>
+      <div class="cell hole">hole</div>
+      <div class="cell copied">3</div>
+    </div>
+    <div class="copy-arrow">↓ flat()</div>
+    <div class="cells">
+      <div class="cell copied">1</div>
+      <div class="cell copied">3</div>
+    </div>
+  </div>
+</div>
+
+---
+
+# 最適化するうえで厄介なところ
+
+<div class="array-memory">
+  <div class="array-label">ソースの .length は 5</div>
+  <div class="cells">
+    <div class="cell copied">1</div>
+    <div class="cell hole">hole</div>
+    <div class="cell copied">3</div>
+    <div class="cell hole">hole</div>
+    <div class="cell copied">5</div>
+  </div>
+  <div class="copy-arrow">↓ flat()</div>
+  <div class="array-label">結果の長さは 3</div>
+  <div class="cells">
+    <div class="cell copied">1</div>
+    <div class="cell copied">3</div>
+    <div class="cell copied">5</div>
+  </div>
+</div>
+
+<p class="lede">長さを先に出すには、holeを除いて数える必要がある</p>
+
+---
+
+# holeがある配列の数え方
+
+<p class="lede">1個ずつ見て、hole以外を数える</p>
+
+```ts
+// src/builtins/array-flat.tq
+let element: JSAny;
+try {
+  element = fastOW.LoadElementNoHole(index) otherwise FoundHole;
+} label FoundHole {
+  index++;
+  continue;
+}
+```
+
+<p class="lede" style="margin-top:24px;">
+<code>LoadElementNoHole</code> はholeを見つけると <code>FoundHole</code> へ飛ぶ
+</p>
+
+---
+
+<FlatAnimation scene="hole" />
+
+---
+
 # ElementsKindで<br>走査そのものを省略する
 
 ---
 
 # 第1パスのコスト
 
-- 2パス方式は配列を2回たどる
-- 第1パスで全要素を見ると、最適化前より走査が1回増える
-- 中身を見ずに長さと型が分かれば、第1パスの走査を省ける
+<p class="lede">2パス方式は配列を2回たどるので、第1パスを軽くしたいところです</p>
+
+<div class="ba">
+  <div>
+    <div class="ba-col-title">全要素を数える</div>
+    <div class="ba-steps">
+      <div class="ba-step cost">第1パスで全要素を1個ずつ見て数える</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">その長さで1回だけ確保</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">第2パスで全要素を書き込む</div>
+    </div>
+  </div>
+  <div>
+    <div class="ba-col-title">配列の種類を見る</div>
+    <div class="ba-steps">
+      <div class="ba-step win">第1パスは配列の種類を見るだけ</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">その長さで1回だけ確保</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step">第2パスで全要素を書き込む</div>
+    </div>
+  </div>
+</div>
 
 ---
 
@@ -305,8 +445,26 @@ V8は配列の中身を<br>「整数だけ」「浮動小数点数を含む」�
 
 # 数値配列のショートカット
 
-- ソースが `PACKED_SMI_ELEMENTS` か `PACKED_DOUBLE_ELEMENTS` なら、中身は数値だけでholeもない
-- だから要素を見ずに `.length` をそのまま結果の長さにする
+<p class="lede">数値だけでholeもないと保証されているので、要素を1つずつ見る必要がありません</p>
+
+<div class="array-memory">
+  <div class="array-label">[1, 2, 3, 4, 5] は PACKED_SMI_ELEMENTS</div>
+  <div class="cells">
+    <div class="cell">1</div>
+    <div class="cell">2</div>
+    <div class="cell">3</div>
+    <div class="cell">4</div>
+    <div class="cell">5</div>
+  </div>
+  <div class="copy-arrow">↓ 要素を見ずに .length をそのまま使う</div>
+  <div class="array-label">結果の長さは 5</div>
+</div>
+
+---
+
+<p class="lede">
+ソースが <code>PACKED_SMI_ELEMENTS</code> か <code>PACKED_DOUBLE_ELEMENTS</code> なら<br><code>.length</code> をそのまま結果の長さにする
+</p>
 
 ```ts
 // src/builtins/array-flat.tq
@@ -394,59 +552,6 @@ if (!IsNumber(element)) {
 <p class="lede" style="margin-top:24px;">
 <code>[[1], [2], [3]].flat()</code> の結果は <code>PACKED_SMI_ELEMENTS</code>
 </p>
-
----
-
-# holeを詰める<br>flat特有の仕様との格闘
-
----
-
-# 最適化するうえで厄介なところ
-
-<div class="array-memory">
-  <div class="array-label">ソースの .length は 5</div>
-  <div class="cells">
-    <div class="cell copied">1</div>
-    <div class="cell hole">hole</div>
-    <div class="cell copied">3</div>
-    <div class="cell hole">hole</div>
-    <div class="cell copied">5</div>
-  </div>
-  <div class="copy-arrow">↓ flat()</div>
-  <div class="array-label">結果の長さは 3</div>
-  <div class="cells">
-    <div class="cell copied">1</div>
-    <div class="cell copied">3</div>
-    <div class="cell copied">5</div>
-  </div>
-</div>
-
-- `.length` と結果の長さが合わない
-- 長さを先に出すには、holeを除いて数える必要がある
-
----
-
-# HOLEY配列の扱い
-
-<p class="lede">HOLEY配列は1個ずつ見て、hole以外を数える</p>
-
-```ts
-// src/builtins/array-flat.tq
-let element: JSAny;
-try {
-  element = fastOW.LoadElementNoHole(index) otherwise FoundHole;
-} label FoundHole {
-  index++;
-  continue;
-}
-```
-
-- `LoadElementNoHole` はholeを見つけると `FoundHole` へ飛ぶ
-- HOLEY配列でも確保は1回だけ
-
----
-
-<FlatAnimation scene="hole" />
 
 ---
 
@@ -566,9 +671,32 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 # write barrier
 
-- V8のGCは世代別なので、どのオブジェクトがどこを指しているかを知っておく必要がある
-- ポインタを書くたびにGCへ知らせる仕組みがwrite barrier
-- `memcpy` はGCに知らせないので、<br>ポインタを運ぶと使用中のオブジェクトが回収されてuse-after-freeになる
+<p class="lede">
+V8のGCは、どのオブジェクトがどこを指しているかを知っておく必要があります<br>
+ポインタを書くたびにGCへ知らせる仕組みがwrite barrierです
+</p>
+
+<div class="ba">
+  <div>
+    <div class="ba-col-title">1個ずつ書く</div>
+    <div class="ba-steps">
+      <div class="ba-step">ポインタを1個書く</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step win">write barrierがGCに知らせる</div>
+    </div>
+    <div class="ba-loop">↑ 要素の数だけくり返す</div>
+  </div>
+  <div>
+    <div class="ba-col-title">memcpyでまとめて写す</div>
+    <div class="ba-steps">
+      <div class="ba-step">ポインタをまとめて写す</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">GCは新しい参照に気づかない</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">使用中のオブジェクトが回収されて<br>use-after-freeになる</div>
+    </div>
+  </div>
+</div>
 
 ---
 
@@ -703,6 +831,20 @@ fast modeと呼ぶのは、ElementsKindがPACKEDかHOLEYの6種で<br>prototype�
 
 ---
 
+<div class="ba-steps" style="width:420px;">
+  <div class="ba-step">v8-devで提案して方針を合わせる</div>
+  <div class="ba-arrow">↓</div>
+  <div class="ba-step">GerritにCLを出す</div>
+  <div class="ba-arrow">↓</div>
+  <div class="ba-step">レビューを受けて直す</div>
+  <div class="ba-arrow">↓</div>
+  <div class="ba-step">2人の Code-Review+1 をもらう</div>
+  <div class="ba-arrow">↓</div>
+  <div class="ba-step win">Commit-Queueでテストが通ればマージ</div>
+</div>
+
+---
+
 # まずv8-devで提案する
 
 - 大きな変更ではいきなりパッチを出さない
@@ -717,25 +859,41 @@ Leszek Swirskiさんの返信<br>
 
 ---
 
-# GerritにCLを出す
-
-- 変更したファイルのオーナーであるLeszekさんをレビュアーに入れる
-- 最初のパッチセットはC++のruntime関数で書いていた
-
----
-
 # 最初の指摘
 
-- Leszekさん「このfast pathはruntime関数ではなく、Torque/CSAで実装するのがよい」
-- CSAはCodeStubAssemblerの略で、組み込み関数を書くV8独自のアセンブラ
-- Torque/CSAならruntimeの呼び出しコストを払わずに済む
-- V8では普通、fast pathはTorqueかCSAで書き、runtimeを呼ぶのはslow pathだけ
-- パッチセット2でTorqueに書き直す
+<p class="lede">
+Leszekさん「このfast pathはruntime関数ではなく、Torque/CSAで実装するのがよい」
+</p>
+
+<div class="ba">
+  <div>
+    <div class="ba-col-title">最初のパッチセット</div>
+    <div class="ba-steps">
+      <div class="ba-step">flatが呼ばれる</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step cost">C++のruntime関数を呼び出す<br>呼び出しのたびにコストがかかる</div>
+    </div>
+  </div>
+  <div>
+    <div class="ba-col-title">パッチセット2</div>
+    <div class="ba-steps">
+      <div class="ba-step">flatが呼ばれる</div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-step win">Torqueで書いたfast pathに入る</div>
+    </div>
+  </div>
+</div>
+
+<p class="lede" style="margin-top:20px;">
+V8では普通、fast pathはTorqueかCSAで書き、runtimeを呼ぶのはslow pathだけ<br>
+CSAはCodeStubAssemblerの略で、組み込み関数を書くV8独自のアセンブラ
+</p>
 
 ---
 
 # マージまで
 
+- 変更したファイルのオーナーであるLeszekさんをレビュアーに入れる
 - マージには2人の `Code-Review+1` が要る
 - 私にはtry jobもCQも動かす権限がないので、レビュアーに頼む
 
@@ -806,10 +964,29 @@ const sourceKind: ElementsKind =
 
 # なぜクラッシュしたのか
 
-- `HOLEY_DOUBLE_ELEMENTS` はholeを含むので、`.length` と要素数が合わない
-- 第1パスで出した長さと実際の要素数がずれる
-- `V8_ENABLE_UNDEFINED_DOUBLE` が有効だと、`FixedDoubleArray` にundefinedも入る
-- 第2パスの `UnsafeCast<Number>` がundefinedを受け取ってクラッシュ
+<div class="array-memory">
+  <div class="array-label">HOLEY_DOUBLE_ELEMENTS の配列の .length は 3</div>
+  <div class="cells">
+    <div class="cell copied">1.5</div>
+    <div class="cell hole">hole</div>
+    <div class="cell copied">3.5</div>
+  </div>
+  <div class="copy-arrow">↓ PACKED_DOUBLE_ELEMENTS として扱い、.length の 3 を長さに使う</div>
+  <div class="array-label">実際の要素は 2個</div>
+  <div class="cells">
+    <div class="cell copied">1.5</div>
+    <div class="cell copied">3.5</div>
+    <div class="cell hole"></div>
+  </div>
+</div>
+
+<p class="lede">第1パスで出した長さと実際の要素数がずれる</p>
+
+---
+
+<p class="lede">
+<code>V8_ENABLE_UNDEFINED_DOUBLE</code> が有効だと、<code>FixedDoubleArray</code> にundefinedも入る
+</p>
 
 ```ts
 // src/builtins/array-flat.tq
@@ -817,6 +994,10 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
   UnsafeCast<Number>(element),
 );
 ```
+
+<p class="lede" style="margin-top:24px;">
+第2パスの <code>UnsafeCast&lt;Number&gt;</code> がundefinedを受け取ってクラッシュ
+</p>
 
 ---
 
@@ -833,8 +1014,8 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
 
 - 従来のflatは、結果配列を確保し直しながら1個ずつ追加していた
 - 2パス方式で長さと型を先に求め、確保を1回にした
-- 数値だけの配列はElementsKindを見て走査そのものを省略
 - holeは第1パスで数から除き、第2パスで飛ばす
+- 数値だけの配列はElementsKindを見て走査そのものを省略
 - 数値だけのサブ配列はwrite barrierが要らないので、`memcpy` でまとめてコピー
 - Torqueの `TryFastFlat` で実装し、前提が崩れたらslow pathへ
 - v8-devで方針を合わせてからGerritに出し、2人の `Code-Review+1` とCQでマージ
