@@ -67,10 +67,10 @@ highlighter: shiki
 # そもそも何でこのパッチを出したのか
 
 <p class="lede">
-Xのタイムラインに流れてきた投稿<br>「JSCのArray.prototype.flatが速くなる」
+ある日、Xのタイムラインに「JSCのArray.prototype.flatが速くなる」という投稿が流れてきました
 </p>
 <p class="lede">
-実装を読むと、同じ発想がV8にも使えそうだった<br>約1ヶ月後、私のパッチがV8 14.7にマージされた
+実装を読むと同じ発想がV8にも適用できそうに見えました<br>約1ヶ月後、私のパッチはV8 14.7にマージされました
 </p>
 
 ---
@@ -96,27 +96,30 @@ v27.0.0-alpha.0.1.1
 ---
 
 <p class="lead-q">
-Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが最大約20倍速くなる
+Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが最大約20倍速くなります
 </p>
 
 ---
 
 <p class="lead-q">
-今日の主役は最適化
+最適化メインで話します
 </p>
 
 - なぜ従来のflatは遅かったのか
 - メモリ割り当てを1回に減らす2パス方式
 - holeを詰めるflat特有の仕様との格闘
+- バルクコピーでさらに約5倍高速化
 - V8独自言語Torqueでの実装
 
+上記について順を追って解説します
+
 <p class="lede">
-v8-devでの提案からGerritレビュー、マージまでの流れも紹介
+v8-devでの提案からGerritレビュー、マージまでの流れも紹介します
 </p>
 
 ---
 
-# flatの仕様
+# flatの仕様を理解する
 
 ```js
 > [[1, 2], [3, 4]].flat()
@@ -133,7 +136,7 @@ v8-devでの提案からGerritレビュー、マージまでの流れも紹介
 # holeとは
 
 <p class="lede">
-JavaScriptの配列で、要素が存在しないインデックスのこと
+JavaScriptの配列では、要素が存在しないインデックスのことをholeと呼びます
 </p>
 
 ```js
@@ -156,36 +159,8 @@ holeは <code>undefined</code> と違い、プロパティ自体がない
 [ 2, <1 empty item>, 6 ]
 ```
 
-- `flat` はholeを飛ばして詰める
 - `map` はholeを残す
-
----
-
-# ElementsKind
-
-<p class="lede">
-V8が配列ごとに追跡している、中身の内部型
-</p>
-
-|                            | Packed（holeなし）       | Holey（holeあり）       |
-| -------------------------- | ------------------------ | ----------------------- |
-| 小さな整数（Smi）だけ      | `PACKED_SMI_ELEMENTS`    | `HOLEY_SMI_ELEMENTS`    |
-| 浮動小数点数を含む         | `PACKED_DOUBLE_ELEMENTS` | `HOLEY_DOUBLE_ELEMENTS` |
-| 文字列やオブジェクトを含む | `PACKED_ELEMENTS`        | `HOLEY_ELEMENTS`        |
-
-<p class="lede" style="margin-top:24px;">
-<code>PACKED_SMI_ELEMENTS</code> と <code>PACKED_DOUBLE_ELEMENTS</code> には、サブ配列もProxyもholeも入らない<br>
-数値だけだと分かっていれば、走査そのものを省略できる
-</p>
-
----
-
-<div class="mapping" style="margin-top:24px;">
-  <div class="key">Torque</div><div>V8の組み込み関数を書く専用言語</div>
-  <div class="key">fast path</div><div>条件がそろったときだけ通る速い経路</div>
-  <div class="key">slow path</div><div>どんな入力でも正しく動く従来の経路</div>
-  <div class="key">bailout</div><div>前提が崩れたときにslow pathへ切り替えること</div>
-</div>
+- `flat` はholeを飛ばして詰める
 
 ---
 
@@ -196,7 +171,7 @@ V8が配列ごとに追跡している、中身の内部型
 # 従来のflatの実装
 
 1. 長さ0の配列を作る
-2. 元の配列を先頭から1個ずつ見る
+2. ソース配列を先頭から1個ずつ見る
 3. 要素が配列なら、再帰呼び出しでその中を見る
 4. 配列でなければ、結果配列の末尾に1個追加する
 
@@ -282,11 +257,36 @@ JSCでSosuke Suzukiさんが実装した2パス方式を参考にした<br>
 
 ---
 
+# ElementsKindとは
+
+<p class="lede">
+V8は配列の中身を<br>「整数だけ」「浮動小数点数を含む」「holeがある」といった<br>ElementsKindと呼ばれる内部型で追跡しています
+</p>
+<p class="lede">
+この型情報を使うと<br>「数値しか入っていない配列にはサブ配列が存在し得ない」ことが自明になり、<br>走査そのものを省略できます
+</p>
+
+---
+
+# 主要なElementsKind
+
+|                            | Packed（holeなし）       | Holey（holeあり）       |
+| -------------------------- | ------------------------ | ----------------------- |
+| 小さな整数（Smi）だけ      | `PACKED_SMI_ELEMENTS`    | `HOLEY_SMI_ELEMENTS`    |
+| 浮動小数点数を含む         | `PACKED_DOUBLE_ELEMENTS` | `HOLEY_DOUBLE_ELEMENTS` |
+| 文字列やオブジェクトを含む | `PACKED_ELEMENTS`        | `HOLEY_ELEMENTS`        |
+
+<p class="lede" style="margin-top:24px;">
+<code>PACKED_SMI_ELEMENTS</code> と <code>PACKED_DOUBLE_ELEMENTS</code> には、サブ配列もProxyもholeも入らない<br>
+この保証を使って最適化する
+</p>
+
+---
+
 # 数値配列のショートカット
 
-- 対象は `PACKED_SMI_ELEMENTS` と `PACKED_DOUBLE_ELEMENTS` の配列
-- 中身は数値だけで、サブ配列もholeもない
-- 要素を見ずに `.length` をそのまま結果の長さにする
+- ソースが `PACKED_SMI_ELEMENTS` か `PACKED_DOUBLE_ELEMENTS` なら、中身は数値だけでholeもない
+- だから要素を見ずに `.length` をそのまま結果の長さにする
 
 ```ts
 // src/builtins/array-flat.tq
@@ -304,7 +304,7 @@ if (sourceKind == ElementsKind::PACKED_SMI_ELEMENTS ||
 
 # `[[1,2,3], [4,5,6], [7,8,9]].flat()`
 
-<p class="lede">数値だけのサブ配列は中を読まずに <code>.length</code> を足す</p>
+<p class="lede">数値だけのサブ配列は、中を読まずに <code>.length</code> を足す</p>
 
 <div class="sum">
   <div class="array-label">外側の配列は PACKED_ELEMENTS</div>
@@ -377,7 +377,64 @@ if (!IsNumber(element)) {
 
 ---
 
-# 第2パスに残った1個ずつのコピー
+# holeを詰める<br>flat特有の仕様との格闘
+
+---
+
+# 最適化するうえで厄介なところ
+
+<div class="array-memory">
+  <div class="array-label">ソースの .length は 5</div>
+  <div class="cells">
+    <div class="cell copied">1</div>
+    <div class="cell hole">hole</div>
+    <div class="cell copied">3</div>
+    <div class="cell hole">hole</div>
+    <div class="cell copied">5</div>
+  </div>
+  <div class="copy-arrow">↓ flat()</div>
+  <div class="array-label">結果の長さは 3</div>
+  <div class="cells">
+    <div class="cell copied">1</div>
+    <div class="cell copied">3</div>
+    <div class="cell copied">5</div>
+  </div>
+</div>
+
+- `.length` と結果の長さが合わない
+- 長さを先に出すには、holeを除いて数える必要がある
+
+---
+
+# HOLEY配列の扱い
+
+<p class="lede">HOLEY配列は1個ずつ見て、hole以外を数える</p>
+
+```ts
+// src/builtins/array-flat.tq
+let element: JSAny;
+try {
+  element = fastOW.LoadElementNoHole(index) otherwise FoundHole;
+} label FoundHole {
+  index++;
+  continue;
+}
+```
+
+- `LoadElementNoHole` はholeを見つけると `FoundHole` へ飛ぶ
+- HOLEY配列でも確保は1回だけ
+
+---
+
+<FlatAnimation scene="hole" />
+
+---
+
+# バルクコピーで<br>さらに約5倍高速化
+
+---
+
+# 第2パスはまだ1個ずつコピーしていた
 
 <div class="ba">
   <div>
@@ -405,9 +462,9 @@ if (!IsNumber(element)) {
 
 ---
 
-# 数値配列のバルクコピー
+# 数値のサブ配列はまとめてコピー
 
-<p class="lede">長さと型は第1パスで決まっているので、まとめて書き込める</p>
+<p class="lede">第1パスで長さと型が決まっているので、ブロックごと流し込める</p>
 
 <div class="array-memory">
   <div class="array-label">サブ配列 [1, 2, 3] のメモリ</div>
@@ -426,6 +483,8 @@ if (!IsNumber(element)) {
     <div class="cell hole"></div>
   </div>
 </div>
+
+<p class="lede">HOLEYなサブ配列は <code>memcpy</code> できず、1個ずつコピー</p>
 
 ---
 
@@ -467,7 +526,7 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 ---
 
-# memcpyできるElementsKind
+# memcpyできるのは数値配列だけ
 
 | ElementsKind             | 中身                         | ポインタ | memcpy   |
 | ------------------------ | ---------------------------- | -------- | -------- |
@@ -481,10 +540,9 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 # write barrier
 
-- ポインタを書くたびにGCへ知らせる仕組み
-- 世代別GCは、どのオブジェクトがどこを指すかを知っておく必要がある
-- `memcpy` で運んだポインタはGCに伝わらない
-- 使用中のオブジェクトが回収されて、use-after-freeになる
+- V8のGCは世代別なので、どのオブジェクトがどこを指しているかを知っておく必要がある
+- ポインタを書くたびにGCへ知らせる仕組みがwrite barrier
+- `memcpy` はGCに知らせないので、<br>ポインタを運ぶと使用中のオブジェクトが回収されてuse-after-freeになる
 
 ---
 
@@ -539,66 +597,21 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 ---
 
-# holeを詰める<br>flat特有の仕様との格闘
-
----
-
-# 最適化するうえで厄介なところ
-
-<div class="array-memory">
-  <div class="array-label">元の配列の .length は 5</div>
-  <div class="cells">
-    <div class="cell copied">1</div>
-    <div class="cell hole">hole</div>
-    <div class="cell copied">3</div>
-    <div class="cell hole">hole</div>
-    <div class="cell copied">5</div>
-  </div>
-  <div class="copy-arrow">↓ flat()</div>
-  <div class="array-label">結果の長さは 3</div>
-  <div class="cells">
-    <div class="cell copied">1</div>
-    <div class="cell copied">3</div>
-    <div class="cell copied">5</div>
-  </div>
-</div>
-
-- `.length` と結果の長さが合わない
-- 長さを先に出すには、holeを除いて数える必要がある
-
----
-
-# HOLEY配列の扱い
-
-<p class="lede">HOLEY配列は1個ずつ見て、hole以外を数える</p>
-
-```ts
-// src/builtins/array-flat.tq
-let element: JSAny;
-try {
-  element = fastOW.LoadElementNoHole(index) otherwise FoundHole;
-} label FoundHole {
-  index++;
-  continue;
-}
-```
-
-- `LoadElementNoHole` はholeを見つけると `FoundHole` へ飛ぶ
-- HOLEYなサブ配列は `memcpy` できず、1個ずつコピー
-- HOLEY配列でも確保は1回だけ
-
----
-
-<FlatAnimation scene="hole" />
-
----
-
 # V8独自言語Torqueでの実装
 
 ---
 
-- 従来の `flat` はTorqueの `FlattenIntoArrayFast` と `FlattenIntoArraySlow` で実装
-- `TryFastFlat` を従来の処理の手前に追加
+<div class="mapping" style="margin-top:24px;">
+  <div class="key">Torque</div><div>V8の組み込み関数を書く専用言語</div>
+  <div class="key">fast path</div><div>条件がそろったときだけ通る速い経路</div>
+  <div class="key">slow path</div><div>どんな入力でも正しく動く従来の経路</div>
+  <div class="key">bailout</div><div>前提が崩れたときにslow pathへ切り替えること</div>
+</div>
+
+---
+
+- 従来の `flat` はTorqueの `FlattenIntoArrayFast` と `FlattenIntoArraySlow`
+- その手前に `TryFastFlat` を追加
 
 ```ts
 // src/builtins/array-flat.tq
@@ -610,15 +623,15 @@ const a: JSReceiver = ArraySpeciesCreate(context, o, 0);
 ```
 
 <p class="lede" style="margin-top:24px;">
-条件を満たさなければslow pathへ
+条件を満たさなければ従来のslow pathへ
 </p>
 
 ---
 
-# 明示的スタック
+# 明示的スタックによる反復処理
 
 - 再帰で書くと、Torqueコンパイラがスタックオーバーフローで落ちた
-- スタックを自前で持つループに書き換えた
+- そこでスタックを自前で持つループにした
 
 ```ts
 // src/builtins/array-flat.tq
@@ -629,7 +642,7 @@ stack.Push(currentDepth);
 ```
 
 - 1段ごとに配列、再開位置、深さの3つを積む
-- 上限は3072個で、深さにすると1024段
+- 積めるのは3072個まで、つまり深さ1024まで
 
 ---
 
@@ -661,7 +674,7 @@ fast modeと呼ぶのは、ElementsKindがPACKEDかHOLEYの6種で<br>prototype�
 
 - d8（arm64）で、V8 14.6.206とmainを比較
 - 要素1,000個のサブ配列1,000個を `flat(2)` して計測
-- 8回計測したうちの最小値
+- 8回の最小値
 
 | サブ配列の型             | 最適化前 | 最適化後 | 速度比 |
 | ------------------------ | -------- | -------- | ------ |
@@ -704,17 +717,15 @@ Leszek Swirskiさんの返信<br>
 - Leszekさん「このfast pathはruntime関数ではなく、Torque/CSAで実装するのがよい」
 - CSAはCodeStubAssemblerの略で、組み込み関数を書くV8独自のアセンブラ
 - Torque/CSAならruntimeの呼び出しコストを払わずに済む
-- V8のfast pathは普通TorqueかCSAで書く
-- runtimeを呼ぶのはslow pathだけ
-- パッチセット2でTorqueに書き直した
+- V8では普通、fast pathはTorqueかCSAで書き、runtimeを呼ぶのはslow pathだけ
+- パッチセット2でTorqueに書き直す
 
 ---
 
 # マージまで
 
 - マージには2人の `Code-Review+1` が要る
-- try jobもCQも、動かす権限は私にない
-- レビュアーに頼んで動かしてもらう
+- 私にはtry jobもCQも動かす権限がないので、レビュアーに頼む
 
 | ラベル           | 動き                               |
 | ---------------- | ---------------------------------- |
@@ -783,9 +794,9 @@ const sourceKind: ElementsKind =
 
 # なぜクラッシュしたのか
 
-- holeを含む `HOLEY_DOUBLE_ELEMENTS` は `.length` と要素数が合わない
-- 第1パスで出した長さが実際の要素数とずれる
-- `V8_ENABLE_UNDEFINED_DOUBLE` が有効だと `FixedDoubleArray` にundefinedも入る
+- `HOLEY_DOUBLE_ELEMENTS` はholeを含むので、`.length` と要素数が合わない
+- 第1パスで出した長さと実際の要素数がずれる
+- `V8_ENABLE_UNDEFINED_DOUBLE` が有効だと、`FixedDoubleArray` にundefinedも入る
 - 第2パスの `UnsafeCast<Number>` がundefinedを受け取ってクラッシュ
 
 ```ts
@@ -800,7 +811,7 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
 # 修正とClose
 
 - `GetPackedElementsKind` を消し、`source.map.elements_kind` を直接見る
-- ショートカットに入るのは本当にPACKEDなときだけ
+- ショートカットは本当にPACKEDなときだけ
 - 回帰テストを足し、CLの `Bug:` にissue番号を書く
 - マージ後、ClusterFuzzが自動で再評価してClose
 
@@ -808,13 +819,13 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
 
 # まとめ
 
-- 従来のflatは結果配列を確保し直しながら1個ずつ追加
-- 2パス方式は長さと型を先に求めて、確保を1回に
-- write barrierが要らない数値配列は `memcpy` でまとめてコピー
+- 従来のflatは、結果配列を確保し直しながら1個ずつ追加していた
+- 2パス方式で長さと型を先に求め、確保を1回にした
 - holeは第1パスで数から除き、第2パスで飛ばす
-- Torqueの `TryFastFlat` として実装し、前提が崩れたらslow pathへ
-- v8-devで方針を合わせてからGerritへ、2人の `Code-Review+1` とCQでマージ
-- マージ翌日にClusterFuzzが見つけたバグは回帰テストを足して修正
+- 数値だけのサブ配列はwrite barrierが要らないので、`memcpy` でまとめてコピー
+- Torqueの `TryFastFlat` で実装し、前提が崩れたらslow pathへ
+- v8-devで方針を合わせてからGerritに出し、2人の `Code-Review+1` とCQでマージ
+- マージ翌日にClusterFuzzが見つけたバグは、回帰テストを足して修正
 
 ---
 
