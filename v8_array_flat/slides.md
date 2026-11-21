@@ -258,6 +258,14 @@ JSCでSosuke Suzukiさんが実装した2パス方式を参考にした<br>
 
 ---
 
+# 第1パスのコスト
+
+- 2パス方式は配列を2回たどる
+- 第1パスで全要素を見ると、最適化前より走査が1回増える
+- 中身を見ずに長さと型が分かれば、第1パスの走査を省ける
+
+---
+
 # ElementsKindとは
 
 <p class="lede">
@@ -266,6 +274,17 @@ V8は配列の中身を<br>「整数だけ」「浮動小数点数を含む」�
 <p class="lede">
 この型情報を使うと<br>「数値しか入っていない配列にはサブ配列が存在し得ない」ことが自明になり、<br>走査そのものを省略できます
 </p>
+
+---
+
+# ElementsKindの例
+
+| 配列           | ElementsKind             |
+| -------------- | ------------------------ |
+| `[1, 2, 3]`    | `PACKED_SMI_ELEMENTS`    |
+| `[1, 2.5, 3]`  | `PACKED_DOUBLE_ELEMENTS` |
+| `[1, "a", {}]` | `PACKED_ELEMENTS`        |
+| `[1, , 3]`     | `HOLEY_SMI_ELEMENTS`     |
 
 ---
 
@@ -328,29 +347,6 @@ if (sourceKind == ElementsKind::PACKED_SMI_ELEMENTS ||
 
 ---
 
-# 結果配列のElementsKind
-
-<p class="lede">
-長さを数えながら、結果に入る値の型を3つのフラグで追う
-</p>
-
-```ts
-// src/builtins/array-flat.tq
-if (!IsNumber(element)) {
-  seenObject = true;
-} else if (!TaggedIsSmi(element)) {
-  seenDouble = true;
-} else {
-  seenSmi = true;
-}
-```
-
-<p class="lede" style="margin-top:24px;">
-<code>[[1], [2], [3]].flat()</code> の結果は <code>PACKED_SMI_ELEMENTS</code>
-</p>
-
----
-
 # 型が混ざった配列
 
 <p class="lede"><code>[[1, 2], [3.5], ["a", "b"]].flat()</code> の場合</p>
@@ -375,6 +371,29 @@ if (!IsNumber(element)) {
 ---
 
 <FlatAnimation scene="kinds" />
+
+---
+
+# 結果配列のElementsKind
+
+<p class="lede">
+長さを数えながら、結果に入る値の型を3つのフラグで追う
+</p>
+
+```ts
+// src/builtins/array-flat.tq
+if (!IsNumber(element)) {
+  seenObject = true;
+} else if (!TaggedIsSmi(element)) {
+  seenDouble = true;
+} else {
+  seenSmi = true;
+}
+```
+
+<p class="lede" style="margin-top:24px;">
+<code>[[1], [2], [3]].flat()</code> の結果は <code>PACKED_SMI_ELEMENTS</code>
+</p>
 
 ---
 
@@ -428,6 +447,12 @@ try {
 ---
 
 <FlatAnimation scene="hole" />
+
+---
+
+<p class="lead-q">
+ここまでの2パス方式で<br>flatは最大約5倍速くなりました
+</p>
 
 ---
 
@@ -743,7 +768,7 @@ Cr-Commit-Position: refs/heads/main@{#105498}
 ---
 
 <p class="lede">
-マージの翌日、GoogleのClusterFuzzがバグを3件発見<br>
+マージの翌日、Googleの自動バグ検知システムClusterFuzzがバグを3件発見<br>
 buganizer-systemからメールが届く
 </p>
 
@@ -808,6 +833,7 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
 
 - 従来のflatは、結果配列を確保し直しながら1個ずつ追加していた
 - 2パス方式で長さと型を先に求め、確保を1回にした
+- 数値だけの配列はElementsKindを見て走査そのものを省略
 - holeは第1パスで数から除き、第2パスで飛ばす
 - 数値だけのサブ配列はwrite barrierが要らないので、`memcpy` でまとめてコピー
 - Torqueの `TryFastFlat` で実装し、前提が崩れたらslow pathへ
