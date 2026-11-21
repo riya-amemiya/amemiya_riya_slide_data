@@ -75,6 +75,8 @@ Reading the implementation, it looked like the same idea could apply to V8<br>Ab
 
 ---
 
+<p class="lede">This patch is not in Node.js 26 yet</p>
+
 ```sh
 ❯ node -v
 v26.13.1
@@ -84,6 +86,8 @@ v26.13.1
 ```
 
 ---
+
+<p class="lede">flat gets faster starting with Node.js 27</p>
 
 ```sh
 ❯ node -v
@@ -104,7 +108,7 @@ In Chrome, Node.js, Deno, and every runtime that ships V8,<br>flat becomes up to
 # ~20x in two steps
 
 <p class="lede">
-Up to ~5x with the two-pass approach, then another ~5x with bulk copy
+Up to ~5x with the two-pass patch, then another ~5x with the bulk copy patch that followed
 </p>
 
 <div class="alloc">
@@ -114,11 +118,11 @@ Up to ~5x with the two-pass approach, then another ~5x with bulk copy
   </div>
   <div class="alloc-name">Two-pass</div>
   <div class="alloc-bars">
-    <div class="alloc-row"><div class="bar new" style="width:100px"></div><span>~5x</span></div>
+    <div class="alloc-row"><div class="bar new" style="width:100px"></div><span>~5x, since V8 14.7</span></div>
   </div>
   <div class="alloc-name">Bulk copy</div>
   <div class="alloc-bars">
-    <div class="alloc-row"><div class="bar new" style="width:400px"></div><span>~20x</span></div>
+    <div class="alloc-row"><div class="bar new" style="width:400px"></div><span>~20x, since V8 15.1</span></div>
   </div>
 </div>
 
@@ -138,7 +142,7 @@ This talk is mostly about the optimization
 I will walk through these in order
 
 <p class="lede">
-I will also show the path from a proposal on v8-dev through Gerrit review to the merge
+I will also show the path from a proposal on v8-dev through Gerrit review to the merge,<br>and the fight with ClusterFuzz the day after
 </p>
 
 ---
@@ -238,7 +242,7 @@ Based on the two-pass approach Sosuke Suzuki implemented in JSC<br>
 
 # How many times the result array is allocated
 
-<p class="lede">For 6 sub-arrays of 10 elements</p>
+<p class="lede">To start, 6 sub-arrays of 10 elements that hold only numbers</p>
 
 <div class="alloc">
   <div class="alloc-name">Before</div>
@@ -348,6 +352,17 @@ Unlike <code>undefined</code>, a hole has no property at all
 
 ---
 
+<p class="lede">V8 code shows up from here, so here are four terms first</p>
+
+<div class="mapping" style="margin-top:24px;">
+  <div class="key">Torque</div><div>A language dedicated to writing V8's builtins</div>
+  <div class="key">fast path</div><div>A fast route taken only when conditions hold</div>
+  <div class="key">slow path</div><div>The existing route that is correct for any input</div>
+  <div class="key">bailout</div><div>Switching to the slow path when an assumption breaks</div>
+</div>
+
+---
+
 # Counting an array with holes
 
 <p class="lede">Look at elements one by one and count everything except holes</p>
@@ -364,7 +379,8 @@ try {
 ```
 
 <p class="lede" style="margin-top:24px;">
-<code>LoadElementNoHole</code> jumps to <code>FoundHole</code> when it finds a hole
+<code>LoadElementNoHole</code> jumps to <code>FoundHole</code> when it finds a hole<br>
+Torque's <code>otherwise</code> names where to jump on an early exit
 </p>
 
 ---
@@ -395,7 +411,7 @@ try {
   <div>
     <div class="ba-col-title">Look at the kind of array</div>
     <div class="ba-steps">
-      <div class="ba-step win">Pass 1 only looks at the kind of array</div>
+      <div class="ba-step win">For numeric arrays, only look at the kind and .length</div>
       <div class="ba-arrow">↓</div>
       <div class="ba-step">Allocate once with that length</div>
       <div class="ba-arrow">↓</div>
@@ -417,24 +433,13 @@ With this type information it becomes obvious that<br>"an array that contains on
 
 ---
 
-# Examples of ElementsKind
-
-| Array          | ElementsKind             |
-| -------------- | ------------------------ |
-| `[1, 2, 3]`    | `PACKED_SMI_ELEMENTS`    |
-| `[1, 2.5, 3]`  | `PACKED_DOUBLE_ELEMENTS` |
-| `[1, "a", {}]` | `PACKED_ELEMENTS`        |
-| `[1, , 3]`     | `HOLEY_SMI_ELEMENTS`     |
-
----
-
 # The main ElementsKinds
 
-|                                 | Packed (no holes)        | Holey (has holes)       |
-| ------------------------------- | ------------------------ | ----------------------- |
-| Small integers (Smi) only       | `PACKED_SMI_ELEMENTS`    | `HOLEY_SMI_ELEMENTS`    |
-| Contains floating-point numbers | `PACKED_DOUBLE_ELEMENTS` | `HOLEY_DOUBLE_ELEMENTS` |
-| Contains strings or objects     | `PACKED_ELEMENTS`        | `HOLEY_ELEMENTS`        |
+|                                 | Packed (no holes)                         | Holey (has holes)                       |
+| ------------------------------- | ----------------------------------------- | --------------------------------------- |
+| Small integers (Smi) only       | `PACKED_SMI_ELEMENTS`<br>`[1, 2, 3]`      | `HOLEY_SMI_ELEMENTS`<br>`[1, , 3]`      |
+| Contains floating-point numbers | `PACKED_DOUBLE_ELEMENTS`<br>`[1, 2.5, 3]` | `HOLEY_DOUBLE_ELEMENTS`<br>`[1.5, , 3]` |
+| Contains strings or objects     | `PACKED_ELEMENTS`<br>`[1, "a", {}]`       | `HOLEY_ELEMENTS`<br>`[1, , "a"]`        |
 
 <p class="lede" style="margin-top:24px;">
 <code>PACKED_SMI_ELEMENTS</code> and <code>PACKED_DOUBLE_ELEMENTS</code> never hold sub-arrays, Proxies, or holes<br>
@@ -507,7 +512,7 @@ Computing the length of <code>[1, 2, 3, ..., 1024].flat()</code> is O(1)
 
 # Arrays of mixed types
 
-<p class="lede">For <code>[[1, 2], [3.5], ["a", "b"]].flat()</code></p>
+<p class="lede">Along with the length, pass 1 also decides the ElementsKind of the result array<br>For <code>[[1, 2], [3.5], ["a", "b"]].flat()</code></p>
 
 <div class="kinds">
   <div class="col-label">Before</div>
@@ -706,7 +711,7 @@ The write barrier is what tells the GC every time a pointer is written
 
 # Allocating without initialization
 
-<p class="lede">When the result is a <code>FixedDoubleArray</code>, the allocation changed too</p>
+<p class="lede">In the same CL as bulk copy, the allocation for a <code>FixedDoubleArray</code> result changed too</p>
 
 <div class="ba">
   <div>
@@ -736,15 +741,6 @@ The write barrier is what tells the GC every time a pointer is written
 ---
 
 # The implementation in Torque,<br>V8's own language
-
----
-
-<div class="mapping" style="margin-top:24px;">
-  <div class="key">Torque</div><div>A language dedicated to writing V8's builtins</div>
-  <div class="key">fast path</div><div>A fast route taken only when conditions hold</div>
-  <div class="key">slow path</div><div>The existing route that is correct for any input</div>
-  <div class="key">bailout</div><div>Switching to the slow path when an assumption breaks</div>
-</div>
 
 ---
 
@@ -782,7 +778,9 @@ Fast mode means an array whose ElementsKind is one of the six PACKED or HOLEY ki
 
 ---
 
-# How much faster did it get
+<p class="lead-q">
+Same input, the whole flow<br>before and after the optimization
+</p>
 
 ---
 
@@ -791,6 +789,10 @@ Fast mode means an array whose ElementsKind is one of the six PACKED or HOLEY ki
 ---
 
 <FlatAnimation scene="flow-new" />
+
+---
+
+# How much faster did it get
 
 ---
 
@@ -824,6 +826,8 @@ Fast mode means an array whose ElementsKind is one of the six PACKED or HOLEY ki
 | `HOLEY_SMI_ELEMENTS`     | 5.91 ms | 3.45 ms | ~1.7x   |
 | `HOLEY_DOUBLE_ELEMENTS`  | 7.49 ms | 4.66 ms | ~1.6x   |
 | `HOLEY_ELEMENTS`         | 6.12 ms | 3.85 ms | ~1.6x   |
+
+<p class="lede">Without memcpy, non-numeric and HOLEY arrays gain only the single allocation</p>
 
 ---
 
@@ -985,7 +989,8 @@ const sourceKind: ElementsKind =
 ---
 
 <p class="lede">
-With <code>V8_ENABLE_UNDEFINED_DOUBLE</code> enabled, a <code>FixedDoubleArray</code> can also hold undefined
+Also, with <code>V8_ENABLE_UNDEFINED_DOUBLE</code> a <code>FixedDoubleArray</code> can hold undefined<br>
+Treated as PACKED, that undefined was read as a number too
 </p>
 
 ```ts
@@ -1010,7 +1015,21 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
 
 ---
 
+# Three CLs
+
+<div class="ba-steps" style="width:520px;">
+  <div class="ba-step">Two-pass approach, released in Chrome 147 (V8 14.7)</div>
+  <div class="ba-arrow">↓</div>
+  <div class="ba-step">Fix for the crash ClusterFuzz found</div>
+  <div class="ba-arrow">↓</div>
+  <div class="ba-step win">Bulk copy, since V8 15.1</div>
+</div>
+
+---
+
 # Summary
+
+<div class="col-label">The optimization</div>
 
 - The old flat appended one element at a time while reallocating the result array
 - The two-pass approach finds the length and type first and allocates once
@@ -1018,6 +1037,9 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
 - Numeric arrays skip the traversal itself by looking at ElementsKind
 - Numeric sub-arrays need no write barrier, so they are copied in one go with `memcpy`
 - Implemented as Torque's `TryFastFlat`, falling back to the slow path when an assumption breaks
+
+<div class="col-label" style="margin-top:16px;">Contributing to OSS</div>
+
 - Agreed on v8-dev, sent to Gerrit, merged with two `Code-Review+1` and the CQ
 - The bugs ClusterFuzz found the day after the merge were fixed with a regression test
 

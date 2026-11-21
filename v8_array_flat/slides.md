@@ -75,6 +75,8 @@ highlighter: shiki
 
 ---
 
+<p class="lede">Node.js 26には、このパッチはまだ入っていません</p>
+
 ```sh
 ❯ node -v
 v26.13.1
@@ -84,6 +86,8 @@ v26.13.1
 ```
 
 ---
+
+<p class="lede">Node.js 27から、flatが速くなります</p>
 
 ```sh
 ❯ node -v
@@ -104,7 +108,7 @@ Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが�
 # 2段階で約20倍
 
 <p class="lede">
-2パス方式で最大約5倍、バルクコピーでさらに約5倍速くしました
+2パス方式のパッチで最大約5倍、そのあとのバルクコピーのパッチでさらに約5倍速くしました
 </p>
 
 <div class="alloc">
@@ -114,11 +118,11 @@ Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが�
   </div>
   <div class="alloc-name">2パス方式</div>
   <div class="alloc-bars">
-    <div class="alloc-row"><div class="bar new" style="width:100px"></div><span>約5x</span></div>
+    <div class="alloc-row"><div class="bar new" style="width:100px"></div><span>約5x、V8 14.7から</span></div>
   </div>
   <div class="alloc-name">バルクコピー</div>
   <div class="alloc-bars">
-    <div class="alloc-row"><div class="bar new" style="width:400px"></div><span>約20x</span></div>
+    <div class="alloc-row"><div class="bar new" style="width:400px"></div><span>約20x、V8 15.1から</span></div>
   </div>
 </div>
 
@@ -138,7 +142,7 @@ Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが�
 上記について順を追って解説します
 
 <p class="lede">
-v8-devでの提案からGerritレビュー、マージまでの流れも紹介します
+v8-devでの提案からGerritレビュー、マージ、<br>マージ翌日のClusterFuzzとの戦いまでの流れも紹介します
 </p>
 
 ---
@@ -238,7 +242,7 @@ JSCでSosuke Suzukiさんが実装した2パス方式を参考にした<br>
 
 # 結果配列を何回確保するか
 
-<p class="lede">要素10個のサブ配列6個の場合</p>
+<p class="lede">まずは数値だけが入った、要素10個のサブ配列6個の場合</p>
 
 <div class="alloc">
   <div class="alloc-name">最適化前</div>
@@ -348,6 +352,17 @@ holeは <code>undefined</code> と違い、プロパティ自体がない
 
 ---
 
+<p class="lede">ここからV8のコードが出てくるので、言葉を4つ確認します</p>
+
+<div class="mapping" style="margin-top:24px;">
+  <div class="key">Torque</div><div>V8の組み込み関数を書く専用言語</div>
+  <div class="key">fast path</div><div>条件がそろったときだけ通る速い経路</div>
+  <div class="key">slow path</div><div>どんな入力でも正しく動く従来の経路</div>
+  <div class="key">bailout</div><div>前提が崩れたときにslow pathへ切り替えること</div>
+</div>
+
+---
+
 # holeがある配列の数え方
 
 <p class="lede">1個ずつ見て、hole以外を数える</p>
@@ -364,7 +379,8 @@ try {
 ```
 
 <p class="lede" style="margin-top:24px;">
-<code>LoadElementNoHole</code> はholeを見つけると <code>FoundHole</code> へ飛ぶ
+<code>LoadElementNoHole</code> はholeを見つけると <code>FoundHole</code> へ飛ぶ<br>
+Torqueの <code>otherwise</code> には、途中で抜けるときの飛び先を書く
 </p>
 
 ---
@@ -395,7 +411,7 @@ try {
   <div>
     <div class="ba-col-title">配列の種類を見る</div>
     <div class="ba-steps">
-      <div class="ba-step win">第1パスは配列の種類を見るだけ</div>
+      <div class="ba-step win">数値配列は種類と .length を見るだけ</div>
       <div class="ba-arrow">↓</div>
       <div class="ba-step">その長さで1回だけ確保</div>
       <div class="ba-arrow">↓</div>
@@ -417,24 +433,13 @@ V8は配列の中身を<br>「整数だけ」「浮動小数点数を含む」�
 
 ---
 
-# ElementsKindの例
-
-| 配列           | ElementsKind             |
-| -------------- | ------------------------ |
-| `[1, 2, 3]`    | `PACKED_SMI_ELEMENTS`    |
-| `[1, 2.5, 3]`  | `PACKED_DOUBLE_ELEMENTS` |
-| `[1, "a", {}]` | `PACKED_ELEMENTS`        |
-| `[1, , 3]`     | `HOLEY_SMI_ELEMENTS`     |
-
----
-
 # 主要なElementsKind
 
-|                            | Packed（holeなし）       | Holey（holeあり）       |
-| -------------------------- | ------------------------ | ----------------------- |
-| 小さな整数（Smi）だけ      | `PACKED_SMI_ELEMENTS`    | `HOLEY_SMI_ELEMENTS`    |
-| 浮動小数点数を含む         | `PACKED_DOUBLE_ELEMENTS` | `HOLEY_DOUBLE_ELEMENTS` |
-| 文字列やオブジェクトを含む | `PACKED_ELEMENTS`        | `HOLEY_ELEMENTS`        |
+|                            | Packed（holeなし）                        | Holey（holeあり）                       |
+| -------------------------- | ----------------------------------------- | --------------------------------------- |
+| 小さな整数（Smi）だけ      | `PACKED_SMI_ELEMENTS`<br>`[1, 2, 3]`      | `HOLEY_SMI_ELEMENTS`<br>`[1, , 3]`      |
+| 浮動小数点数を含む         | `PACKED_DOUBLE_ELEMENTS`<br>`[1, 2.5, 3]` | `HOLEY_DOUBLE_ELEMENTS`<br>`[1.5, , 3]` |
+| 文字列やオブジェクトを含む | `PACKED_ELEMENTS`<br>`[1, "a", {}]`       | `HOLEY_ELEMENTS`<br>`[1, , "a"]`        |
 
 <p class="lede" style="margin-top:24px;">
 <code>PACKED_SMI_ELEMENTS</code> と <code>PACKED_DOUBLE_ELEMENTS</code> には、サブ配列もProxyもholeも入らない<br>
@@ -507,7 +512,7 @@ if (sourceKind == ElementsKind::PACKED_SMI_ELEMENTS ||
 
 # 型が混ざった配列
 
-<p class="lede"><code>[[1, 2], [3.5], ["a", "b"]].flat()</code> の場合</p>
+<p class="lede">第1パスでは長さと一緒に、結果配列のElementsKindも決める<br><code>[[1, 2], [3.5], ["a", "b"]].flat()</code> の場合</p>
 
 <div class="kinds">
   <div class="col-label">最適化前</div>
@@ -706,7 +711,7 @@ V8のGCは、どのオブジェクトがどこを指しているかを知って�
 
 # 初期化を省いた確保
 
-<p class="lede">結果が <code>FixedDoubleArray</code> のときは、確保のしかたも変えた</p>
+<p class="lede">バルクコピーと同じCLで、結果が <code>FixedDoubleArray</code> のときの確保のしかたも変えた</p>
 
 <div class="ba">
   <div>
@@ -736,15 +741,6 @@ V8のGCは、どのオブジェクトがどこを指しているかを知って�
 ---
 
 # V8独自言語Torqueでの実装
-
----
-
-<div class="mapping" style="margin-top:24px;">
-  <div class="key">Torque</div><div>V8の組み込み関数を書く専用言語</div>
-  <div class="key">fast path</div><div>条件がそろったときだけ通る速い経路</div>
-  <div class="key">slow path</div><div>どんな入力でも正しく動く従来の経路</div>
-  <div class="key">bailout</div><div>前提が崩れたときにslow pathへ切り替えること</div>
-</div>
 
 ---
 
@@ -782,7 +778,9 @@ fast modeと呼ぶのは、ElementsKindがPACKEDかHOLEYの6種で<br>prototype�
 
 ---
 
-# どれだけ速くなったのか
+<p class="lead-q">
+同じ入力で、最適化前後の<br>全体の流れを比べます
+</p>
 
 ---
 
@@ -791,6 +789,10 @@ fast modeと呼ぶのは、ElementsKindがPACKEDかHOLEYの6種で<br>prototype�
 ---
 
 <FlatAnimation scene="flow-new" />
+
+---
+
+# どれだけ速くなったのか
 
 ---
 
@@ -824,6 +826,8 @@ fast modeと呼ぶのは、ElementsKindがPACKEDかHOLEYの6種で<br>prototype�
 | `HOLEY_SMI_ELEMENTS`     | 5.91 ms  | 3.45 ms  | 約1.7x |
 | `HOLEY_DOUBLE_ELEMENTS`  | 7.49 ms  | 4.66 ms  | 約1.6x |
 | `HOLEY_ELEMENTS`         | 6.12 ms  | 3.85 ms  | 約1.6x |
+
+<p class="lede">数値以外とHOLEYはmemcpyできないので、2パス方式の1回確保の分だけ速くなる</p>
 
 ---
 
@@ -985,7 +989,8 @@ const sourceKind: ElementsKind =
 ---
 
 <p class="lede">
-<code>V8_ENABLE_UNDEFINED_DOUBLE</code> が有効だと、<code>FixedDoubleArray</code> にundefinedも入る
+もう1つ、<code>V8_ENABLE_UNDEFINED_DOUBLE</code> が有効だと <code>FixedDoubleArray</code> にundefinedも入る<br>
+PACKEDとして扱ったので、そのundefinedも数値として読んでしまった
 </p>
 
 ```ts
@@ -1010,7 +1015,21 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
 
 ---
 
+# 3本のCL
+
+<div class="ba-steps" style="width:520px;">
+  <div class="ba-step">2パス方式、Chrome 147（V8 14.7）でリリース</div>
+  <div class="ba-arrow">↓</div>
+  <div class="ba-step">ClusterFuzzが見つけたクラッシュの修正</div>
+  <div class="ba-arrow">↓</div>
+  <div class="ba-step win">バルクコピー、V8 15.1から</div>
+</div>
+
+---
+
 # まとめ
+
+<div class="col-label">最適化</div>
 
 - 従来のflatは、結果配列を確保し直しながら1個ずつ追加していた
 - 2パス方式で長さと型を先に求め、確保を1回にした
@@ -1018,6 +1037,9 @@ doubleElements.values[targetIndex] = Convert<float64_or_undefined_or_hole>(
 - 数値だけの配列はElementsKindを見て走査そのものを省略
 - 数値だけのサブ配列はwrite barrierが要らないので、`memcpy` でまとめてコピー
 - Torqueの `TryFastFlat` で実装し、前提が崩れたらslow pathへ
+
+<div class="col-label" style="margin-top:16px;">OSSへのコントリビュート</div>
+
 - v8-devで方針を合わせてからGerritに出し、2人の `Code-Review+1` とCQでマージ
 - マージ翌日にClusterFuzzが見つけたバグは、回帰テストを足して修正
 
