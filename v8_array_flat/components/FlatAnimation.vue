@@ -9,7 +9,6 @@ type SceneName =
   | "hole"
   | "kinds"
   | "barrier"
-  | "stack"
   | "compare-twopass"
   | "compare-bulk"
   | "flow-old"
@@ -472,92 +471,6 @@ const buildBarrier = (): Frame[] => {
   return frames;
 };
 
-const buildStack = (): Frame[] => {
-  const arrays: Record<string, string[]> = {
-    外側: ["X", "Y"],
-    X: ['"a"', "Z"],
-    Z: ['"b"', '"c"'],
-    Y: ['"d"'],
-  };
-  const st = {
-    phase: "",
-    cur: "外側",
-    idx: 0,
-    depth: 2,
-    stack: [] as [string, number, number][],
-    pushed: false,
-    out: [] as string[],
-    newIdx: -1,
-  };
-  const draw = () =>
-    headHtml("明示的スタック", st.phase) +
-    '<div class="fa-label">入力は <span class="fa-mono">[X, Y].flat(2)</span>　<span class="fa-mono">X = ["a", Z]</span>　<span class="fa-mono">Z = ["b", "c"]</span>　<span class="fa-mono">Y = ["d"]</span></div>' +
-    `<div class="fa-lane fa-lane-two"><div class="fa-lane-name">見ている配列</div><div class="fa-row"><span class="fa-cur">${st.cur}</span><div class="fa-cells">${arrays[
-      st.cur
-    ]
-      .map((v, i) => cellHtml(i === st.idx ? "read" : "", v))
-      .join(
-        "",
-      )}</div><span class="fa-stat">残りの深さ<span class="fa-v">${st.depth}</span></span></div></div>` +
-    `<div class="fa-lane fa-lane-two"><div class="fa-lane-name">スタック</div><div class="fa-stack">${
-      st.stack.length
-        ? st.stack
-            .map(
-              (e, i) =>
-                `<div class="fa-entry${st.pushed && i === st.stack.length - 1 ? " push" : ""}"><span class="fa-k">配列</span>${e[0]} <span class="fa-k">再開位置</span>${e[1]} <span class="fa-k">深さ</span>${e[2]}</div>`,
-            )
-            .join("")
-        : '<span class="fa-stat fa-empty-text">空</span>'
-    }</div></div>` +
-    `<div class="fa-lane fa-lane-two"><div class="fa-lane-name">結果</div><div class="fa-cells">${st.out
-      .map((v, i) => cellHtml(i === st.newIdx ? "new" : "", v))
-      .join("")}</div></div>`;
-  const frames: Frame[] = [];
-  const push = (delay: number) => frames.push({ html: draw(), delay });
-  const walk = (): void => {
-    const items = arrays[st.cur];
-    st.newIdx = -1;
-    st.pushed = false;
-    if (st.idx < items.length) {
-      const v = items[st.idx];
-      if (v in arrays && st.depth > 0) {
-        st.phase = `${v} は配列なので、戻り先を積んで中に入る`;
-        push(70);
-        st.stack.push([st.cur, st.idx + 1, st.depth]);
-        st.cur = v;
-        st.idx = 0;
-        st.depth -= 1;
-        st.pushed = true;
-        push(110);
-      } else {
-        st.out.push(v);
-        st.newIdx = st.out.length - 1;
-        st.phase = `${v} を結果に書く`;
-        push(60);
-        st.idx++;
-      }
-      walk();
-      return;
-    }
-    const top = st.stack[st.stack.length - 1];
-    if (!top) return;
-    st.phase = `${st.cur} を見終わったので、スタックから戻る`;
-    push(80);
-    st.stack.pop();
-    st.cur = top[0];
-    st.idx = top[1];
-    st.depth = top[2];
-    push(80);
-    walk();
-  };
-  st.phase = "外側の配列から見ていく";
-  push(110);
-  walk();
-  st.phase = "完了";
-  push(350);
-  return frames;
-};
-
 const FLOW_SRC: (number | null)[][] = [
   [1, 2, 3, 4, 5, 6, 7],
   [8, null, 10, 11, 12, 13, 14],
@@ -875,7 +788,6 @@ const builders: Record<SceneName, () => Frame[][]> = {
   hole: () => [buildHole()],
   kinds: () => [buildKinds()],
   barrier: () => [buildBarrier()],
-  stack: () => [buildStack()],
   "compare-twopass": () => [
     buildOld((s) => renderLane("最適化前", s)),
     buildTwoPass(false, (s) => renderLane("2パス方式", s)),
@@ -1156,10 +1068,6 @@ onUnmounted(() => clearInterval(timer.value));
 .flat-anim .fa-lane-wide {
   grid-template-columns: 190px 1fr 150px;
 }
-.flat-anim .fa-lane-two {
-  grid-template-columns: 150px 1fr;
-  margin-top: 8px;
-}
 .flat-anim .fa-lane-name {
   font-weight: 700;
   color: var(--fa-blue);
@@ -1207,38 +1115,6 @@ onUnmounted(() => clearInterval(timer.value));
   border-color: var(--fa-blue);
   color: var(--fa-blue);
   background: var(--fa-light);
-}
-.flat-anim .fa-stack {
-  display: flex;
-  gap: 8px;
-  min-height: 58px;
-  align-items: flex-end;
-}
-.flat-anim .fa-entry {
-  border: 2px solid var(--fa-blue);
-  border-radius: 8px;
-  padding: 4px 10px;
-  font:
-    700 13px/1.5 "Nunito",
-    "Noto Sans JP",
-    sans-serif;
-  background: var(--fa-light);
-}
-.flat-anim .fa-entry.push {
-  border-color: var(--fa-copy);
-  background: var(--fa-copy-bg);
-}
-.flat-anim .fa-k {
-  font-weight: 400;
-  font-size: 12px;
-  margin-right: 4px;
-}
-.flat-anim .fa-cur {
-  font-weight: 700;
-  min-width: 44px;
-}
-.flat-anim .fa-empty-text {
-  color: var(--fa-dash);
 }
 .flat-anim .fa-mono {
   font-family: "PT Mono", ui-monospace, Menlo, monospace;

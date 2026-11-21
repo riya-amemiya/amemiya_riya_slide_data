@@ -107,6 +107,7 @@ Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが�
 
 - なぜ従来のflatは遅かったのか
 - メモリ割り当てを1回に減らす2パス方式
+- ElementsKindで走査そのものを省略する
 - holeを詰めるflat特有の仕様との格闘
 - バルクコピーでさらに約5倍高速化
 - V8独自言語Torqueでの実装
@@ -174,10 +175,6 @@ holeは <code>undefined</code> と違い、プロパティ自体がない
 2. ソース配列を先頭から1個ずつ見る
 3. 要素が配列なら、再帰呼び出しでその中を見る
 4. 配列でなければ、結果配列の末尾に1個追加する
-
----
-
-<FlatAnimation scene="flow-old" />
 
 ---
 
@@ -254,6 +251,10 @@ JSCでSosuke Suzukiさんが実装した2パス方式を参考にした<br>
 ---
 
 <FlatAnimation scene="compare-twopass" />
+
+---
+
+# ElementsKindで<br>走査そのものを省略する
 
 ---
 
@@ -581,22 +582,6 @@ if (subArray.map.elements_kind == ElementsKind::PACKED_SMI_ELEMENTS) {
 
 ---
 
-# 3つの実装の比較
-
-<table class="ba-table">
-<thead>
-  <tr><th></th><th>最適化前</th><th>2パス方式</th><th>バルクコピー</th></tr>
-</thead>
-<tbody>
-  <tr><td>結果配列の確保</td><td class="bad">足りなくなるたびに作り直す</td><td class="good">長さを数えて1回だけ</td><td class="good">1回だけ</td></tr>
-  <tr><td>サブ配列の処理</td><td class="bad">再帰で中へ入り1個ずつ追加</td><td class="bad">1個ずつ直接書く</td><td class="good">数値配列は <code>memcpy</code> でまとめて</td></tr>
-  <tr><td>要素ごとの確認</td><td class="bad">あり</td><td class="bad">あり</td><td class="good">数値配列では不要</td></tr>
-  <tr><td>速度の目安</td><td class="bad">1x</td><td>約5x</td><td class="good">約20x</td></tr>
-</tbody>
-</table>
-
----
-
 # V8独自言語Torqueでの実装
 
 ---
@@ -628,28 +613,6 @@ const a: JSReceiver = ArraySpeciesCreate(context, o, 0);
 
 ---
 
-# 明示的スタックによる反復処理
-
-- 再帰で書くと、Torqueコンパイラがスタックオーバーフローで落ちた
-- そこでスタックを自前で持つループにした
-
-```ts
-// src/builtins/array-flat.tq
-if (stack.length >= kMaxFlatFastStackEntries) goto Bailout;
-stack.Push(currentArray);
-stack.Push(nextIndex);
-stack.Push(currentDepth);
-```
-
-- 1段ごとに配列、再開位置、深さの3つを積む
-- 積めるのは3072個まで、つまり深さ1024まで
-
----
-
-<FlatAnimation scene="stack" />
-
----
-
 # どこでbailoutするか
 
 <p class="lede">前提がそろっている間だけfast pathで進み、崩れたらその場でslow pathへ</p>
@@ -666,7 +629,31 @@ fast modeと呼ぶのは、ElementsKindがPACKEDかHOLEYの6種で<br>prototype�
 
 ---
 
+# どれだけ速くなったのか
+
+---
+
+<FlatAnimation scene="flow-old" />
+
+---
+
 <FlatAnimation scene="flow-new" />
+
+---
+
+# 3つの実装の比較
+
+<table class="ba-table">
+<thead>
+  <tr><th></th><th>最適化前</th><th>2パス方式</th><th>バルクコピー</th></tr>
+</thead>
+<tbody>
+  <tr><td>結果配列の確保</td><td class="bad">足りなくなるたびに作り直す</td><td class="good">長さを数えて1回だけ</td><td class="good">1回だけ</td></tr>
+  <tr><td>サブ配列の処理</td><td class="bad">再帰で中へ入り1個ずつ追加</td><td class="bad">1個ずつ直接書く</td><td class="good">数値配列は <code>memcpy</code> でまとめて</td></tr>
+  <tr><td>要素ごとの確認</td><td class="bad">あり</td><td class="bad">あり</td><td class="good">数値配列では不要</td></tr>
+  <tr><td>速度の目安</td><td class="bad">1x</td><td>約5x</td><td class="good">約20x</td></tr>
+</tbody>
+</table>
 
 ---
 
