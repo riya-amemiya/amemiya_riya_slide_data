@@ -1,0 +1,10 @@
+{
+  "name": "v8_array_flat-en",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev --open",
+    "export": "slidev export"
+  }
+}

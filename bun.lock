@@ -61,6 +61,9 @@
     "v8_array_flat": {
       "name": "v8_array_flat",
     },
+    "v8_array_flat-en": {
+      "name": "v8_array_flat-en",
+    },
     "v8_contribute_intro": {
       "name": "v8_contribute_intro",
     },
@@ -1615,6 +1618,8 @@
     "utils-merge": ["utils-merge@1.0.1", "", {}, "sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA=="],
 
     "v8_array_flat": ["v8_array_flat@workspace:v8_array_flat"],
+
+    "v8_array_flat-en": ["v8_array_flat-en@workspace:v8_array_flat-en"],
 
     "v8_contribute_intro": ["v8_contribute_intro@workspace:v8_contribute_intro"],
 
