@@ -85,6 +85,16 @@ v26.13.1
 
 ---
 
+```sh
+❯ node -v
+v27.0.0-alpha.0.1.1
+
+❯ node -p process.versions.v8
+15.6.75.50-node.14
+```
+
+---
+
 <p class="lead-q">
 Chrome、Node.js、Deno、V8を積む<br>あらゆるランタイムでflatが最大約20倍速くなります
 </p>
