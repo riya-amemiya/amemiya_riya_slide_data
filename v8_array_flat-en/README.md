@@ -1,4 +1,4 @@
-# Making V8's Array.prototype.flat up to ~20x faster, and the road to a large commit in a huge OSS project
+# How I Made V8's Array.prototype.flat Up to 20× Faster—and the Journey to a Large-Scale OSS Contribution
 
 A Slidev deck about the patch that made V8's `Array.prototype.flat` faster, and how that patch was merged into V8.
 This is the English translation of [v8_array_flat](../v8_array_flat).
