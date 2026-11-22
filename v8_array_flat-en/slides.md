@@ -1,7 +1,7 @@
 ---
 theme: seriph
 background: white
-title: Making V8's Array.prototype.flat up to ~20x faster, and the road to a large commit in a huge OSS project
+title: How I Made V8's Array.prototype.flat Up to 20× Faster—and the Journey to a Large-Scale OSS Contribution
 info: |
   One day, a post saying "JSC's Array.prototype.flat is getting faster" showed up on my X timeline. Reading the implementation, it looked like the same idea could apply to V8, and about a month later my patch was merged into V8 14.7.
   Array.prototype.flat becomes up to ~20x faster in Chrome, Node.js, Deno, and every runtime that ships V8.
